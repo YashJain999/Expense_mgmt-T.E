@@ -1,58 +1,24 @@
 import React,{ useState } from 'react';
+import { NavLink,Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+
+// import './Sidebar.css'; // Import your custom CSS file for Sidebar styling
+// import Navbar from './Navbar';
 
 
 export default function Sidebar() {
-    // const [mainElement, setMainElement] = useState([
-    //     { itemName:"Budget" , isSelected:"true"},
-    //     { itemName:"Quotation" , isSelected:"true"},
-    //     { itemName:"Purchase" , isSelected:"true"},
-    //     { itemName:"Bills" , isSelected:"true"},
-    //     { itemName:"Central Dead Stock" , isSelected:"true"} 
-    // ]);
 
-    // const [items, setItems] = useState([
-    //     { itemName:"Enter Budget"},
-    //     { itemName:"Generate Budget Report"},
-    //     { itemName:"View Budget"},
-    //     { itemName:"Financial Year Updation"},
-    // ]);
-
-    // const handleShowSubList = (index) =>{
-    //     const updatedElement = [...mainElement]; // Create a copy of the items array
-    //     updatedElement[index].isSelected =! updatedElement[index].isSelected;
-    //     const updatedItems = [...items];
-    //     setItems(updatedItems);
-    //     setMainElement("");
-    //     <>
-    //     <button className="btn btn">Budget</button>
-    //     <span className="fa-solid fa-chevron-right"></span>
-    //         <div className="container">
-    //             {mainElement.map((item,index) => (
-    //                 item.isSelected ? (
-    //                     <>
-    //                         <ul className="list-group list-group-flush">
-    //                             <div key={index}>
-    //                                 {/* Render your JSX content here */}
-    //                                 <li className="list-group-item">{item.itemName}</li>
-    //                             </div>
-    //                         </ul>
-    //                         {console.log("subitems opened")}
-    //                     </>)
-    //                     :(
-    //                         <span className="fa-solid fa-chevron-left"></span>
-    //                     )
-    //             ))}
-    //         </div>
-    //     </>
-    // }
-    // }
+    const linkStyle = {
+        textDecoration: 'none',
+        border :'none'
+    };
 
     //showing budget list
     const [shouldShowBudget, setShouldShowBudget] = useState([]); 
     const [isBudgetListVisible, setIsBudgetListVisible] = useState(false);
     const toggleBudgetList =() => {
     const buttonObject1 = ([
-        {text:'Enter Budget'            ,onClick:()=>{alert("Enter budget was clicked")}},
+        {text:'Enter Budget'            ,onClick:()=>{}},
         {text:'Generate Budget Report'  ,onClick:()=>{alert("Generate budget Report was clicked")}},
         {text:'View Budget'             ,onClick:()=>{alert("View budget was clicked")}},
         {text:'Update Financial Year'   ,onClick:()=>{alert("Update Financial Year was clicked")}},
@@ -91,7 +57,7 @@ export default function Sidebar() {
     const [isBillsListVisible, setIsBillsListVisible] = useState(false);
     const toggleBillsList =() => {
         const buttonObject4 = ([
-            {text:'b.B1'            ,onClick:()=>{alert("bb1 was clicked")}},
+            {text:'b.B1'            , },
             {text:'b.B2'            ,onClick:()=>{alert("bb2 was clicked")}},
             // {text:'b.B3'            ,onClick:()=>{alert("pb3 clicked")}},
             // {text:'b.B4'            ,onClick:()=>{alert("pb4 was clicked")}},
@@ -113,119 +79,185 @@ export default function Sidebar() {
         setIsCDSListVisible(!isCDSListVisible);
     }
 
+    const [shouldShowFeedback, setShouldShowFeedBack] = useState(true); 
+    const [isFeedBackListVisible, setIsFeedBackListVisible] = useState(false);
+    const toggleFeedBackList=() => {
+        const buttonObject6 = ([
+            {text:'cds.B1'            ,onClick:()=>{alert("cdsb1 was clicked")}},
+            {text:'cds.B2'            ,onClick:()=>{alert("cdsb2 was clicked")}},
+            // {text:'cds.B3'            ,onClick:()=>{alert("cdsb3 clicked")}},
+            // {text:'cds.B4'            ,onClick:()=>{alert("cdsb4 was clicked")}},
+        ])
+        setShouldShowFeedBack(buttonObject6)
+        setIsFeedBackListVisible(!isFeedBackListVisible);
+    }
+
     const [shouldShowList, setShouldShowList] = useState(true); 
     const toggleList =() => {
         setShouldShowList(!shouldShowList)  
     }
 
+    // const additionalClasses="offcanvas-header"
     return (
-    <>
-    <div className="offcanvas offcanvas-start show" tabIndex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
-        <div className="offcanvas-header">
-            <h5 className="offcanvas-title" id="offcanvasLabel">LABTRACKER</h5>
-            <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div className="offcanvas-body">
-            <ul className="list-group list-group-flush">
-                    {shouldShowList && ((                
-                    <li className='list-group-item'>
-                        <button type="button" className="btn btn" onClick={() => {toggleBudgetList();toggleList()}}>Budget</button>
-                        {/* <i class="fa-solid fa-chevron-left ms-5"></i> */}
-                    </li>
-                    ))}
-                    {isBudgetListVisible && (
-                        <ul className="list-group-item ">
-                            <li>
-                                <button type="button" className="btn btn" onClick={() => {toggleBudgetList();toggleList()}}>Budget</button>
+    <> 
+        <div className="offcanvas offcanvas-start text-bg-dark border-bottom show" data-bs-backdrop="false" data-bs-theme="dark" tabIndex="-1" id="offcanvasDark" aria-labelledby="offcanvasDarkLabel" style={{width:260}}>
+        <div className="offcanvas-header ">
+            <h5 className="offcanvas-title" id="offcanvasDarkLabel">Labtracker</h5>
+            {/* <button >
+            <i class="fa-solid fa-bars"></i>
+            </button> */}
+            <button type="button" className="btn btn-close text-reset " data-bs-dismiss="offcanvas" data-bs-backdrop="false" aria-label="Close"></button>
+        </div>                                                                                                                         
+            <div className="offcanvas-body">
+                <ul className="list-group list-group-flush">
+                        {shouldShowList && ((                
+                        <li className='list-group-item'>
+                        <NavLink to ="/budget" style={linkStyle}>
+                            <button type="button" className="btn btn" onClick={() => {toggleBudgetList();toggleList()}}>Budget</button>
+                        </NavLink>
+                            {/* <i class="fa-solid fa-chevron-left ms-5"></i> */}
+                        </li>
+                        ))}
+                        {isBudgetListVisible && (
+                            <ul className="list-group list-group-flush">
+                                <li className='list-group-item'>
+                                <NavLink to ="/" style={linkStyle}>
+                                    <button type="button" className="btn btn" onClick={() => {toggleBudgetList();toggleList()}}>Budget</button>
+                                </NavLink>
+                                </li>
+                                <div className=" m-n1 pt-2 container" >
+                                {shouldShowBudget.map((item, index) => (
+                                <li>
+                                    <button type="button" className="btn btn" key={index} onClick={item.onClick}>{item.text}</button>
+                                </li>
+                                ))}
+                                </div>
+                            </ul>
+                        )}
+                        {shouldShowList && ((
+                        <li className="list-group-item">
+                        <NavLink to ="/quotation" style={linkStyle}>
+                            <button type="button" className="btn btn" onClick={() => {toggleQuotationList();toggleList()}}>Quotation</button>
+                        </NavLink>
+                        </li>
+                        ))}
+                        {isQuotationListVisible && (
+                            <ul className="list-group list-group-flush">
+                            <li className='list-group-item'>
+                            <NavLink to ="/" style={linkStyle}>
+                                <button type="button" className="btn btn" onClick={() => {toggleQuotationList();toggleList()}}>Quotation</button>
+                            </NavLink>
                             </li>
-                            {shouldShowBudget.map((item, index) => (
+                            <div className=" m-n1 pt-2 container" >
+                            {shouldShowQuotation.map((item, index) => (
                             <li>
                                 <button type="button" className="btn btn" key={index} onClick={item.onClick}>{item.text}</button>
                             </li>
                             ))}
-                        </ul>
-                    )}
-                    {shouldShowList && ((
-                    <li className="list-group-item">
-                        <button type="button" className="btn btn" onClick={() => {toggleQuotationList();toggleList()}}>Quotation</button>
-                    </li>
-                    ))}
-                    {isQuotationListVisible && (
-                        <ul className="list-group-item ">
-                        <li>
-                            <button type="button" className="btn btn" onClick={() => {toggleQuotationList();toggleList()}}>Quotation</button>
-                        </li>
-                        {shouldShowQuotation.map((item, index) => (
-                        <li>
-                            <button type="button" className="btn btn" key={index} onClick={item.onClick}>{item.text}</button>
-                        </li>
-                        ))}
-                        </ul>
-                    )}
-                    {shouldShowList && ((
-                    <li className="list-group-item">
-                        <button type="button" className="btn btn" onClick={() => {togglePurchaseList();toggleList()}}>Purchase</button>
-                    </li>
-                    ))}
-                    {isPurchaseListVisible && (
-                        <ul className="list-group-item ">
-                        <li>
+                            </div>
+                            </ul>
+                        )}
+                        {shouldShowList && ((
+                        <li className="list-group-item">
+                        <NavLink to ="/purchase" style={linkStyle}>
                             <button type="button" className="btn btn" onClick={() => {togglePurchaseList();toggleList()}}>Purchase</button>
-                        </li>
-                        {shouldShowPurchase.map((item, index) => (
-                        <li>
-                            <button type="button" className="btn btn" key={index} onClick={item.onClick}>{item.text}</button>
+                        </NavLink>
                         </li>
                         ))}
-                        </ul>
-                    )}
-                    {shouldShowList && ((
-                    <li className="list-group-item">
-                        <button type="button" className="btn btn" onClick={() => {toggleBillsList();toggleList()}}>Bills</button>
-                    </li>
-                    ))}
-                    {isBillsListVisible && (
-                        <ul className="list-group-item ">
-                        <li>
+                        {isPurchaseListVisible && (
+                            <ul className="list-group list-group-flush">
+                            <li className='list-group-item'>
+                            <NavLink to ="/" style={linkStyle}>
+                                <button type="button" className="btn btn" onClick={() => {togglePurchaseList();toggleList()}}>Purchase</button>
+                            </NavLink>
+                            </li>
+                            <div className=" m-n1 pt-2 container" >
+                            {shouldShowPurchase.map((item, index) => (
+                            <li>
+                                <button type="button" className="btn btn" key={index} onClick={item.onClick}>{item.text}</button>
+                            </li>
+                            ))}
+                            </div>
+                            </ul>
+                        )}
+                        {shouldShowList && ((
+                        <li className="list-group-item">
+                        <NavLink to ="/bills" style={linkStyle}>
                             <button type="button" className="btn btn" onClick={() => {toggleBillsList();toggleList()}}>Bills</button>
-                        </li>
-                        {shouldShowBills.map((item, index) => (
-                        <li>
-                            <button type="button" className="btn btn" key={index} onClick={item.onClick}>{item.text}</button>
+                        </NavLink>
                         </li>
                         ))}
-                        </ul>
-                    )}
-                    {shouldShowList && ((
-                    <li className="list-group-item">
-                        <button type="button" className="btn btn" onClick={() => {toggleCDSList();toggleList()}}>Central Dead Stock</button>
-                    </li>
-                    ))}
-                    {isCDSListVisible && (
-                        <ul className="list-group-item ">
-                        <li>
+                        {isBillsListVisible && (
+                            <ul className="list-group list-group-flush">
+                            <li className='list-group-item'>
+                            <NavLink to ="/" style={linkStyle}>
+                                <button type="button" className="btn btn" onClick={() => {toggleBillsList();toggleList()}}>Bills</button>
+                            </NavLink>
+                            </li>
+                            <div className=" m-n1 pt-2 container" >
+                            {shouldShowBills.map((item, index) => (
+                            <li>
+                                <button type="button" className="btn btn" key={index} onClick={item.onClick}>{item.text}</button>
+                            </li>
+                            ))}
+                            </div>
+                            </ul>
+                        )}
+                        {shouldShowList && ((
+                        <li className="list-group-item">
+                        <NavLink to ="/centraldeadstock" style={linkStyle}>
                             <button type="button" className="btn btn" onClick={() => {toggleCDSList();toggleList()}}>Central Dead Stock</button>
-                        </li>
-                        {shouldShowCDS.map((item, index) => (
-                        <li>
-                            <button type="button" className="btn btn" key={index} onClick={item.onClick}>{item.text}</button>
+                        </NavLink>
                         </li>
                         ))}
-                        </ul>
-                    )}
-                    {shouldShowList && ((
-                    <li className="list-group-item">
-                        <button type="button" className="btn btn" onClick={toggleList}>Feedback</button>
-                    </li>
-                    ))}
-                    {shouldShowList && ((
-                    <li className="list-group-item">
-                        <button type="button" className="btn btn" onClick={toggleList}>Logout</button>
-                    </li>
-                    ))}
-            </ul> 
+                        {isCDSListVisible && (
+                            <ul className="list-group list-group-flush">
+                            <li className='list-group-item'>
+                            <NavLink to ="/" style={linkStyle}>
+                                <button type="button" className="btn " onClick={() => {toggleCDSList();toggleList()}}>Central Dead Stock</button>
+                            </NavLink>
+                            </li>
+                            <div className=" m-n1 pt-2 container" >
+                            {shouldShowCDS.map((item, index) => (
+                            <li>
+                                <button type="button" className="btn " key={index} onClick={item.onClick}>{item.text}</button>
+                            </li>
+                            ))}
+                            </div>
+                            </ul>
+                        )}
+                        {shouldShowList && ((
+                        <li className="list-group-item">
+                        <NavLink to ="/feedback" style={linkStyle}>
+                            <button type="button" className="btn btn" onClick={() => {toggleFeedBackList();toggleList()}}>Feedback</button>
+                        </NavLink>
+                        </li>
+                        ))}
+                        {isFeedBackListVisible && (
+                            <ul className="list-group list-group-flush">
+                            <li className='list-group-item'>
+                            <NavLink to ="/" style={linkStyle}>
+                                <button type="button" className="btn " onClick={() => {toggleFeedBackList();toggleList()}}>Feedback</button>
+                            </NavLink>
+                            </li>
+                            <div className=" m-n1 pt-2 container" >
+                            {shouldShowFeedback.map((item, index) => (
+                            <li>
+                                <button type="button" className="btn " key={index} onClick={item.onClick}>{item.text}</button>
+                            </li>
+                            ))}
+                            </div>
+                            </ul>
+                        )}
+                        {shouldShowList && ((
+                        <li className="list-group-item">
+                            <button type="button" className="btn btn" onClick={toggleList}>Logout</button>
+                        </li>
+                        ))}
+                </ul> 
+            </div>
         </div>
-    </div>
+        {/* </aside> */}
     </>
   )
 }
