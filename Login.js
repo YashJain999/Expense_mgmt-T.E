@@ -1,5 +1,9 @@
 import React from 'react';
 import './App.css';
+import './Login.css';
+// import PasswordReset from './PasswordReset';
+// import RegistrationForm from './RegistrationForm';
+import { Link } from 'react-router-dom';
 
 function Login() {
   return (
@@ -40,15 +44,16 @@ function Login() {
               />
               <br />
               <br />
+              {/* <a id='forgetpassword' href={<PasswordReset />} >Forgot Password?</a>
+              <a id='registernow' href= {<RegistrationForm />}> Register Now!</a> */}
+               <Link to="/password-reset">Forgot Password?</Link>
+              <Link to="/register">Register Now!</Link>
               <br />
               <br />
             </div>
             <button type="submit">Submit</button>
             <br />
             <br />
-            {/* <div id="fg">
-              <a href="http://moodle.apsit.org.in/moodle/login/index.php">Forgot Password?</a>
-            </div> */}
           </form>
         </div>
       </div>

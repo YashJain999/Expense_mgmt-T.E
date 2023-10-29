@@ -1,12 +1,12 @@
-// src/RegistrationForm.js
 import React, { useState } from 'react';
-import './RegistrationForm.css'; 
+import './RegistrationForm.css';
 
 function RegistrationForm() {
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
+    Password: '',
     designation: '',
+    Department: '',
   });
   const [backgroundPhoto, setBackgroundPhoto] = useState(null);
 
@@ -28,98 +28,85 @@ function RegistrationForm() {
     // Handle form submission logic, including the background photo
     console.log(formData, backgroundPhoto);
   };
-  
+
   return (
-    <>
-    
-   {/* <div>
-      <h1>lab travker</h1>
-    </div> */}
-    <div>
-      {/* <h1>samle</h1> */}
-      <h2>Registration Form</h2>
-      {/* <h3>Enter the following details</h3> */}
-      <form onSubmit={handleSubmit}>
-        
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
+    <div className="App">
+      <div className="registration-container">
+        <h1>LAB TRACKER</h1>
+        <div className="registration-form">
+          <div className='header'></div>
+          <h2>Registration Form</h2>
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label>Email:</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+              <label>Password</label>
+              <input
+                type="password"
+                name="Password"
+                value={formData.Password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div>
+              <label>Designation:</label>
+              <select
+                name="designation"
+                value={formData.designation}
+                onChange={handleChange}
+                required
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  marginBottom: '15px',
+                  border: '1px solid #ccc',
+                  borderRadius: '3px',
+                }}
+              >
+                <option value="Select Designation"></option>
+                <option value="Engineer">D1</option>
+                <option value="Manager">D2</option>
+                <option value="Designer">D3</option>
+              </select>
+            </div>
+            <div>
+              <label>Department:</label>
+              <select
+                name="Department"
+                value={formData.Department}
+                onChange={handleChange}
+                required
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  marginBottom: '15px',
+                  border: '1px solid #ccc',
+                  borderRadius: '3px',
+                }}
+              >
+                <option value="Select Department"></option>
+                <option value="Engineering">Engineering</option>
+                <option value="Management">Management</option>
+                <option value="Design">Design</option>
+              </select>
+            </div>
+            <br></br>
+            <div>
+              <button type="submit">Register</button>
+            </div>
+          </form>
         </div>
-        <div>
-          <label>Password</label>
-          <input
-            type="password"
-            // type="text"
-            name="Password"
-            value={formData.Password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-        <label>Designation:</label>
-          <select
-            name="designation"
-            value={formData.designation}
-            onChange={handleChange}
-            required
-            style={{
-              width: '100%',
-              padding: '10px',
-              marginBottom: '15px',
-              border: '1px solid #ccc',
-              borderRadius: '3px',
-            }}
-          >
-            <option value="Select Designation"></option>
-            <option value="Engineer">D1</option>
-            <option value="Manager">D2</option>
-            <option value="Designer">D3</option>
-          </select>
-        </div>
-        <div>
-        <label>Deparment:</label>
-          <select
-            name="Department"
-            value={formData.Department}
-            onChange={handleChange}
-            required
-            style={{
-              width: '100%',
-              padding: '10px',
-              marginBottom: '15px',
-              border: '1px solid #ccc',
-              borderRadius: '3px',
-            }}
-          >
-            <option value="Select Designation"></option>
-            <option value="Engineer">D1</option>
-            <option value="Manager">D2</option>
-            <option value="Designer">D3</option>
-          </select>
-        </div>
-        {/* <div>
-          <label>Background Photo:</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handlePhotoUpload}
-            required
-          />
-        </div> */}
-        <br></br>
-        <div>
-          <button type="submit">Register</button>
-        </div>
-      </form>
+      </div>
     </div>
-    </>
   );
 }
 
