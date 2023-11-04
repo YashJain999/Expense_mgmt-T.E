@@ -25,7 +25,7 @@ from budget.models import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/verify-email/', EmailVerificationView.as_view(), name='anything'),
-    # path('api/update-password/', PasswordUpdateView.as_view(), name='anything'),
+    path('update-password/', views.update_password, name='anything'),
     # path('api/login/', LoginView.as_view(), name='anything')
     path('generate_pdf/',views.generate_pdf, name='generate_pdf' ),
 ]
