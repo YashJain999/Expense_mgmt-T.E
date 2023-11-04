@@ -1,18 +1,61 @@
 import "./App.css";
-import ListComponent from "./components/ListComponent";
+import { BrowserRouter,Routes,Route } from "react-router-dom";
+import Login from './components/Login';
+import RegistrationForm from './components/RegistrationForm';
+import PasswordReset from './components/PasswordReset';
 import Navbar from "./components/Navbar";
 import Sidebar from './components/Sidebar';
+import Bills from './components/Bills';
+import Budget from "./components/Budget";
+import Quotation from './components/Quotation';
+import Purchase from './components/Purchase';
+import CentralDeadStock from "./components/CentralDeadStock";
+import Feedback from "./components/Feedback";
+import EnterBudget from "./components/EnterBudget";
+import UploadBudget from "./components/UploadBudget";
+import ViewBudget from "./components/ViewBudget";
+import UpdateFinancialYear from "./components/UpdateFinancialYear";
 
 
 function App() {
   return (
     <>
-      <Navbar title = "Labtracker" />
-      <Sidebar />
-      <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rem et iusto mollitia minima culpa possimus quidem! Consequatur, doloribus unde mollitia vitae illo odit facilis nulla laboriosam aliquam? Omnis minus delectus consequatur exercitationem corporis temporibus eaque, nihil vero id fuga sunt explicabo quos nobis officiis, asperiores ad laudantium. Aperiam autem saepe, aliquid, nisi fuga nesciunt dolorum libero illo animi harum, tempore sunt laboriosam reprehenderit deserunt laudantium adipisci dolor repellendus! Nesciunt totam placeat consectetur architecto rerum nihil dolorum provident ullam nemo quas assumenda veritatis consequuntur quidem modi earum quia alias dolorem, quaerat velit sapiente facilis numquam. Quam, iure officia, harum ipsam qui omnis accusantium eos, facere quos facilis possimus. Esse earum magni voluptates quia exercitationem laboriosam hic nemo similique ut nisi vel id, est quisquam fuga aspernatur harum ullam sit repellendus soluta tempore qui. Laboriosam vero nobis incidunt corrupti molestias accusantium ab iste reprehenderit eligendi eum eveniet beatae, ipsa sed porro obcaecati eaque possimus magni est dolorum tempora sapiente perferendis veniam. Rerum ipsum temporibus dicta facilis, qui possimus quasi laudantium unde, a nostrum labore sint, odio voluptate expedita! Quas ut illo ad nisi ab repudiandae consequuntur quibusdam mollitia cum deserunt voluptas, rem rerum ex itaque, laborum doloribus quidem quis corporis hic sapiente vel facere at? Maiores similique amet distinctio iste quibusdam soluta repellat voluptatibus ullam velit a aperiam excepturi, et ea alias aliquam porro fugit voluptatum quis, ipsa natus adipisci tempora assumenda incidunt? Similique quas corporis id veniam accusantium recusandae harum cum officiis dignissimos inventore iure aliquam saepe nobis magni dolor eius unde, esse doloribus atque? Architecto tempore odio quisquam voluptates beatae autem fuga explicabo, maiores repellat dolorum recusandae iste non molestiae saepe, quo ipsam a ut aperiam error inventore alias veritatis corrupti? Sint assumenda ab rem corrupti error quasi vero qui architecto molestias accusantium quo necessitatibus possimus illum, quam laudantium accusamus officia labore in sequi. Odit harum nesciunt facilis nihil maxime magnam itaque error voluptates possimus? Minus ipsum nesciunt dolore, doloremque laudantium veritatis velit ea, magnam at ad nobis inventore ut cum nulla maxime modi similique corporis rem dolorem iure, voluptatum dolor repellendus! Nulla commodi tempore aperiam modi quod aliquid quam asperiores dolorum. Nihil molestias itaque, incidunt sed ratione, quis placeat voluptas ducimus aspernatur quidem, cum perferendis. Doloribus earum debitis maiores vero dolores, nobis itaque quisquam obcaecati accusamus nemo, commodi adipisci placeat. Sit, dolores excepturi quas libero neque aut. Voluptatum animi praesentium dignissimos numquam esse totam perspiciatis dicta eos deleniti distinctio harum reiciendis nemo officiis ipsam assumenda fugit ducimus doloribus tempore, architecto vitae. Unde maiores est dolorem, natus mollitia cupiditate at corrupti nemo necessitatibus quibusdam rem consectetur. Sunt quisquam hic aut in nostrum exercitationem dignissimos cupiditate, provident beatae, odio minima quis illo iusto vel! Excepturi officia optio debitis, corrupti nemo magni dolores aut obcaecati ullam maiores corporis omnis incidunt dolore ducimus necessitatibus molestias atque ratione pariatur itaque id dicta qui ut? Ipsa facilis minima itaque, cum, voluptatem, quidem consectetur laudantium harum maiores quam ipsam facere quae molestiae amet eius beatae deleniti officia modi aspernatur distinctio nulla nesciunt eos? Molestiae, dolore dolorem.</p>
-      <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Laborum eius veritatis id tempore corrupti nisi porro laudantium eveniet ad officiis ut, earum, velit molestiae impedit fugiat iusto minus alias ipsa? Facere fugit totam iste tempora, amet dolorem eum aperiam ea est sed nesciunt harum iure facilis sit perspiciatis ullam necessitatibus maiores aspernatur mollitia laboriosam dolorum. Voluptates excepturi sit quod iure sed libero cumque facere voluptatibus officiis officia inventore corrupti, dolor delectus dicta autem quidem suscipit quas. Reiciendis distinctio ad vel officiis, dolorum qui tempore quisquam totam nam voluptates assumenda corporis maiores, amet eum quidem, numquam similique ipsam atque nesciunt. Nobis aut nihil placeat quisquam voluptatibus, assumenda officia cupiditate excepturi incidunt modi corrupti ipsum dolore minus. Veritatis minus nemo fuga id quis fugit alias aperiam error minima similique nisi ad animi in ipsum, quidem, praesentium expedita labore blanditiis ut dolor soluta placeat! Repudiandae quos quae accusantium! Voluptates vel ullam deserunt culpa illum quam voluptate officiis dolore, praesentium in sint aliquam natus cupiditate excepturi nisi itaque quos quia molestiae labore earum perferendis tempore saepe placeat! Ducimus, earum repellendus aperiam quisquam optio quia labore tenetur debitis dicta totam laudantium omnis eaque, odio sequi asperiores inventore? Sequi provident neque nostrum corporis ea, veniam ratione harum aut itaque et ad officiis nobis pariatur tempore deserunt accusamus odit culpa magnam placeat expedita? Nihil unde illo ad soluta, aliquid quia earum cumque? Exercitationem maiores eaque officiis. Voluptatem nobis rem sint? Earum doloribus velit, dolorem, ab repudiandae porro, unde sint corporis numquam placeat blanditiis animi. Molestiae veniam odit, itaque facilis quasi repudiandae! Ipsa, et aperiam? Est neque cum, autem id magni asperiores illum veritatis doloribus ab excepturi velit nemo, odit iure at dolor enim. Mollitia eligendi, ipsum iusto quis consequatur doloremque quas harum esse amet quod asperiores possimus quos! Molestiae iure eligendi culpa totam magnam voluptatem aperiam eum aliquam odit deserunt assumenda molestias eveniet illum, laudantium dolor dolorum deleniti consectetur earum in enim? Necessitatibus molestiae placeat eum fugit doloribus tempora quaerat quis doloremque, suscipit deleniti nulla id sequi impedit magnam nemo repudiandae aut voluptas quos accusantium minus voluptates, atque nisi, dolores exercitationem. Dignissimos commodi, sunt voluptates nam unde accusantium corrupti quaerat omnis aliquid reprehenderit deserunt eius est repellendus magnam neque iste quisquam iure non beatae ab blanditiis provident tempore velit. Recusandae, quas. Repellat labore libero ipsa illo tempora consequuntur fugit. Nobis labore, dolore architecto ipsa atque corporis dolorem ab sint quae reiciendis exercitationem velit doloremque aperiam esse consequatur ratione autem placeat numquam libero aliquid vitae provident fuga? Consectetur vero quibusdam neque excepturi. Necessitatibus in nemo unde consequatur! Aliquam eos incidunt dolore, accusamus eligendi laborum? Dolore commodi consectetur et, ab culpa nihil, veritatis facere odit consequuntur quas vitae maxime? Eaque labore architecto quae aspernatur sunt possimus, placeat magnam non ipsam rerum repudiandae odio sequi vitae ullam autem tempora? Illum, ducimus explicabo rem officia neque cum error corporis, veniam asperiores perspiciatis blanditiis ab non ipsa rerum, eaque deleniti quibusdam voluptates unde aperiam. Eos ratione corrupti perferendis placeat non. Eum, voluptates veritatis ratione placeat nam minima. Dignissimos temporibus dolores nesciunt cumque soluta, repudiandae totam animi ipsam modi pariatur cum fugiat tempora iusto illo cupiditate, distinctio error, aspernatur reprehenderit fugit debitis neque magnam! Est eos excepturi omnis similique iure facilis quos libero nisi beatae eveniet soluta consequatur nihil dicta doloribus, recusandae tempore! Possimus rem reiciendis, deleniti dolores ullam unde perspiciatis eaque sequi quaerat accusantium placeat atque quisquam, vero, laboriosam ipsum aut voluptatum earum. Doloribus hic pariatur aperiam, fugit consequatur sed molestiae non excepturi sequi magnam nisi veritatis amet laboriosam delectus deserunt saepe temporibus repellat praesentium nihil mollitia soluta possimus nostrum est? Dolorem, molestiae? Soluta non itaque quaerat veniam assumenda saepe rem quisquam!</p>
+        <BrowserRouter>
+        <Sidebar />
+        <Navbar title='LabTracker'/>
+          <Routes>
+            <div>
+              <Route path="/" element={<Login />} />
+              <Route path="/register" element={<RegistrationForm />} /> 
+              <Route path='/password-reset' element={<PasswordReset />} />
+            </div>
+            <Route exact path="/" element={<Home />}></Route>
+            <Route exact path="/budget" element={<Budget />}></Route>
+            <Route exact path="/quotation" element={<Quotation />}></Route>
+            <Route exact path="/purchase" element={<Purchase />}></Route>
+            <Route exact path="/bills" element={<Bills />}></Route>
+            <Route exact path="/centraldeadstock" element={<CentralDeadStock />}></Route>
+            <Route exact path="/feedback" element={<Feedback />}></Route>
+            <Route exact path="/budget/enterbudget" element={<EnterBudget />}></Route>
+            <Route exact path="/budget/viewbudget" element={<ViewBudget />}></Route>
+            <Route exact path="/budget/uploadbudget" element={<UploadBudget />}></Route>
+            <Route exact path="/budget/updatefinancialyear" element={<UpdateFinancialYear />}></Route>
+          </Routes>
+        </BrowserRouter>
     </>
   );
 }
 
 export default App;
+
+
+function Home(){
+  return <h2 style={{
+    position:"relative",
+    height: "40vmin",
+    top:"200px",
+    left: "490px",
+    width: "calc(100% - 560px)",
+    transition: "all 0.5s ease",
+  }}>Home Component</h2>
+}

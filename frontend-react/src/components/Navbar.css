@@ -1,0 +1,9 @@
+/* Navbar.css */
+.navbar {
+    transition: all 0.5s; /* Add a smooth transition for the Navbar */
+  }
+  
+.navbar.shrink {
+width: calc(100% - 250px); /* Adjust this width to match your Sidebar's width */
+padding-left: 250px; /* Push the Navbar content to the right when the Sidebar is open */
+}

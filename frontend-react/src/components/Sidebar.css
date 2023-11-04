@@ -1,0 +1,16 @@
+.sidebar {
+    width: 0; /* Initially hidden */
+    transition: width 0.3s ease;
+  }
+  
+.sidebar.open {
+  width: 250px; /* Adjust this width based on your Sidebar's width */
+}
+
+.list-group-flush button:hover{
+  background: pink
+}
+
+.submenu-item:hover{
+  background: pink
+}
