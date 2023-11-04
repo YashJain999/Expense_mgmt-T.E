@@ -2,6 +2,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
+from rest_framework.decorators import api_view
 from . import views
 from .serializers import *
 from django.contrib.auth import authenticate, login  # Add this import
@@ -14,6 +15,10 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from .models import *
 from django.shortcuts import render
 from .pdf_generator import generate_pdf
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .models import User
 
 class EmailVerificationView(APIView):
     def post(self, request):
@@ -27,18 +32,6 @@ class EmailVerificationView(APIView):
         # Here you can implement your email verification logic.
         # For simplicity, we assume verification is successful if the email exists.
         return Response({"is_verified": True}, status=200)
-    
-# class LoginView(APIView):
-#     def post(self, request):
-#         email = request.data.get('email')
-#         password = request.data.get('password')
-#         user = authenticate(request, username=email, password=password)
-
-#         if user is not None:
-#             login(request, user)
-#             return JsonResponse({'message': 'Login successful'})
-#         else:
-#             return JsonResponse({'message': 'Login failed'}, status=401)
 
 
 def generate_pdf_view(request):
@@ -46,6 +39,17 @@ def generate_pdf_view(request):
     # queryset_budget = budget.objects.all()
     return generate_pdf(queryset_itemmaster)
 
+@api_view(['POST'])
+def update_password(request):
+    u_pass = request.data.get('u_pass')
+    email = request.data.get('email')  # Make sure you are getting the email from the request
 
-
-
+    try:
+        user = User.objects.get(u_email=email)
+        user.u_pass = u_pass  # Update the password field
+        user.save()
+        return Response(status=status.HTTP_201_CREATED)
+    except User.DoesNotExist:
+        return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'message': 'An error occurred while updating password', 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
