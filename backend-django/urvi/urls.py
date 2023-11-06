@@ -28,4 +28,9 @@ urlpatterns = [
     path('update-password/', views.update_password, name='anything'),
     # path('api/login/', LoginView.as_view(), name='anything')
     path('generate_pdf/',views.generate_pdf, name='generate_pdf' ),
+    path('dropdown/', views.dropdown, name="anything"),
+    path("submit_year/", views.getyear, name = 'anything'),
+    path("get_budget_data/", views.get_budget_data, name = "anything"),
+    path("get_financialyears/", views.get_financialyears, name='anything'),
+    path("post_year_desc/",views.post_year_desc, name="anything"),
 ]
