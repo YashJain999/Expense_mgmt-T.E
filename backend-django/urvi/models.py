@@ -48,3 +48,12 @@ class budget(models.Model):
 
     # class Meta:
     #     unique_together = ('dept', 'f_year', 'item')
+class financialyear(models.Model):
+    F_year = models.IntegerField(
+        primary_key=True,
+        verbose_name="Financial Year",
+    )
+    Desc = models.CharField(
+        max_length=255,
+        verbose_name="Financial Year Description",
+    )
