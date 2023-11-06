@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './uploadbud.css'; 
 
-function FinancialTable() {
+function uploadBudget(){
   const [selectedYear, setSelectedYear] = useState('three'); 
 
   
@@ -105,4 +105,4 @@ function FinancialTable() {
   );
 }
 
-export default FinancialTable;
+export default uploadBudget;
