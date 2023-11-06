@@ -1,109 +1,86 @@
-import React, { useState } from 'react';
-import './UpdationTable.css'; 
+import React, { useState, useEffect } from 'react';
+import './UpdateFinancialYear.css';   // name changed og name was UpdationTable.css
+import axios from 'axios';
 
-function FinancialTable() {
-  const [selectedYear, setSelectedYear] = useState('three'); 
+function UpdateFinancialYear() {
+    const [financialYears, setFinancialYears] = useState([]);
+    const [showInputs, setShowInputs] = useState(false);
+    const [addButtonClicked, setAddButtonClicked] = useState(false);
+    const [yearValue, setYearValue] = useState('');
+    const [descValue, setDescValue] = useState('');
 
-  
-  const handleDownloadClick = () => {
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/get_financialyears/');
+                const { years, desc } = response.data;
+                const data = years.map((year, index) => ({ year, desc: desc[index] }));
+                setFinancialYears(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
 
-    alert('Download button clicked');
-  };
+        fetchData();
+    }, []);
 
- 
-  const handleSaveClick = () => {
-  
-    alert('Save button clicked');
-  };
+    const handleDownloadClick = () => {
+        setShowInputs(true);
+        setAddButtonClicked(true);
+    };
 
-  return (
-    <div>
-      <label htmlFor="language">Financial Year :</label>
-      <select
-        name="language"
-        id="language"
-        value={selectedYear}
-        onChange={(e) => setSelectedYear(e.target.value)}
-      >
-        <option value="one">2019-2020</option>
-        <option value="two">2020-2021</option>
-        <option value="three">2021-2022</option>
-      </select>
-      <br></br>
-      <table>
-        <thead>
-          <tr>
-            <th>Items</th>
-            <th>Budget</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Laboratory Equipment</td>
-            <td>
-              <input type="text" id="budget-laboratory-equipment" name="budget-laboratory-equipment" />
-            </td>
-            
-          </tr>
-          <tr>
-            <td>Software</td>
-            <td>
-              <input type="text" id="budget-software" name="budget-software" />
-            </td>
-            
-          </tr>
-          <tr>
-            <td>Laboratory Consumables</td>
-            <td>
-              <input type="text" id="budget-laboratory-consumables" name="budget-laboratory-consumables" />
-            </td>
-            
-          </tr>
-          <tr>
-            <td>Maintenance & Spares</td>
-            <td>
-              <input type="text" id="budget-maintenance-spares" name="budget-maintenance-spares" />
-            </td>
-            
-          </tr>
-          <tr>
-            <td>Research & Development</td>
-            <td>
-              <input type="text" id="budget-research-development" name="budget-research-development" />
-            </td>
-            
-          </tr>
-          <tr>
-            <td>Travel and Training</td>
-            <td>
-              <input type="text" id="budget-travel-training" name="budget-travel-training" />
-            </td>
-            
-          </tr>
-          <tr>
-            <td>Miscellaneous expenses</td>
-            <td>
-              <input type="text" id="budget-miscellaneous-expenses" name="budget-miscellaneous-expenses" />
-            </td>
-            
-          </tr>
-          <tr>
-            <td>Total</td>
-            <td>
-              <input type="text" id="total-budget" name="total-budget" />
-            </td>
-            
-          </tr>
-        </tbody>
-      </table>
+    const handleSaveClick = async () => {
+        try {
+            const response = await axios.post('http://localhost:8000/post_year_desc/', { F_year: yearValue, Desc: descValue });
+            console.log('Data sent successfully:', response.data);
+            alert('Data sent successfully!');
+        } catch (error) {
+            console.error('Error submitting data:', error);
+            alert('Failed to send data');
+        }
+    };
 
-      
-      <button class="Edit" onClick={handleDownloadClick}>Edit</button>
+    return (
+        <div>
+            <br></br>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Financial Year</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {financialYears.map((data, index) => (
+                        <tr key={index}>
+                            <td>{data.year}</td>
+                            <td>{data.desc}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
 
-    
-      <button class="save" onClick={handleSaveClick}>Save</button>
-    </div>
-  );
+            <br></br>
+            <br></br>
+
+
+            <button className="Edit" onClick={handleDownloadClick} disabled={addButtonClicked}>
+                Add
+            </button>
+
+            <br></br><br></br>
+            {showInputs && (
+                <div>
+                    Enter the Financial Year   <input type="text" pattern="[0-9-]*" style={{ border: '1px solid black' }} placeholder="E.g. 2025" value={yearValue} onChange={(e) => setYearValue(e.target.value)} /><br></br>
+                    Enter its Description     <input type="text" pattern="[0-9-]*" style={{ border: '1px solid black' }} placeholder="E.g. 2024-2025" value={descValue} onChange={(e) => setDescValue(e.target.value)} />
+                    <br></br>
+                    <button className="save" onClick={handleSaveClick}>Submit</button>
+                </div>
+            )}
+
+
+        </div>
+    );
 }
 
-export default FinancialTable;
+export default UpdateFinancialYear;
