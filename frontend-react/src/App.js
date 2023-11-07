@@ -1,8 +1,9 @@
 import "./App.css";
 import { BrowserRouter,Routes,Route } from "react-router-dom";
-import Login from './components/Login';
-import RegistrationForm from './components/RegistrationForm';
-import PasswordReset from './components/PasswordReset';
+import React, { useState } from 'react';
+// import Login from './components/Login';
+// import RegistrationForm from './components/RegistrationForm';
+// import PasswordReset from './components/PasswordReset';
 import Navbar from "./components/Navbar";
 import Sidebar from './components/Sidebar';
 import Bills from './components/Bills';
@@ -15,33 +16,46 @@ import EnterBudget from "./components/EnterBudget";
 import UploadBudget from "./components/UploadBudget";
 import ViewBudget from "./components/ViewBudget";
 import UpdateFinancialYear from "./components/UpdateFinancialYear";
+import Landing from "./components/Landing";
 
 
 function App() {
+
+  
+const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(true);
+
+const closeOffcanvas = () => {
+  setIsOffcanvasOpen(false);
+};
+
+const toggleOffcanvas = () => {
+  setIsOffcanvasOpen(!isOffcanvasOpen);
+};
+
+
   return (
     <>
-        <BrowserRouter>
-        <Sidebar />
-        <Navbar title='LabTracker'/>
-          <Routes>
-            <div>
-              <Route path="/" element={<Login />} />
-              <Route path="/register" element={<RegistrationForm />} /> 
-              <Route path='/password-reset' element={<PasswordReset />} />
-            </div>
-            <Route exact path="/" element={<Home />}></Route>
-            <Route exact path="/budget" element={<Budget />}></Route>
-            <Route exact path="/quotation" element={<Quotation />}></Route>
-            <Route exact path="/purchase" element={<Purchase />}></Route>
-            <Route exact path="/bills" element={<Bills />}></Route>
-            <Route exact path="/centraldeadstock" element={<CentralDeadStock />}></Route>
-            <Route exact path="/feedback" element={<Feedback />}></Route>
-            <Route exact path="/budget/enterbudget" element={<EnterBudget />}></Route>
-            <Route exact path="/budget/viewbudget" element={<ViewBudget />}></Route>
-            <Route exact path="/budget/uploadbudget" element={<UploadBudget />}></Route>
-            <Route exact path="/budget/updatefinancialyear" element={<UpdateFinancialYear />}></Route>
-          </Routes>
-        </BrowserRouter>
+      <div className="main-container">
+      <BrowserRouter>
+       <Navbar title='LabTracker' isOffcanvasOpen={isOffcanvasOpen} toggleOffcanvas={toggleOffcanvas}/>
+          <div className="app">
+              <Sidebar isOffcanvasOpen={isOffcanvasOpen} closeOffcanvas={closeOffcanvas}/>
+          </div>
+              <Routes>
+              <Route exact path="/" element={<Landing isOffcanvasOpen={isOffcanvasOpen} />}></Route>
+              <Route exact path="/budget" element={<Budget isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
+              <Route exact path="/budget/enterbudget" element={<EnterBudget  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
+              <Route exact path="/budget/viewbudget" element={<ViewBudget  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
+              <Route exact path="/budget/uploadbudget" element={<UploadBudget  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
+              <Route exact path="/budget/updatefinancialyear" element={<UpdateFinancialYear  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
+              <Route exact path="/quotation" element={<Quotation  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
+              <Route exact path="/purchase" element={<Purchase  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
+              <Route exact path="/bills" element={<Bills  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
+              <Route exact path="/centraldeadstock" element={<CentralDeadStock  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
+              <Route exact path="/feedback" element={<Feedback  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
+              </Routes>
+      </BrowserRouter>
+      </div>
     </>
   );
 }
@@ -49,13 +63,9 @@ function App() {
 export default App;
 
 
-function Home(){
-  return <h2 style={{
-    position:"relative",
-    height: "40vmin",
-    top:"200px",
-    left: "490px",
-    width: "calc(100% - 560px)",
-    transition: "all 0.5s ease",
-  }}>Home Component</h2>
-}
+
+            /* <div>
+              <Route path="/" element={<Login />} />
+              <Route path="/register" element={<RegistrationForm />} /> 
+              <Route path='/password-reset' element={<PasswordReset />} />
+            </div> */

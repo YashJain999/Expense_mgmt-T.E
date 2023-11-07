@@ -1,6 +1,6 @@
 // src/RegistrationForm.js
 import React, { useState } from 'react';
-import './PasswordReset.css'; 
+// import './PasswordReset.css'; 
 
 function PasswordReset() {
   const [formData, setFormData] = useState({

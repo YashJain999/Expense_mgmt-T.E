@@ -1,15 +1,16 @@
 import React from 'react'
 
-const Budget = () => {
+const Budget = ({isOffcanvasOpen}) => {
+  const AppStyle = {
+    position:"relative",
+    top:"300px",
+    left : isOffcanvasOpen ? '260px': '0%'  ,
+    width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
+    transition: 'all 0.5s ease',
+    zIndex: 1000,
+  }; 
   return (
-        <h2 style={{
-        position:"relative",
-        height: "40vmin",
-        top:"200px",
-        left: "490px",
-        width: "calc(100% - 560px)",
-        transition: "all 0.5s ease",
-      }}>Budget Section</h2>
+        <h2 style={AppStyle}>Budget Section</h2>
   )
 }
 

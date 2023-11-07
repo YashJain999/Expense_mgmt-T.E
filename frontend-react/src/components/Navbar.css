@@ -1,9 +1,23 @@
 /* Navbar.css */
 .navbar {
-    transition: all 0.5s; /* Add a smooth transition for the Navbar */
+    transition: all 0.5s ease; /*Add a smooth transition for the Navbar */
+    box-sizing: content-box;
+  } 
+
+/* .navbar.navbar-open {
+  left: 255px;
+  width: calc(100% - 255px); /* Adjust the width to match the offcanvas width */
+  /* transition: all 0.5s ease; */
+  /* Add transition for smooth resizing */
+
+/* 
+.navbar.navbar-closed {
+  width: 100%;
+} */
+
+@media (max-width: 425px) {
+
+  html{
+    font-size: 60%;
   }
-  
-.navbar.shrink {
-width: calc(100% - 250px); /* Adjust this width to match your Sidebar's width */
-padding-left: 250px; /* Push the Navbar content to the right when the Sidebar is open */
-}
+  }

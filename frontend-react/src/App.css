@@ -1,6 +1,13 @@
- .App {
-  text-align: center;
+html{
+  height: 100%;
+  width: auto;
+  background-color: white;
 }
+ .main-container {
+  text-align: center;
+  background-color: white;
+}
+
 
 .offcanvas-body .btn{
   padding: 10px;
@@ -12,15 +19,11 @@
   justify-content:space-between;
   color: #fff;
   cursor: pointer;
-   z-index: 99;
-}
-
-#navbarSupportedContent
-{
+  z-index: 99;
   justify-content: center;
 }
 
-* .App {
+/* .App {
   position: relative;
   min-height: 100vh;
   display: flex;
@@ -33,39 +36,45 @@
   width: calc(100% - 260px);
   transition: all 0.5s ease;
   z-index: 1000; 
-}
+} */
 
-.offcanvas .navbar{
+/* .offcanvas .navbar{
   left: 260px;
   width: calc(100% - 260px);
   transition: all 0.5s ease;
   z-index: 1000;
-}
+} */
 
 .btn i{
-  font-size: 22px;
+  font-size: 20px;
   color:white;
+  position: relative;
+  top: 10%;
 }
 
 .nav-link{
   font-size: 20px;
 } 
 
-h2{
+/* h2{
   position:"relative";
   height: "40vmin";
   top:"200px";
   left: "490px";
   width: "calc(100% - 560px)";
   transition: "all 0.5s ease";
+  background-color: red;
+} */
+
+
+.main-content.offcanvas-open .app {
+  margin-left: 300px; /* Adjust this value to match the width of your offcanvas menu */
+  /* Add other styles to adjust the main content when offcanvas is open */
 }
 
-html{
-  height: 100%;
-}
-
+/*
 body{
-  background-image: url(./frontend-react/public/login1.png);
+  background-image: url(src/login1.png);
   background-size: cover;
   background-repeat: no-repeat;
   color: #ffff;
@@ -102,7 +111,7 @@ body{
   background-clip: content-box;
 } 
 
-.login-container h3{/*login text*? */
+.login-container h3{
   color:white; 
   position: absolute;
   left: 185px;
@@ -121,7 +130,6 @@ body{
   background:linear-gradient(to bottom,white,#9292df);
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
-  /* color: white; */
   text-decoration: solid;
   padding: 10px ;
 } 
@@ -197,4 +205,15 @@ input:valid~::placeholder
   left: 400px;
   top :138px;
   margin-top: 0%;
+} */
+
+/* responsive for mobile */
+@media (max-width: 425px) {
+
+html{
+  font-size: 50%;
+}
+h2{
+  backgroundColor:"red"
+}
 }

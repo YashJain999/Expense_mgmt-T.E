@@ -25,33 +25,43 @@ body {
   }
 
       input[type=text] {
-      /* width: 100%; */
-      padding: 12px 20px;
-      margin: 2px 0;
-      box-sizing: border-box;
-      border-color: transparent;
-      border: none;
-      text-align: center;
+      width: 50%;
+      box-sizing: content-box;
+      text-align: left;
+      border-radius:60px ;
       }
-      .save {
+
+      .disabled {
+        pointer-events: none;
+        opacity: 0.3;
+      }
+      
+      .addfinancialyear {
         position: relative;
         top: 10px;
-        background-color:#000000;
-        color: #fff;
-        border:none;
-        border-radius:60px;
-        font-size: 30px;
-        text-align: center;
-        left: 200px;
-      }
-      .Edit {
-        position: relative;
-        top: 10px;
-        background-color:#000000;
-        color: #fff;
-        border:none;
-        border-radius:60px;
-        font-size: 30px;
-        text-align: center;
         left: 180px;
+        width: 190px;
+        background-color:#000000;
+        color: #fff;
+        border:none;
+        border-radius:60px;
+        font-size: 30px;
+        /* text-align: center; */
+        padding: 3px 25px;
       }
+      
+      .submitupdatedfinancial {
+        position: relative;
+        top: 10px;
+        left: 180px;
+        width: 190px;
+        background-color:#000000;
+        color: #fff;
+        border:none;
+        border-radius:60px;
+        font-size: 30px;
+        text-align: center;
+        padding: 3px 25px;
+        cursor: pointer;
+      }
+      

@@ -1,12 +1,8 @@
 import React,{ useState } from 'react';
 import { NavLink } from "react-router-dom";
-// import { useNavigate } from 'react-router-dom';
+import './Sidebar.css'; // Import your custom CSS file for Sidebar styling
 
-// import './Sidebar.css'; // Import your custom CSS file for Sidebar styling
-// import Navbar from './Navbar';
-
-
-export default function Sidebar() {
+export default function Sidebar({ isOffcanvasOpen, closeOffcanvas }) {
 
     //style for navlink
     const NavLinkStyle = {
@@ -98,10 +94,12 @@ export default function Sidebar() {
 
     return (
     <> 
-        <div className="offcanvas offcanvas-start text-bg-dark border-bottom show" data-bs-backdrop="false" data-bs-theme="dark" tabIndex="-1" id="offcanvasDark" aria-labelledby="offcanvasDarkLabel" style={{width:260}}>
+        <div className="offcanvas offcanvas-start text-bg-dark border-bottom show" data-bs-backdrop="false" data-bs-target="#offcanvasDark" data-bs-theme="dark" tabIndex="-1" id="offcanvasDark" aria-labelledby="offcanvasDarkLabel" style={{width:260,transition: 'all 0.5s ease'}}>
         <div className="offcanvas-header ">
             <h5 className="offcanvas-title" id="offcanvasDarkLabel">Labtracker</h5>
-            <button type="button" className="btn btn-close text-reset " data-bs-dismiss="offcanvas" data-bs-backdrop="false" aria-label="Close"></button>
+            {isOffcanvasOpen ? (
+            <button type="button" className="btn btn-close " onClick={closeOffcanvas} data-bs-dismiss="offcanvas" data-bs-backdrop="false" data-bs-target="#offcanvasDark" aria-label="Close"></button>
+            )   : null}
         </div>                                                                                                                         
             <div className="offcanvas-body">
                 <ul className="list-group list-group-flush">
@@ -264,7 +262,8 @@ export default function Sidebar() {
                     ))}
                 </ul> 
             </div>
-        </div>
+            </div>
+    {/* </div>   */}
     </>
   )
 }

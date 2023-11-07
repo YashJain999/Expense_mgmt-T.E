@@ -1,16 +1,31 @@
-.sidebar {
+.offcanvas {
     width: 0; /* Initially hidden */
     transition: width 0.3s ease;
+    box-sizing: content-box;
+
   }
-  
-.sidebar.open {
-  width: 250px; /* Adjust this width based on your Sidebar's width */
-}
 
 .list-group-flush button:hover{
-  background: pink
+  background: darkblue
 }
 
-.submenu-item:hover{
-  background: pink
+ 
+
+.offcanvas.close ~ .navbar{
+  left: 0;
+  width: 100%;  
 }
+
+@media (max-width: 425px) {
+
+  html{
+    font-size: 60%;
+  }
+}
+
+@media (max-width: 425px) {
+
+  style{
+    width: 160px;
+  }
+  }

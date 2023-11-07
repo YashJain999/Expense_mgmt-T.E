@@ -1,29 +1,36 @@
 import React from "react";
 import PropTypes from "prop-types";
-// import './Navbar.css'; // Import your custom CSS file for Navbar styling
-import { Feedback } from './Feedback';
+import './Navbar.css'; // Import your custom CSS file for Navbar styling
+// import { Feedback } from './Feedback';
 
-export default function Navbar(props) {
+export default function Navbar({toggleOffcanvas,isOffcanvasOpen,props}) {
   // const additionalClasses = "navbar sticky-top fade show navbar-expand-lg bg-body-tertiary bg-dark border-bottom ";
   // `navbar ${isSidebarOpen ? 'shrink' : ''} ${additionalClasses}`} data-bs-theme="dark"
+  // const { isOffcanvasOpen } = props;
+
+
+  const navbarStyle = {
+    left : isOffcanvasOpen ? '260px': '0%'  ,
+    right : '0px',
+    width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
+    transition: 'all 0.3s ease  ',
+    zIndex: 1000,
+    };
+
 
   return (
-    <div>
       <>
         <nav
-          className="navbar sticky-top fade show navbar-expand-lg bg-body-tertiary bg-dark border-bottom py-0cd Feedback "
-          data-bs-theme="dark"
+          className="navbar navbar-dark fixed-top fade show navbar-expand-lg bg-dark border-bottom py-0cd" data-bs-theme="dark" style={navbarStyle}
         >
           <div className="container-fluid">
-            {/* <a className="navbar-brand" href="/">
-          <i class="fa-solid fa-bars"></i>
-        </a> */}
             <button
-              className="btn btn-none side "
+              className="btn"
               type="button"
               data-bs-toggle="offcanvas"
               data-bs-target="#offcanvasDark"
-              aria-controls="offcanvasExample"
+              aria-controls="offcanvasDark"
+              onClick={toggleOffcanvas}
             >
               <i className="fa-solid fa-bars"></i>
             </button>
@@ -31,32 +38,25 @@ export default function Navbar(props) {
               className="navbar-toggler"
               type="button"
               data-bs-toggle="collapse"
-              data-bs-target="/navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
+              data-bs-target="#navbarTogglerDemo02"
+              aria-controls="#navbarTogglerDemo02"
               aria-expanded="false"
               aria-label="Toggle navigation"
-            ></button>
-            <div
-              className="collapse navbar-collapse"
-              id="navbarSupportedContent"
             >
-              <ul className="navbar-nav active justify-content-center me-auto mb-lg-0">
+              <i className="fa-solid fa-bars"></i>
+            </button>
+            <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
+
+              <ul className="navbar-nav active justify-content-center me-auto mb-2 mb-lg-0">
                 <li className="nav-item">
-                  <a className="nav-link " aria-current="page" href="/">
-                    Home
-                  </a>
+                  <a className="nav-link " aria-current="page" href="/">Home</a>
                 </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="/">
-                    Link
-                  </a>
-                </li>
+                
               </ul>
             </div>
           </div>
         </nav>
       </>
-    </div>
   );
 }
 
