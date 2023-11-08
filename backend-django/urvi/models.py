@@ -57,3 +57,31 @@ class financialyear(models.Model):
         max_length=255,
         verbose_name="Financial Year Description",
     )
+
+class pdf(models.Model):
+    dept = models.CharField(
+        verbose_name='department',
+        max_length=50,
+        default='Default Department'
+    )
+    f_year = models.IntegerField(
+        primary_key=True,
+        verbose_name='Financial Year'
+    )
+    pdf = models.FileField(
+        verbose_name='pdf report'
+    )
+    description = models.CharField(
+        verbose_name='description',
+        max_length=500,
+    )
+
+    status = models.CharField(
+        verbose_name='status',
+        max_length=50
+    )
+
+    comment = models.CharField(
+        verbose_name='comment',
+        max_length=500
+    )
