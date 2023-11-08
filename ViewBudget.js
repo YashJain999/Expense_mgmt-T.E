@@ -5,26 +5,27 @@ import axios from 'axios';
 function ViewBudget() {
     const [selectedYear, setSelectedYear] = useState('');
     const [budgetData, setBudgetData] = useState([]);
-
-    const handleDownloadClick = async () => {
+      const handleDownloadClick = async () => {
         try {
-            // here i have sended an API endpoint request to download the pdf 
-            // Set the response type to 'blob' to handle binary data like files, such as PDFs.
-            // This ensures that the response data is treated as a binary object and allows for proper handling of file downloads.
-          const response = await axios.get('http://localhost:8000/generate_pdf/', {selectedYear}, { responseType: 'blob' });
-          // created a url for the downloaded blob data
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          // Create an anchor element to trigger the download
+          const response = await fetch(`http://localhost:8000/generate_pdf/?selectedYear=${selectedYear}`, {
+              method: 'GET',
+          });
+  
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(new Blob([blob]));
           const link = document.createElement('a');
-          link.href = url; // here we have set the url
-          link.setAttribute('download', 'item_master.pdf'); // here also we have set the attribute for filename
-          document.body.appendChild(link);  // this appends the anchor tag to the document body
-          link.click();  // so on click trigger the downloading process 
-        } catch (error) {
+          link.href = url;
+          link.setAttribute('download', `cumulative_budget_report_of_year_${selectedYear}.pdf`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+      } catch (error) {
           console.error('Error in downloading', error);
           alert('Error in downloading');
-        }
-      };
+      }
+  };
+      
+      
 
   useEffect(() => {
     fetchData();
@@ -63,66 +64,101 @@ function ViewBudget() {
       const rowData = [];
   
       const totalRows = table.querySelectorAll('tr.total');
-  
+      let column7 = 0;
+    let column8 = 0;
+    let column6 = 0;
+    let column5 = 0;
+    let column4 = 0;
+    let column3 = 0;
+    let column2 = 0;
+    let column1 = 0;
+
       budgetData.forEach((data, index) => {
         tableRows[index].cells[7].textContent = data.budgeted_amt;
-        tableRows[index].cells[8].textContent = data.actual_exp;
+      column7 += data.budgeted_amt;
+      console.log(column7);
+
+      tableRows[index].cells[8].textContent = data.actual_exp;
+      column8 += data.actual_exp;
+      console.log(column8);
         // tableRows[index].cells[6].textContent = data.previousYearData.budgetData;
         // Update other table cells in a similar manner
          // Assuming budgetData is sorted by year
       const previousYearData = budgetData[7 + index]; // Get data for the previous year
       if (previousYearData) {
         tableRows[index].cells[5].textContent = previousYearData.budgeted_amt;
+        column5 += previousYearData.budgeted_amt;
+      console.log(column5);
         tableRows[index].cells[6].textContent = previousYearData.actual_exp;
+        column6 += previousYearData.actual_exp;
+      console.log(column6);
         // Update other table cells in a similar manner for the previous year
       }
       const previousYearData1 = budgetData[14 +index];
       if(previousYearData1){
         tableRows[index].cells[3].textContent = previousYearData1.budgeted_amt;
+        column3 += previousYearData1.budgeted_amt;
+      console.log(column3);
         tableRows[index].cells[4].textContent = previousYearData1.actual_exp;
+        column4 += previousYearData1.budgeted_amt;
+      console.log(column4);
       }
       const previousYearData2 = budgetData[21 + index];
       if(previousYearData1){
         tableRows[index].cells[1].textContent = previousYearData2.budgeted_amt;
+        column1 += previousYearData2.budgeted_amt;
+      console.log(column1);
         tableRows[index].cells[2].textContent = previousYearData2.actual_exp;
+        column2 += previousYearData2.budgeted_amt;
+      console.log(column2);
       }
-    
-// Get the table element
-const table = document.querySelector('table');
+ // Remove any existing total rows
+const existingTotalRows = document.querySelectorAll('tr.total-row');
+existingTotalRows.forEach(row => row.remove());
 
-// Create a new row element
-const newRow = document.createElement('tr');
+// Create a new row element for the individual column sums
+const individualSumsRow = document.createElement('tr');
+individualSumsRow.classList.add('total-row');
+const individualSumsCell = document.createElement('td');
+individualSumsCell.textContent = 'Total';
+individualSumsRow.appendChild(individualSumsCell);
 
-// Create a new cell element to contain the text "Total"
-const totalCell = document.createElement('td');
-totalCell.textContent = 'Total';
+const sumCell1 = document.createElement('td');
+sumCell1.textContent = column1;
+individualSumsRow.appendChild(sumCell1);
 
-// // Add the new cell element to the new row element
-// newRow.appendChild(totalCell);
+const sumCell2 = document.createElement('td');
+sumCell2.textContent = column2;
+individualSumsRow.appendChild(sumCell2);
 
-// // Calculate the total for each column in the table
-// const columnTotals = [];
-// for (let i = 0; i < table.rows.length; i++) {
-//   const row = table.rows[i];
-//   const cells = row.cells;
-//   let total = 0;
-//   for (let j = 0; j < cells.length; j++) {
-//     const cell = cells[j];
-//     total += parseInt(cell.textContent);
-//   }
-//   columnTotals.push(total);
-// }
+const sumCell3 = document.createElement('td');
+sumCell3.textContent = column3;
+individualSumsRow.appendChild(sumCell3);
 
-// // Create a new cell element for each column total
-// for (let i = 0; i < columnTotals.length; i++) {
-//   const totalCell = document.createElement('td');
-//   totalCell.textContent = columnTotals[i];
-//   newRow.appendChild(totalCell);
-// }
+const sumCell4 = document.createElement('td');
+sumCell4.textContent = column4;
+individualSumsRow.appendChild(sumCell4);
 
-// // Add the new row element to the table element
-// table.appendChild(newRow);
-    });
+const sumCell5 = document.createElement('td');
+sumCell5.textContent = column5;
+individualSumsRow.appendChild(sumCell5);
+
+const sumCell6 = document.createElement('td');
+sumCell6.textContent = column6;
+individualSumsRow.appendChild(sumCell6);
+
+const sumCell7 = document.createElement('td');
+sumCell7.textContent = column7;
+individualSumsRow.appendChild(sumCell7);
+
+const sumCell8 = document.createElement('td');
+sumCell8.textContent = column8;
+individualSumsRow.appendChild(sumCell8);
+
+table.appendChild(individualSumsRow);
+
+
+      });
    
   
   } catch (error) {
