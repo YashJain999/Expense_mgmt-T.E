@@ -3,8 +3,22 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import *
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+import json
+from django.db import IntegrityError
+from django.http import FileResponse
+from django.shortcuts import get_object_or_404
+from .pdf_generator import generate_pdf
+from reportlab.pdfgen import canvas
+from rest_framework.exceptions import NotFound
+import io
+from django.core.files.base import ContentFile
+import base64
+from rest_framework.decorators import api_view
 from . import views
 from .serializers import *
+from rest_framework.response import Response
 from django.contrib.auth import authenticate, login  # Add this import
 from django.http import JsonResponse
 from django.http import HttpResponse
@@ -14,7 +28,7 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from .models import *
 from django.shortcuts import render
-from .pdf_generator import generate_pdf
+from budget.pdf_generator import * 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -67,16 +81,149 @@ def getyear(request):
     # generate_pdf_view(selected_year)
     return Response({'selectedYear': selected_year})
     
-@api_view(['GET'])
-def generate_pdf_view(request,selected_year):
+# @api_view(['GET'])
+# def generate_pdf_view(request):
+ #        queryset_itemmaster = itemmaster.objects.all()
+   #     return generate_pdf(queryset_itemmaster) # Pass both query and selected_year to the generate_pdf function
+
+def generate_pdf_view(request):
+    selected_year = request.GET.get('selectedYear')  # Get the selected year from the request
+
+    # Generate the PDF using the pdf_generator module
+    queryset_itemmaster = itemmaster.objects.all()
+    dept_value = 'IT'
+
     try:
-        # selected_year = request.data.get('selectedYear')
         f_year_obj = financialyear.objects.get(Desc=selected_year)
         f_year_value = f_year_obj.F_year
-        queryset_itemmaster = itemmaster.objects.all()
-        return generate_pdf(selected_year)
     except financialyear.DoesNotExist:
         raise Http404("Financial Year matching query does not exist")
+    
+    filename = "item_master.pdf"
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    # Use the title attribute to set the title of the PDF document
+    doc = SimpleDocTemplate(response, pagesize=A2, title="PDF Report")
+
+
+    elements = []
+    title_style = ParagraphStyle(
+        name='HeadingStyle',
+        fontSize=24,
+        fontName='Helvetica-Bold',
+        alignment=1,
+        spaceAfter=12,
+    )
+    college_name = 'A. P. Shah Institute of Technology'
+    title = Paragraph(college_name, title_style)
+    elements.append(title)
+    elements.extend([Paragraph(" ", title_style) for _ in range(7)])  # Add 5 blank paragraphs for spacing
+
+    heading = f"Cumulative Budget Report of CFY {selected_year}"
+    Heading = Paragraph(heading, title_style)
+    elements.append(Heading)
+    elements.extend([Paragraph(" ", title_style) for _ in range(7)])  # Add 5 blank paragraphs for spacing
+
+    
+
+
+    item_headers = ['Items'] 
+    item_headers1 = ['Budget in CFY','Actual Expenses in CFY','Budget in CFYm1', 'Actual Expenses in CFYm1', 'Budget in CFYm2', 'Actual Expenses in CFYm2', 'Budget in CFYm3', 'Actual Expenses in CFYm3']
+
+    data = [item_headers + item_headers1]  # Use combined_headers as the header row
+
+    sum_values = [0] * len(item_headers1)  # Initialize a list to hold the sum of each column
+
+
+    # Generate a list of the previous three years
+    previous_years = [f_year_value - i for i in range(4)]
+
+    # Convert the years to the required format
+    f_years = [f"{year}-{year + 1}" for year in previous_years]
+
+    # Use the f_years list for filtering or querying your data
+    
+
+    processed_items = set()
+
+    for obj in queryset_itemmaster:
+        if obj.item_desc not in processed_items:
+            processed_items.add(obj.item_desc)
+            data_row = [obj.item_desc]  # Use the item_desc field directly
+            for f_y in f_years:
+                queryset_budget = budget.objects.filter(dept=dept_value, f_year=f_y)
+                for budget_obj in queryset_budget:
+                    if budget_obj.item == obj.item:
+                        # print(budget_obj.item)
+                        data_row.append(str(budget_obj.budgeted_amt))
+                        data_row.append(str(budget_obj.actual_exp))
+                        sum_values[-8] += int(budget_obj.budgeted_amt)
+                        sum_values[-7] += int(budget_obj.actual_exp)
+                        sum_values[-6] += int(budget_obj.budgeted_amt)
+                        sum_values[-5] += int(budget_obj.actual_exp)
+                        sum_values[-4] += int(budget_obj.budgeted_amt)
+                        sum_values[-3] += int(budget_obj.actual_exp)
+                        sum_values[-2] += int(budget_obj.budgeted_amt)
+                        sum_values[-1] += int(budget_obj.actual_exp)
+                        print(sum_values[-1])
+                    else:
+                        continue
+            data.append(data_row)
+
+
+
+    # Add the 'Total' row
+    total_row = ['Total'] + [str(val) for val in sum_values]
+    data.append(total_row)
+
+
+    # for obj1 in queryset_list:
+    #     data_row1 = [str(getattr(obj1, field.name)) for field in List._meta.fields]
+    #     data.append(data_row1)
+
+    table = Table(data, colWidths=[120] * len(data[0]))
+    table_style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.red),  # Color the headers
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # Set text color for headers
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Add grid lines
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 20),  # Space after row 1
+        ("TOPPADDING", (0, 0), (-1, -1), 20),  # Space before row 2
+        ('WORDWRAP', (1, 0), (-1, -1), True),# Allow word wrap within the specified column width
+        ('FONT', (0,0),(-1,-1), "Helvetica", 9)
+    ])
+
+
+    table.setStyle(table_style)
+    # table_width = 600  # Adjust the table dimensions as needed
+    # table_height = 600
+
+
+    # table.wrapOn(doc, table_width, table_height)
+    elements.append(table)
+
+
+    # Add blank paragraphs for spacing
+    for _ in range(10):
+        elements.append(Paragraph(" ", title_style))
+
+
+    footer_style = ParagraphStyle(
+           name='footerStyle',
+        fontSize=14,
+        fontName='Helvetica-Bold',
+    )
+   
+    footer_text = 'Department of Information Technology'
+    footer = Paragraph(footer_text, footer_style)
+    elements.append(footer)
+   
+
+
+    doc.build(elements)
+    return response
+
 
 @api_view(['POST'])
 def get_budget_data(request):
@@ -102,6 +249,110 @@ def post_year_desc(request):
     else:
         return Response({'error': 'Invalid data provided'}, status=400)
 
+@api_view(['POST'])
+def upload_budget(request):
+    branch = request.data.get('branch')
+    selectedYear = request.data.get('selectedYear')
 
+    try:
+        year = financialyear.objects.get(Desc=selectedYear).F_year
+    except financialyear.DoesNotExist:
+        raise NotFound(detail="Specified year not found")
+
+    file = request.FILES.get('file')
+    description = request.data.get('description')
+    status = 'pending'
+    comment = 'null'
+
+    if file:
+        content = file.read()
+        content_file = io.BytesIO(content)
+        content_file.seek(0)
+        try:
+            budget, created = pdf.objects.update_or_create(
+                dept=branch,
+                f_year=year,
+                defaults={
+                    'pdf': ContentFile(content_file.read(), name=file.name),
+                    'description': description,
+                    'status': status,
+                    'comment': comment
+                }
+            )
+            return Response({"message": "PDF uploaded successfully"}, status=201)
+        except IntegrityError as e:
+            return Response({"message": "Failed to upload PDF: " + str(e)}, status=500)
+    else:
+        return Response({"message": "No file provided"}, status=400)
     
+@api_view(['POST'])
+def get_uploaded_docs(request):
+    branch = request.data.get('branch')
+    selectedYear = request.data.get('selectedYear')
+    year = financialyear.objects.get(Desc=selectedYear).F_year
 
+    # Retrieve the required data from the model
+    try:
+        data = list(pdf.objects.filter(dept=branch, f_year=year).values('pdf', 'description', 'status', 'comment'))
+        
+        # pdf_serializer = PdfSerializer(data)
+        print(data)  # Assuming you have defined a PdfSerializer for the pdf model
+        return Response(data)
+    except pdf.DoesNotExist:
+        return Response({"message": "No data found for the specified branch and year"}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['POST'])
+def get_budget_details(request):
+    try: 
+        selectedYear = request.data.get('selectedYear')
+        year = financialyear.objects.get(Desc=selectedYear).F_year
+        dept = 'IT'
+        data = list(budget.objects.filter(dept = dept, f_year = year).values('item', 'budgeted_amt', 'actual_exp'))
+        return Response(data)
+    except :
+        return Response({'message': 'Error in finding data'})
+    
+@api_view(['POST'])
+def update_budget_details(request): 
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            updated_data = data['updatedData']
+            print(updated_data)
+            selectedYear = request.data.get('selectedYear')
+            year = financialyear.objects.get(Desc=selectedYear).F_year
+
+            item_mappings = {
+                'Laboratory Consumables': 'LAB-CONSUME',
+                'Laboratory Equipments': 'LAB-EQ',
+                'Maintenance and spares': 'MAINT-SPARE',
+                'Miscellaneous': 'MISC',
+                'Research and Development': 'RND',
+                'Software': 'SOFT',
+                'Training and travel': 'T&T'
+            }
+
+            for i in updated_data:
+                if i['item'] in item_mappings:
+                    item_value = item_mappings[i['item']]
+                    print(item_value)
+                    budget_item = budget.objects.get(dept='IT', f_year=year, item=item_value).values('budgeted_amt','actual_exp')
+                    print('reach here')
+                    budget_item.budgeted_amt = float(i['budgeted_amt']) if i['budgeted_amt'] else 0.0
+                    print(budget_item.budgeted_amt)
+                    print('u can able')
+                    budget_item.actual_exp = float(i['actual_exp']) if i['actual_exp'] else 0.0
+                    print(budget_item.actual_exp)
+                    print('help save please')
+                    budget_item.save()
+                    print('budget saved ')
+                else:
+                    continue
+            print('budget save')
+            return Response({'message': 'Budget details updated successfully.'}, status=status.HTTP_200_OK)
+        except json.JSONDecodeError as e:
+            return Response({'error': 'Invalid JSON format.'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response({'error': 'Invalid request method.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
