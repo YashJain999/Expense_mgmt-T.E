@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 from budget.views import *
 from budget.models import *
+from budget.pdf_generator import * 
 # from django.conf.urls import url
 
 
@@ -27,10 +28,14 @@ urlpatterns = [
     path('api/verify-email/', EmailVerificationView.as_view(), name='anything'),
     path('update-password/', views.update_password, name='anything'),
     # path('api/login/', LoginView.as_view(), name='anything')
-    path('generate_pdf/',views.generate_pdf, name='generate_pdf' ),
+    path('generate_pdf/', views.generate_pdf_view, name='generate_pdf'),
     path('dropdown/', views.dropdown, name="anything"),
     path("submit_year/", views.getyear, name = 'anything'),
     path("get_budget_data/", views.get_budget_data, name = "anything"),
     path("get_financialyears/", views.get_financialyears, name='anything'),
     path("post_year_desc/",views.post_year_desc, name="anything"),
+    path('upload_budget/', views.upload_budget, name='anything'),
+    path('get_uploaded_docs/',views.get_uploaded_docs,name='anything'),
+    path('get_budget_details/', views.get_budget_details, name='anything'),
+    path('update_budget_details/',views.update_budget_details,name='anything'),
 ]
