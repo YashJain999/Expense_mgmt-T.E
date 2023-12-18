@@ -1,0 +1,137 @@
+.login-app{
+  background-image: url(../images/login.png);
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  height: 100vh; /* You can adjust this for desired height */
+  overflow: hidden;
+}
+
+.container{
+  position: relative;
+  left: 30%; top:30px ;
+  width: 430px;
+  height: 450px; 
+} 
+
+.glass{
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 25px;
+  border:1px solid rgba(255, 255, 255, 0.98);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}  
+
+.login-form{        
+  height: 400px;
+}
+
+.login-container {
+  position: relative;
+  left: 0%;  top: 0px;
+  border-radius: 50px;
+  width: 353px;
+  height: 400px;
+  background-clip: content-box;
+} 
+
+.login-container h3{/*login text*? */
+  color:white; 
+  position: absolute;
+  left: 165px;
+  top: 24px;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-size:35px;
+}
+
+#logo{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-style: italic;
+  font-size: 35px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight:700;
+  background:linear-gradient(to bottom,white,#9292df);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  /* color: white; */
+  text-decoration: solid;
+  padding: 10px ;
+} 
+
+#logo-desc{
+  position: absolute; top: 350px; left: 150px;
+  color: white;
+  font-family:Arial, Helvetica, sans-serif;
+  font-weight:550;
+  font-size: 50px;
+  font-style: italic;
+} 
+
+.login-form input[type="text"],
+.login-form input[type="password"]{
+  position: relative; top : 90px ;
+  color: white;
+  background-color: transparent ;
+  border-radius:12px;
+  text-align:left;
+  font-weight: 450;
+  font-size: 20px;  
+  width: 350px;
+  padding:10px 35px 10px 15px;  
+  margin: 15px 0px 0px 30px;
+}
+
+.login-form button{
+  position: relative  ; top : 105px ;left: 50px;
+  color: white;
+  background-color: transparent ;
+  border-radius:15px;
+  text-decoration: solid;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  text-align: left;
+  font-size: 20px;  
+  height: 65px;
+  width: 205px;
+  padding-left: 0;
+  padding: 10px 130px 15px 75px
+}
+
+.login-form button:hover{
+  background-color: white;
+  text-decoration: none;
+  color: black;
+}
+
+input:focus::placeholder,
+input:valid~::placeholder
+{
+  color: white;
+  text-align: left;
+}
+
+::placeholder{
+  color: #fff;
+}
+
+#fg a{
+  position: relative; bottom: 0px ;left: 0px; top: -20px;
+  color: white;
+  text-decoration-line: none;
+}
+
+#fg a:hover{
+  color: black;
+}
+
+.input-box span{
+  transition:color 0.8s;
+  position: relative;
+  left: 400px;
+  top :138px;
+  margin-top: 0%;
+}
