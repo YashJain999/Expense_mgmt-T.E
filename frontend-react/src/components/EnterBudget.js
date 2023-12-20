@@ -1,9 +1,16 @@
 import React from 'react'
-import './FinancialTable.css'; 
 import { useState } from 'react';
 
+function EnterBudget({isOffcanvasOpen}) {
+  const AppStyle = {
+    position:"relative",
+    top:"100px",
+    left : isOffcanvasOpen ? '100px': '0%'  ,
+    width: isOffcanvasOpen ? 'calc(100% - 100px)': '100%'  ,
+    transition: 'all 0.5s ease',
+    zIndex: 1000,
+  };  
 
-const EnterBudget = () => {
   const [selectedYear, setSelectedYear] = useState('three'); 
 
   
@@ -19,7 +26,7 @@ const EnterBudget = () => {
   };
   
   return (
-    <div>
+    <div className='container pt-0' style={AppStyle}>
       <label htmlFor="language">Financial Year :</label>
       <select
         name="language"
@@ -117,10 +124,9 @@ const EnterBudget = () => {
       </table>
 
       
-      <button class="Edit" onClick={handleEditClick}>Edit</button>
-
+      <button className="Edit" onClick={handleEditClick}>Edit</button>
     
-      <button class="save" onClick={handleSaveClick}>Save</button>
+      <button className="save" onClick={handleSaveClick}>Save</button>
     </div>
   );
 }

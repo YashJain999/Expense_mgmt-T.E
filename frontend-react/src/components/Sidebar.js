@@ -1,18 +1,15 @@
-import React,{ useState } from 'react';
+import React,{ useEffect, useState } from 'react';
 import { NavLink } from "react-router-dom";
-// import { useNavigate } from 'react-router-dom';
+import './Sidebar.css'; // Import your custom CSS file for Sidebar styling
 
-// import './Sidebar.css'; // Import your custom CSS file for Sidebar styling
-// import Navbar from './Navbar';
-
-
-export default function Sidebar() {
+export default function Sidebar({ isOffcanvasOpen, closeOffcanvas }) {
 
     //style for navlink
     const NavLinkStyle = {
         textDecoration: 'none',
-        border :'none',
-        color :'none',
+        width: 20,
+        // border :'none',
+        // color :'none',
     };
 
 
@@ -96,36 +93,46 @@ export default function Sidebar() {
         setShouldShowList(!shouldShowList)  
     }
 
+    useEffect(() => {
+        
+    })
+
+    const offcanvasStyle={width:260,transition: 'all 0.5s ease'}
+
     return (
     <> 
-        <div className="offcanvas offcanvas-start text-bg-dark border-bottom show" data-bs-backdrop="false" data-bs-theme="dark" tabIndex="-1" id="offcanvasDark" aria-labelledby="offcanvasDarkLabel" style={{width:260}}>
+        <div className="offcanvas offcanvas-start text-bg-dark border-bottom show" data-bs-backdrop="false" data-bs-target="#offcanvasDark" data-bs-theme="dark" tabIndex="-1" id="offcanvasDark" aria-labelledby="offcanvasDarkLabel" style={offcanvasStyle}>
         <div className="offcanvas-header ">
             <h5 className="offcanvas-title" id="offcanvasDarkLabel">Labtracker</h5>
-            <button type="button" className="btn btn-close text-reset " data-bs-dismiss="offcanvas" data-bs-backdrop="false" aria-label="Close"></button>
+            {isOffcanvasOpen ? (
+            <button type="button" className="btn btn-close " onClick={closeOffcanvas} data-bs-dismiss="offcanvas" data-bs-backdrop="false" data-bs-target="#offcanvasDark" aria-label="Close"></button>
+            )   : null}
         </div>                                                                                                                         
             <div className="offcanvas-body">
                 <ul className="list-group list-group-flush">
                     {shouldShowList && ((                
                     <li className='list-group-item'>
-                    <div className="submenu-item">
-                        <NavLink to ="/budget" style={NavLinkStyle}>
-                            <button type="button" className="btn btn" onClick={() => {toggleBudgetList();toggleList()}}>Budget</button>
-                        </NavLink>
-                    </div>
+                        <div className="submenu-item">
+                            <NavLink to ="/budget" style={NavLinkStyle}>
+                                <button type="button" className="btn" onClick={() => {toggleBudgetList();toggleList()}}>
+                                    {/* <i className="fa-solid fa-indian-rupee-sign"></i> */}
+                                        Budget</button>
+                            </NavLink>
+                        </div>
                     </li>
                     ))}
                     {isBudgetListVisible && (
                         <ul className="list-group list-group-flush">
                             <li className='list-group-item'>
                             <NavLink to ="/" style={NavLinkStyle}>
-                                <button type="button" className="btn btn" onClick={() => {toggleBudgetList();toggleList()}}>Budget</button>
+                                <button type="button" className="btn" onClick={() => {toggleBudgetList();toggleList()}}>Budget</button>
                             </NavLink>
                             </li>
                             <div className=" m-n1 pt-2 container" >
                             {shouldShowBudget.map((item, index) => (
                             <li key={index}>
                             <NavLink to ={item.path} style={NavLinkStyle}>
-                                <button type="button" className="btn btn" onClick={item.onClick}>{item.text}</button>
+                                <button type="button" className="btn" onClick={item.onClick}>{item.text}</button>
                             </NavLink>
                             </li>
                             ))}
@@ -135,7 +142,9 @@ export default function Sidebar() {
                     {shouldShowList && ((
                     <li className="list-group-item">
                     <NavLink to ="/quotation" style={NavLinkStyle}>
-                        <button type="button" className="btn btn" onClick={() => {toggleQuotationList();toggleList()}}>Quotation</button>
+                        <button type="button" className="btn" onClick={() => {toggleQuotationList();toggleList()}}>
+                            {/* <i className="fa-solid fa-file-lines"></i>    */}
+                                                         Quotation</button>
                     </NavLink>
                     </li>
                     ))}
@@ -143,14 +152,14 @@ export default function Sidebar() {
                         <ul className="list-group list-group-flush">
                         <li className='list-group-item'>
                         <NavLink to ="/" style={NavLinkStyle}>
-                            <button type="button" className="btn btn" onClick={() => {toggleQuotationList();toggleList()}}>Quotation</button>
+                            <button type="button" className="btn" onClick={() => {toggleQuotationList();toggleList()}}>Quotation</button>
                         </NavLink>
                         </li>
                         <div className=" m-n1 pt-2 container" >
                         {shouldShowQuotation.map((item, index) => (
                         <li key={index}>
                         <NavLink to ={item.path} style={NavLinkStyle}>
-                            <button type="button" className="btn btn" onClick={item.onClick}>{item.text}</button>
+                            <button type="button" className="btn" onClick={item.onClick}>{item.text}</button>
                         </NavLink>
                         </li>
                         ))}
@@ -160,7 +169,9 @@ export default function Sidebar() {
                     {shouldShowList && ((
                     <li className="list-group-item">
                     <NavLink to ="/purchase" style={NavLinkStyle}>
-                        <button type="button" className="btn btn" onClick={() => {togglePurchaseList();toggleList()}}>Purchase</button>
+                        <button type="button" className="btn" onClick={() => {togglePurchaseList();toggleList()}}>
+                            {/* <i className="fa-solid fa-truck-moving"></i> */}
+                                Purchase</button>
                     </NavLink>
                     </li>
                     ))}
@@ -168,14 +179,14 @@ export default function Sidebar() {
                         <ul className="list-group list-group-flush">
                         <li className='list-group-item'>
                         <NavLink to ="/" style={NavLinkStyle}>
-                            <button type="button" className="btn btn" onClick={() => {togglePurchaseList();toggleList()}}>Purchase</button>
+                            <button type="button" className="btn" onClick={() => {togglePurchaseList();toggleList()}}>Purchase</button>
                         </NavLink>
                         </li>
                         <div className=" m-n1 pt-2 container" >
                         {shouldShowPurchase.map((item, index) => (
                         <li key={index}>
                         <NavLink to ={item.path} style={NavLinkStyle}>
-                            <button type="button" className="btn btn" onClick={item.onClick}>{item.text}</button>
+                            <button type="button" className="btn" onClick={item.onClick}>{item.text}</button>
                         </NavLink>
                         </li>
                         ))}
@@ -185,7 +196,9 @@ export default function Sidebar() {
                     {shouldShowList && ((
                     <li className="list-group-item">
                     <NavLink to ="/bills" style={NavLinkStyle}>
-                        <button type="button" className="btn btn" onClick={() => {toggleBillsList();toggleList()}}>Bills</button>
+                        <button type="button" className="btn" onClick={() => {toggleBillsList();toggleList()}}>
+                        {/* <i className="fa-solid fa-file-invoice-dollar"></i> */}
+                        Bills</button>
                     </NavLink>
                     </li>
                     ))}
@@ -193,14 +206,14 @@ export default function Sidebar() {
                         <ul className="list-group list-group-flush">
                         <li className='list-group-item'>
                         <NavLink to ="/" style={NavLinkStyle}>
-                            <button type="button" className="btn btn" onClick={() => {toggleBillsList();toggleList()}}>Bills</button>
+                            <button type="button" className="btn" onClick={() => {toggleBillsList();toggleList()}}>Bills</button>
                         </NavLink>
                         </li>
                         <div className=" m-n1 pt-2 container" >
                         {shouldShowBills.map((item, index) => (
                         <li key={index}>
                         <NavLink to ={item.path} style={NavLinkStyle}>
-                            <button type="button" className="btn btn" onClick={item.onClick}>{item.text}</button>
+                            <button type="button" className="btn" onClick={item.onClick}>{item.text}</button>
                         </NavLink>        
                         </li>
                         ))}
@@ -210,7 +223,9 @@ export default function Sidebar() {
                     {shouldShowList && ((
                     <li className="list-group-item">
                     <NavLink to ="/centraldeadstock" style={NavLinkStyle}>
-                        <button type="button" className="btn btn" onClick={() => {toggleCDSList();toggleList()}}>Central Dead Stock</button>
+                        <button type="button" className="btn" onClick={() => {toggleCDSList();toggleList()}}>
+                        {/* <i className="fa-solid fa-box-open"></i> */}
+                                Central Dead Stock</button>
                     </NavLink>
                     </li>
                     ))}
@@ -218,14 +233,14 @@ export default function Sidebar() {
                         <ul className="list-group list-group-flush">
                         <li className='list-group-item'>
                         <NavLink to ="/" style={NavLinkStyle}>
-                            <button type="button" className="btn btn" onClick={() => {toggleCDSList();toggleList()}}>Central Dead Stock</button>
+                            <button type="button" className="btn" onClick={() => {toggleCDSList();toggleList()}}>Central Dead Stock</button>
                         </NavLink>
                         </li>
                         <div className=" m-n1 pt-2 container" >
                         {shouldShowCDS.map((item, index) => (
                         <li key={index}>
                         <NavLink to ={item.path} style={NavLinkStyle}>
-                            <button type="button" className="btn btn" onClick={item.onClick}>{item.text}</button>
+                            <button type="button" className="btn" onClick={item.onClick}>{item.text}</button>
                         </NavLink>
                         </li>
                         ))}
@@ -235,7 +250,9 @@ export default function Sidebar() {
                     {shouldShowList && ((
                     <li className="list-group-item">
                     <NavLink to ="/feedback" style={NavLinkStyle}>
-                        <button type="button" className="btn btn" onClick={() => {toggleFeedBackList();toggleList()}}>Feedback</button>
+                        <button type="button" className="btn" onClick={() => {toggleFeedBackList();toggleList()}}>
+                        {/* <i className="fa-solid fa-comment-dollar"></i> */}
+                                Feedback</button>
                     </NavLink>
                     </li>
                     ))}
@@ -243,14 +260,14 @@ export default function Sidebar() {
                         <ul className="list-group list-group-flush">
                         <li className='list-group-item'>
                         <NavLink to ="/" style={NavLinkStyle}>
-                            <button type="button" className="btn btn" onClick={() => {toggleFeedBackList();toggleList()}}>Feedback</button>
+                            <button type="button" className="btn" onClick={() => {toggleFeedBackList();toggleList()}}>Feedback</button>
                         </NavLink>
                         </li>
                         <div className=" m-n1 pt-2 container" >
                         {shouldShowFeedback.map((item, index) => (
                         <li key={index}>
                         <NavLink to ={item.path} style={NavLinkStyle}>
-                            <button type="button" className="btn btn" onClick={item.onClick}>{item.text}</button>
+                            <button type="button" className="btn" onClick={item.onClick}>{item.text}</button>
                         </NavLink>
                         </li>
                         ))}
@@ -259,12 +276,15 @@ export default function Sidebar() {
                     )}
                     {shouldShowList && ((
                     <li className="list-group-item">
-                        <button type="button" className="btn btn" onClick={toggleList}>Logout</button>
+                        <button type="button" className="btn" onClick={toggleList}>
+                        {/* <i className="fa-solid fa-arrow-right-from-bracket"></i> */}
+                           Logout</button>
                     </li>
                     ))}
                 </ul> 
             </div>
-        </div>
+            </div>
+    {/* </div>   */}
     </>
   )
 }

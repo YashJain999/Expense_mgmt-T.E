@@ -1,24 +1,22 @@
-import React from 'react';
-import './App.css';
-import './Login.css';
-// import PasswordReset from './PasswordReset';
-// import RegistrationForm from './RegistrationForm';
-import { Link } from 'react-router-dom';
+import React from "react";
+// import 'D:/Yash/React/TE-College Project/Expense_mgmt-T.E/frontend-react/src/App.css';
+import classes from "./Login.module.css";
+import { Link } from "react-router-dom";
 
 function Login() {
   return (
-    <div className="App">
-      <span id="logo">LABTRACKER</span>
-      <span id="logo-desc">
+    <div className={classes.loginmaindiv}>
+      <span id={classes.logo}>LABTRACKER</span>
+      <span id={classes.logodesc}>
         LAB INVENTORY & <br />
         EXPENSES MANAGER.
       </span>
-      <div className="container glass">
-        <div className="login-container">
+      <div className={`${classes.container} ${classes.glass}`}>
+        <div className={classes.logincontainer}>
           <h3>Login</h3>
-          <form className="login-form" action="#" method="post">
-            <div className="input-box">
-              <span className="icon">
+          <form className={classes.loginform} action="#" method="post">
+            <div className={classes.inputbox}>
+              <span className={classes.icon}>
                 <i className="fa-solid fa-user"></i>
               </span>
               <input
@@ -27,12 +25,12 @@ function Login() {
                 placeholder="Email"
                 id="Username"
                 required
-              />{' '}
+              />{" "}
               <br />
               <br />
             </div>
-            <div className="input-box">
-              <span className="icon">
+            <div className={classes.inputbox}>
+              <span className={classes.icon}>
                 <i className="fa-solid fa-lock"></i>
               </span>
               <input
@@ -46,7 +44,7 @@ function Login() {
               <br />
               {/* <a id='forgetpassword' href={<PasswordReset />} >Forgot Password?</a>
               <a id='registernow' href= {<RegistrationForm />}> Register Now!</a> */}
-               <Link to="/password-reset">Forgot Password?</Link>
+              <Link to="/password-reset">Forgot Password?</Link>
               <Link to="/register">Register Now!</Link>
               <br />
               <br />
