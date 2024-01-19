@@ -1,0 +1,63 @@
+body {
+  text-align: center;
+  top: 10px;
+}
+.year{
+  left: 40px;
+}
+
+select {
+  border: none;
+  padding: 5px 10px;
+  border-radius: 2px;
+  left: 390px;
+}
+
+/* select:focus {
+  outline: none;
+} */
+
+table,
+th,
+td {
+  margin-left: 380px;
+  margin-right: 2px;
+  text-align: center;
+  width: 20%;
+  border: 2px solid black;
+  border-collapse: collapse;
+  padding: 5px 4px ;
+}
+
+    input[type=text] {
+    width: 20%;
+    padding: 1px 0px;
+    margin: 2px 0;
+    box-sizing: border-box;
+    border-color: transparent;
+    border: none;
+    text-align: center;
+    size: 1;
+    }
+
+    .Edit {
+      position: relative;
+      top: 10px;
+      background-color:#000000;
+      color: #fff;
+      border:none;
+      border-radius:60px;
+      font-size: 30px;
+      cursor: pointer;
+      /* text-align: ; */
+      left: 410px;
+    }
+    .viewbutton{
+      position: relative;
+      top: 2px;
+      background-color:#000000;
+      color: #fff;
+      border:none;
+      border-radius:25px;
+      font-size: 20px;
+    }
