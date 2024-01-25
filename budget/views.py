@@ -1,12 +1,8 @@
-import traceback
 from .models import *
 from . import views
 from .models import *
-import mysql.connector
-from django.shortcuts import get_object_or_404
 from budget.pdf_generator import * 
 from .serializers import *
-from django.views.decorators.csrf import csrf_exempt
 import json
 import io
 from rest_framework.views import APIView
@@ -27,6 +23,8 @@ from reportlab.lib import colors
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.pagesizes import A2
+# new imports
+from django.views.decorators.csrf import csrf_exempt
 
 
 class LoginView(APIView):
@@ -327,86 +325,80 @@ def get_budget_details(request):
         return Response(data)
     except :
         return Response({'message': 'Error in finding data'})
+   
     
 @csrf_exempt
 @api_view(['POST'])
-def update_budget_details(request): 
+def update_budget_details(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            updated_data = data['updatedData']
-            print(updated_data)
             selectedYear = request.data.get('selectedYear')
             year = financialyear.objects.get(Desc=selectedYear).F_year
-            print(year)
 
             item_mappings = {
                 'Laboratory Consumables': 'LAB-CONSUME',
-                'Laboratory Equipments': 'LAB-EQ',
-                'Maintenance and spares': 'MAINT-SPARE',
-                'Miscellaneous': 'MISC',
+                'Laboratory Equipment': 'LAB-EQ',
+                'Maintenance and Spares': 'MAINT-SPARE',
+                'Miscellaneous expenses': 'MISC',
                 'Research and Development': 'RND',
                 'Software': 'SOFT',
-                'Training and travel': 'T&T'
+                'Training and Travel': 'T&T'
             }
 
-            for i in updated_data:
-                    if i['item'] in item_mappings:
-                        item_value = item_mappings[i['item']]
-                        
-                        try:
-                            # Try to get the existing record
-                            budget_amt = budget.objects.get(dept='IT', f_year=year, item=item_value)
-                            
-                            # If it exists, update the values
-                            budget_amt.budgeted_amt = float(i['budgeted_amt'])
-                            print(budget_amt.budgeted_amt)
-                            if 'actual_exp' in i and i['actual_exp']:
-                                budget_amt.actual_exp = float(i['actual_exp'])
-                                
-                            # Print the values before saving
-                            print('Before Save -', budget_amt.budgeted_amt, budget_amt.actual_exp)
-                            
-                            # Serialize the object
-                            budget_data = BudgetDataSerializer(budget_amt, data={'budgeted_amt': budget_amt.budgeted_amt, 'actual_exp': budget_amt.actual_exp})
+            for item_data in data.get('updatedData', []):
+                item_name = item_data.get('item')
+                budgeted_amt = float(item_data.get('budgeted_amt', 0))
+                actual_exp = float(item_data.get('actual_exp', 0))
 
-                            if budget_data.is_valid():
-                                budget_data.save()
-                                print('Budget updated successfully')
-                            else:
-                                print("Validation error:", budget_data.errors)
-                                
-                        except budget.DoesNotExist:
-                            # If it doesn't exist, create a new record
-                            budget_amt = budget.objects.create(
-                                dept='IT',
-                                f_year=year,
-                                item=item_value,
-                                budgeted_amt=float(i['budgeted_amt']),
-                                actual_exp=float(i.get('actual_exp', 0.0))  # Set to 0 if 'actual_exp' is not provided
-                            )
-                            
-                            # Print the values before saving for a new record
-                            print('Before Save (New Record) -', budget_amt.budgeted_amt, budget_amt.actual_exp)
+                if item_name in item_mappings:
+                    item_value = item_mappings[item_name]
 
-                            # Serialize the object
-                            budget_data = BudgetDataSerializer(budget_amt, data={'budgeted_amt': budget_amt.budgeted_amt, 'actual_exp': budget_amt.actual_exp}, partial=True)
+                    # Try to get the existing record
+                    try:
+                        budget_obj = budget.objects.get(dept='IT', f_year=year, item=item_value)
 
-                            if budget_data.is_valid():
-                                print("reaach here ")
-                                budget_data.save()
-                                print('Budget created successfully')
-                            else:
-                                print("Validation error (New Record):", budget_data.errors)
-                        
-                    else:
-                        continue
-                    print('budget save')
+                        # If it exists, delete the existing record
+                        budget_obj.delete()
+
+                    except budget.DoesNotExist:
+                        pass  # If it doesn't exist, do nothing
+
+                else:
+                    continue  # Skip items not in item_mappings
+
+            for item_data in data.get('updatedData', []):
+                item_name = item_data.get('item')
+                budgeted_amt = float(item_data.get('budgeted_amt', 0))
+                actual_exp = float(item_data.get('actual_exp', 0))
+
+                if item_name in item_mappings:
+                    item_value = item_mappings[item_name]
+                    # Create a new record
+                    budget_obj = budget.objects.create(
+                        dept='IT',
+                        f_year=year,
+                        item=item_value,
+                        budgeted_amt=budgeted_amt,
+                        actual_exp=actual_exp
+                    )
+
+                else:
+                    print("Error occur")
+
+                
 
             return Response({'message': 'Budget details updated successfully.'}, status=status.HTTP_200_OK)
+
         except json.JSONDecodeError as e:
             return Response({'error': 'Invalid JSON format.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except financialyear.DoesNotExist:
+            return Response({'error': 'Selected year not found.'}, status=status.HTTP_404_NOT_FOUND)
+
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     else:
         return Response({'error': 'Invalid request method.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
