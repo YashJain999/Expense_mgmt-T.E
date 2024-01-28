@@ -28,7 +28,7 @@ td {
   border-collapse: collapse;
   padding: 5px 4px ;
 }
-
+/*
     input[type=text] {
     width: 20%;
     padding: 1px 0px;
@@ -38,7 +38,7 @@ td {
     border: none;
     text-align: center;
     size: 1;
-    }
+    }*/
 
     .Edit {
       position: relative;
