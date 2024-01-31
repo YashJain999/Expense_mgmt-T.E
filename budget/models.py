@@ -13,19 +13,17 @@ class itemmaster(models.Model):
         verbose_name="Items",
         default = "Default Itemmaster"
     )
-    item = models.TimeField(
+    item = models.TextField(
         max_length=255,
         primary_key=True,
     )
-    def __str__(self):
-        return self.item_desc
     
 
 class budget(models.Model):
     dept = models.TextField(
         max_length=255,
         verbose_name="Department",
-        default='Default Department'
+        default='Default Department',
     )
     f_year = models.CharField(
         max_length=255,
@@ -36,7 +34,7 @@ class budget(models.Model):
     item = models.TextField(
         max_length=255,
         verbose_name="Items",
-        default="Default Itemmaster"
+        default="Default Itemmaster",
     )
     budgeted_amt = models.FloatField(
         max_length=255,

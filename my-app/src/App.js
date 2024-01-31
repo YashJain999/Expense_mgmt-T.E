@@ -17,6 +17,7 @@ import UploadBudget from "./components/UploadBudget";
 import ViewBudget from "./components/ViewBudget";
 import UpdateFinancialYear from "./components/UpdateFinancialYear";
 import Home from "./components/Home";
+import PrincipalDashboard from "./components/PrincipalDashboard";
 
 function App() {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(true);
@@ -54,6 +55,7 @@ function App() {
               <Route exact path="/bills" element={<Bills  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
               <Route exact path="/centraldeadstock" element={<CentralDeadStock  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
               <Route exact path="/feedback" element={<Feedback  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
+              <Route exact path="/PrincipalDashboard" element={<PrincipalDashboard isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
               </Routes>
       </BrowserRouter>
       </div>

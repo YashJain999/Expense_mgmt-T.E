@@ -109,7 +109,9 @@ function UploadBudget({isOffcanvasOpen}) {
         if (response.status === 201) {
           console.log('Data successfully submitted:', response.data);
           alert('File Upload Successful')
-          // Handle successful submission
+          handleYearSubmit();
+          // Automatically close the fieldset after submission
+          setShowInputs(false);
         } else {
           console.error('Error submitting data:', response.data);
           alert('Error in submitting')

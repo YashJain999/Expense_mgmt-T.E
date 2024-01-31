@@ -1,12 +1,8 @@
-import traceback
 from .models import *
 from . import views
 from .models import *
-import mysql.connector
-from django.shortcuts import get_object_or_404
 from budget.pdf_generator import * 
 from .serializers import *
-from django.views.decorators.csrf import csrf_exempt
 import json
 import io
 from rest_framework.views import APIView
@@ -27,6 +23,10 @@ from reportlab.lib import colors
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.pagesizes import A2
+# new imports
+from django.views.decorators.csrf import csrf_exempt
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 
 class LoginView(APIView):
@@ -75,33 +75,32 @@ class EmailVerificationView(APIView):
         # For simplicity, we assume verification is successful if the email exists.
         return Response({"is_verified": True}, status=200)
 
+def generate_pdf_view(request):
+    selected_year = request.GET.get('selectedYear', None)
 
-def generate_pdf_view(request, selectedYear):
-
-    selected_year = request.GET.get('selectedYear')
-    # Generate the PDF using the pdf_generator module
+    if not selected_year:
+        return HttpResponse("Selected year is required", status=400)
+    print(selected_year)
     queryset_itemmaster = itemmaster.objects.all()
     dept_value = 'IT'
 
     try:
         f_year_obj = financialyear.objects.get(Desc=selected_year)
         f_year_value = f_year_obj.F_year
-        print(f_year_value)
     except financialyear.DoesNotExist:
         raise Http404("Financial Year matching query does not exist")
     
     filename = "item_master.pdf"
-
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
-
-    # Use the title attribute to set the title of the PDF document
     doc = SimpleDocTemplate(response, pagesize=A2, title="PDF Report")
 
     elements = []
+
+    # Add title to the PDF
     title_style = ParagraphStyle(
         name='HeadingStyle',
-        fontSize=24,
+        fontSize=36,
         fontName='Helvetica-Bold',
         alignment=1,
         spaceAfter=12,
@@ -109,15 +108,17 @@ def generate_pdf_view(request, selectedYear):
     college_name = 'A. P. Shah Institute of Technology'
     title = Paragraph(college_name, title_style)
     elements.append(title)
-    elements.extend([Paragraph(" ", title_style) for _ in range(7)])  # Add 5 blank paragraphs for spacing
-    heading = f"Cumulative Budget Report of CFY {f_year_value}"
+
+    # Add blank paragraphs for spacing
+    elements.extend([Paragraph(" ", title_style) for _ in range(7)])
+
+    # Add heading to the PDF
+    heading = f"Cumulative Budget Report of CFY {selected_year}"
     Heading = Paragraph(heading, title_style)
     elements.append(Heading)
-    elements.extend([Paragraph(" ", title_style) for _ in range(7)])  # Add 5 blank paragraphs for spacing
-    item_headers = ['Items'] 
-    item_headers1 = ['Budget in CFY','Actual Expenses in CFY','Budget in CFYm1', 'Actual Expenses in CFYm1', 'Budget in CFYm2', 'Actual Expenses in CFYm2', 'Budget in CFYm3', 'Actual Expenses in CFYm3']
-    data = [item_headers + item_headers1]  # Use combined_headers as the header row
-    sum_values = [0] * len(item_headers1)  # Initialize a list to hold the sum of each column
+
+    # Add blank paragraphs for spacing
+    elements.extend([Paragraph(" ", title_style) for _ in range(7)])
 
     # Generate a list of the previous three years
     previous_years = [f_year_value - i for i in range(4)]
@@ -125,65 +126,59 @@ def generate_pdf_view(request, selectedYear):
     # Convert the years to the required format
     f_years = [f"{year}-{year + 1}" for year in previous_years]
 
-    # Use the f_years list for filtering or querying your data
-    processed_items = set()
+    # Create a list to hold the data for the PDF table
+    data = [['Items'] + ['Budget in CFY', 'Actual Expenses in CFY', 'Budget in CFYm1', 'Actual Expenses in CFYm1', 'Budget in CFYm2', 'Actual Expenses in CFYm2', 'Budget in CFYm3', 'Actual Expenses in CFYm3']]
 
+    # Fetch and organize data for each row
     for obj in queryset_itemmaster:
-        if obj.item_desc not in processed_items:
-            processed_items.add(obj.item_desc)
-            data_row = [obj.item_desc]  # Use the item_desc field directly
-            for f_y in f_years:
-                queryset_budget = budget.objects.filter(dept=dept_value, f_year=f_y)
-                for budget_obj in queryset_budget:
-                    if budget_obj.item == obj.item:
-                        # print(budget_obj.item)
-                        data_row.append(str(budget_obj.budgeted_amt))
-                        data_row.append(str(budget_obj.actual_exp))
-                        sum_values[-8] += int(budget_obj.budgeted_amt)
-                        sum_values[-7] += int(budget_obj.actual_exp)
-                        sum_values[-6] += int(budget_obj.budgeted_amt)
-                        sum_values[-5] += int(budget_obj.actual_exp)
-                        sum_values[-4] += int(budget_obj.budgeted_amt)
-                        sum_values[-3] += int(budget_obj.actual_exp)
-                        sum_values[-2] += int(budget_obj.budgeted_amt)
-                        sum_values[-1] += int(budget_obj.actual_exp)
-                        print(sum_values[-1])
-                    else:
-                        continue
-            data.append(data_row)
+        data_row = [obj.item_desc]  # Use the item_desc field directly
+        for f_y in f_years:
+            queryset_budget = budget.objects.filter(dept=dept_value, f_year=f_y, item=obj.item)
+            for budget_obj in queryset_budget:
+                data_row.append(str(budget_obj.budgeted_amt))
+                data_row.append(str(budget_obj.actual_exp))
+
+        data.append(data_row)
 
     # Add the 'Total' row
-    total_row = ['Total'] + [str(val) for val in sum_values]
+    total_row = ['Total'] + [sum(float(data_row[i]) for data_row in data[1:]) for i in range(1, len(data[0]))]
     data.append(total_row)
 
+    # Create a table with the data
     table = Table(data, colWidths=[120] * len(data[0]))
-    table_style = TableStyle([
+
+    # Define the style for the table
+    style = TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.red),  # Color the headers
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # Set text color for headers
         ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Add grid lines
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 20),  # Space after row 1
-        ("TOPPADDING", (0, 0), (-1, -1), 20),  # Space before row 2
-        ('WORDWRAP', (1, 0), (-1, -1), True),# Allow word wrap within the specified column width
-        ('FONT', (0,0),(-1,-1), "Helvetica", 9)
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 20),  # Space after each row
+        ('TOPPADDING', (0, 0), (-1, -1), 20),  # Space before each row
+        ('WORDWRAP', (1, 0), (-1, -1), True),  # Allow word wrap within the specified column width
     ])
 
-    table.setStyle(table_style)
-    elements.append(table)
-    # Add blank paragraphs for spacing
-    for _ in range(10):
-        elements.append(Paragraph(" ", title_style))
+    # Apply the style to the table
+    table.setStyle(style)
 
+    # Add the table to the elements
+    elements.append(table)
+
+    # Add blank paragraphs for spacing
+    elements.extend([Paragraph(" ", title_style) for _ in range(10)])
+
+    # Add footer to the PDF
     footer_style = ParagraphStyle(
-           name='footerStyle',
+        name='footerStyle',
         fontSize=14,
         fontName='Helvetica-Bold',
     )
-   
     footer_text = 'Department of Information Technology'
     footer = Paragraph(footer_text, footer_style)
     elements.append(footer)
-   
+
+    # Build the PDF document
     doc.build(elements)
+
     return response
 
 
@@ -327,86 +322,80 @@ def get_budget_details(request):
         return Response(data)
     except :
         return Response({'message': 'Error in finding data'})
+   
     
 @csrf_exempt
 @api_view(['POST'])
-def update_budget_details(request): 
+def update_budget_details(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            updated_data = data['updatedData']
-            print(updated_data)
             selectedYear = request.data.get('selectedYear')
             year = financialyear.objects.get(Desc=selectedYear).F_year
-            print(year)
 
             item_mappings = {
                 'Laboratory Consumables': 'LAB-CONSUME',
-                'Laboratory Equipments': 'LAB-EQ',
-                'Maintenance and spares': 'MAINT-SPARE',
-                'Miscellaneous': 'MISC',
+                'Laboratory Equipment': 'LAB-EQ',
+                'Maintenance and Spares': 'MAINT-SPARE',
+                'Miscellaneous expenses': 'MISC',
                 'Research and Development': 'RND',
                 'Software': 'SOFT',
-                'Training and travel': 'T&T'
+                'Training and Travel': 'T&T'
             }
 
-            for i in updated_data:
-                    if i['item'] in item_mappings:
-                        item_value = item_mappings[i['item']]
-                        
-                        try:
-                            # Try to get the existing record
-                            budget_amt = budget.objects.get(dept='IT', f_year=year, item=item_value)
-                            
-                            # If it exists, update the values
-                            budget_amt.budgeted_amt = float(i['budgeted_amt'])
-                            print(budget_amt.budgeted_amt)
-                            if 'actual_exp' in i and i['actual_exp']:
-                                budget_amt.actual_exp = float(i['actual_exp'])
-                                
-                            # Print the values before saving
-                            print('Before Save -', budget_amt.budgeted_amt, budget_amt.actual_exp)
-                            
-                            # Serialize the object
-                            budget_data = BudgetDataSerializer(budget_amt, data={'budgeted_amt': budget_amt.budgeted_amt, 'actual_exp': budget_amt.actual_exp})
+            for item_data in data.get('updatedData', []):
+                item_name = item_data.get('item')
+                budgeted_amt = float(item_data.get('budgeted_amt', 0))
+                actual_exp = float(item_data.get('actual_exp', 0))
 
-                            if budget_data.is_valid():
-                                budget_data.save()
-                                print('Budget updated successfully')
-                            else:
-                                print("Validation error:", budget_data.errors)
-                                
-                        except budget.DoesNotExist:
-                            # If it doesn't exist, create a new record
-                            budget_amt = budget.objects.create(
-                                dept='IT',
-                                f_year=year,
-                                item=item_value,
-                                budgeted_amt=float(i['budgeted_amt']),
-                                actual_exp=float(i.get('actual_exp', 0.0))  # Set to 0 if 'actual_exp' is not provided
-                            )
-                            
-                            # Print the values before saving for a new record
-                            print('Before Save (New Record) -', budget_amt.budgeted_amt, budget_amt.actual_exp)
+                if item_name in item_mappings:
+                    item_value = item_mappings[item_name]
 
-                            # Serialize the object
-                            budget_data = BudgetDataSerializer(budget_amt, data={'budgeted_amt': budget_amt.budgeted_amt, 'actual_exp': budget_amt.actual_exp}, partial=True)
+                    # Try to get the existing record
+                    try:
+                        budget_obj = budget.objects.get(dept='IT', f_year=year, item=item_value)
 
-                            if budget_data.is_valid():
-                                print("reaach here ")
-                                budget_data.save()
-                                print('Budget created successfully')
-                            else:
-                                print("Validation error (New Record):", budget_data.errors)
-                        
-                    else:
-                        continue
-                    print('budget save')
+                        # If it exists, delete the existing record
+                        budget_obj.delete()
+
+                    except budget.DoesNotExist:
+                        pass  # If it doesn't exist, do nothing
+
+                else:
+                    continue  # Skip items not in item_mappings
+
+            for item_data in data.get('updatedData', []):
+                item_name = item_data.get('item')
+                budgeted_amt = float(item_data.get('budgeted_amt', 0))
+                actual_exp = float(item_data.get('actual_exp', 0))
+
+                if item_name in item_mappings:
+                    item_value = item_mappings[item_name]
+                    # Create a new record
+                    budget_obj = budget.objects.create(
+                        dept='IT',
+                        f_year=year,
+                        item=item_value,
+                        budgeted_amt=budgeted_amt,
+                        actual_exp=actual_exp
+                    )
+
+                else:
+                    print("Error occur")
+
+                
 
             return Response({'message': 'Budget details updated successfully.'}, status=status.HTTP_200_OK)
+
         except json.JSONDecodeError as e:
             return Response({'error': 'Invalid JSON format.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except financialyear.DoesNotExist:
+            return Response({'error': 'Selected year not found.'}, status=status.HTTP_404_NOT_FOUND)
+
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     else:
         return Response({'error': 'Invalid request method.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+

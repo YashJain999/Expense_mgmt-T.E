@@ -114,6 +114,8 @@ function EnterBudget({isOffcanvasOpen}) {
                 updatedData
             });
             console.log('Data successfully updated:', response.data);
+            window.alert("Data Updated Success")
+            handleYearSubmit();
         } catch (error) {
             console.error('Error updating data:', error);
         }
@@ -158,7 +160,7 @@ function EnterBudget({isOffcanvasOpen}) {
             <td></td>
           </tr>
           <tr>
-            <td>Maintenance & Spares</td>
+            <td>Maintenance and Spares</td>
             <td></td>
             <td></td>
           </tr>
@@ -168,7 +170,7 @@ function EnterBudget({isOffcanvasOpen}) {
             <td></td>
           </tr>
           <tr>
-            <td>Research & Development</td>
+            <td>Research and Development</td>
             <td></td>
             <td></td>
           </tr>
@@ -178,7 +180,7 @@ function EnterBudget({isOffcanvasOpen}) {
             <td></td>
           </tr>
           <tr>
-            <td>Travel and Training</td>
+            <td>Training and Travel</td>
             <td></td>
             <td></td>
           </tr>
