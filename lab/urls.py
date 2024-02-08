@@ -16,7 +16,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from budget.views import *
 from budget.models import *
 
@@ -38,5 +38,6 @@ urlpatterns = [
     path('get_uploaded_docs/',views.get_uploaded_docs,name='anything'),
     path('get_budget_details/', views.get_budget_details, name='anything'),
     path('update_budget_details/',views.update_budget_details,name='anything'),
-
+    path('get_all_pdf_records/',views.get_all_pdf_records,name='anything'),
+    path('principal_status/', views.principal_status,name='anything')
 ]

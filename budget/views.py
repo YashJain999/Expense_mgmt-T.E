@@ -1,6 +1,5 @@
 from .models import *
 from . import views
-from .models import *
 from budget.pdf_generator import * 
 from .serializers import *
 import json
@@ -25,8 +24,15 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.pagesizes import A2
 # new imports
 from django.views.decorators.csrf import csrf_exempt
-from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from rest_framework import status
+import base64
+from django.http import HttpResponseServerError
+from rest_framework.response import Response
+from .models import pdf, financialyear
+from .serializers import PdfData
+from django.http import HttpResponse
+from django.core.files import File
 
 
 class LoginView(APIView):
@@ -108,6 +114,10 @@ def generate_pdf_view(request):
     college_name = 'A. P. Shah Institute of Technology'
     title = Paragraph(college_name, title_style)
     elements.append(title)
+    # Add image to the right corner
+    image_path = './images/apsit_logo.jpg'  # Update the path accordingly
+    doc.build([Paragraph(" ", title_style)])  # Add some space for the image
+    doc.drawImage(image_path, doc.width - 150, doc.height - 150, width=100, height=100)
 
     # Add blank paragraphs for spacing
     elements.extend([Paragraph(" ", title_style) for _ in range(7)])
@@ -273,7 +283,7 @@ def upload_budget(request):
 
     file = request.FILES.get('file')
     description = request.data.get('description')
-    status = 'pending'
+    status = 'reject'
     comment = 'null'
 
     if file:
@@ -399,3 +409,43 @@ def update_budget_details(request):
     else:
         return Response({'error': 'Invalid request method.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+@api_view(['GET'])
+def get_all_pdf_records(request):
+    selected_year = request.data.get('selected_year')
+    year = financialyear.objects.get(Desc=selected_year).F_year
+
+    # Retrieve the required data from the model
+    try:
+        pdf_record = pdf.objects.get(f_year=year)
+        response = HttpResponse(pdf_record.pdf, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_record.pdf.name}"'
+        print(response)
+        return response
+    except pdf.DoesNotExist:
+        return Response({"message": "No data found for the specified branch and year"}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def principal_status(request):
+    branch = request.data.get('dept')
+    selectedYear = request.data.get('year')
+    status = request.data.get('status')
+    comment = request.data.get('comment')
+
+    try:
+        year = financialyear.objects.get(Desc=selectedYear).F_year
+    except financialyear.DoesNotExist:
+        raise NotFound(detail="Specified year not found")
+
+    try:
+        # Update pdf instance
+        pdf_instance = pdf.objects.get(dept=branch, f_year=year)
+        pdf_instance.status = status
+        pdf_instance.comment = comment
+        pdf_instance.save()
+
+        return Response({'message': 'Success'}, status=status.HTTP_201_CREATED)
+    except pdf.DoesNotExist:
+        return Response({'message': 'PDF not found for approval'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

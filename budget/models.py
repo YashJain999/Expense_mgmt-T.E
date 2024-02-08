@@ -66,7 +66,8 @@ class pdf(models.Model):
         verbose_name='Financial Year'
     )
     pdf = models.FileField(
-        verbose_name='pdf report'
+        verbose_name='pdf'
+    
     )
     description = models.CharField(
         verbose_name='description',

@@ -14,6 +14,7 @@ function PrincipalDashboard({isOffcanvasOpen}) {
   };
   const [selectedYear, setSelectedYear] = useState(''); 
   const [YearDetails, setYearDetails] = useState([]);
+  const [pdfRecords, setPdfRecords] = useState([]);
   //radio button js hai  
   const [selectedOption, setSelectedOption] = useState('option1');
   useEffect(() => {
@@ -21,120 +22,103 @@ function PrincipalDashboard({isOffcanvasOpen}) {
 }, []);
 
 const fetchData = async () => {
-    try {
-        const response = await axios.get('http://localhost:8000/dropdown/');
-        setYearDetails(response.data);
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
+  try {
+      const response = await axios.get('http://localhost:8000/dropdown/');
+      setYearDetails(response.data);
+  } catch (error) {
+      console.error('Error fetching data:', error);
+  }
 };
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
   };
   
+
+  const handleViewDetails = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/get_all_pdf_records/?selectedYear=${selectedYear}`);
+      console.log('PDF records for the selected year:', response.data);
+      setPdfRecords(response.data);
+      // Handle the PDF records data as needed
+  
+    } catch (error) {
+      console.error('Error fetching PDF records:', error);
+      // Handle error
+    }
+  };
+  
   const [comment, setCSComment] = useState('');
-  const handleSave = () => {
-    // Handle save action here
-  };
-  // const [ITcomment, setITComment] = useState('');
-  // const handleSave = () => {
-  //   // Handle save action here
-  // };
-  const handleClose = () => {
-    // Handle close action here
-  };
   const [CSbuttonsVisible, setCSButtonsVisible] = useState(true);
 
-  const handleFirstCSButtonClick = () => {
+  const handleSaveCSButtonClick = () => {
     // Handle the first button click action here
+    const formData = new FormData();
+    formData.append('dept', 'CS'); // Add the constant dept value
+    formData.append('year', selectedYear);
+    formData.append('status', selectedOption);
+    formData.append('comment', comment);
+    
+  
+    axios.post('http://localhost:8000/principal_status/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+      .then(() => {
+        window.alert("Status update Successful for Dept: CS")
+        // Set CSButtonsVisible to false after the request is completed
+        setCSButtonsVisible(false);
+      })
+      .catch((error) => {
+        // Handle error if needed
+        console.error('Error posting data:', error);
+      });
   };
+  
 
-  const handleSecondCSButtonClick = () => {
-    // Handle the second button click action here
-
-    // Hide both buttons
-    setCSButtonsVisible(false);
-  };
   const [AIcomment, setAIComment] = useState('');
   const [AIbuttonsVisible, setAIButtonsVisible] = useState(true);
 
-  const handleFirstAIButtonClick = () => {
+  const handleSaveAIButtonClick = () => {
     // Handle the first button click action here
-  };
-
-  const handleSecondAIButtonClick = () => {
-    // Handle the second button click action here
-
-    // Hide both buttons
     setAIButtonsVisible(false);
   };
+
   const [ITcomment, setITComment] = useState('');
   const [ITbuttonsVisible, setITButtonsVisible] = useState(true);
 
-  const handleFirstITButtonClick = () => {
+  const handleSaveITButtonClick = () => {
     // Handle the first button click action here
-  };
-
-  const handleSecondITButtonClick = () => {
-    // Handle the second button click action here
-
-    // Hide both buttons
     setITButtonsVisible(false);
   };
+
   const [DScomment, setDSComment] = useState('');
   const [DSbuttonsVisible, setDSButtonsVisible] = useState(true);
 
-  const handleFirstDSButtonClick = () => {
+  const handleSaveDSButtonClick = () => {
     // Handle the first button click action here
-  };
-
-  const handleSecondDSButtonClick = () => {
-    // Handle the second button click action here
-
-    // Hide both buttons
     setDSButtonsVisible(false);
+
   };
+
   const [CVcomment, setCVComment] = useState('');
   const [CVbuttonsVisible, setCVButtonsVisible] = useState(true);
 
-  const handleFirstCVButtonClick = () => {
+  const handleSaveCVButtonClick = () => {
     // Handle the first button click action here
-  };
-
-  const handleSecondCVButtonClick = () => {
-    // Handle the second button click action here
-
-    // Hide both buttons
     setCVButtonsVisible(false);
   };
+
   const [MEcomment, setMEComment] = useState('');
   const [MEbuttonsVisible, setMEButtonsVisible] = useState(true);
 
-  const handleFirstMEButtonClick = () => {
+  const handleSaveMEButtonClick = () => {
     // Handle the first button click action here
-  };
-
-  const handleSecondMEButtonClick = () => {
-    // Handle the second button click action here
-
-    // Hide both buttons
     setMEButtonsVisible(false);
   };
 
 
-
-  
-  const handleDownloadClick = () => {
-
-    alert('Download button clicked');
-  };
-
- 
-  const handleSaveClick = () => {
-  
-    alert('Save button clicked');
-  };
 
   return (
     <div className='container p-2 mw-5' style={AppStyle}>
@@ -150,16 +134,41 @@ const fetchData = async () => {
                     </option>
                 ))}
       </select>
+      <button class="viewDetails" onClick={handleViewDetails}>View</button>
       <br></br>
       <table>
         <thead>
           <tr>
-            <th>Department</th>
-            <th>Download </th>
-            <th>Status</th>
+          <th>Department</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Comment</th>
+                        <th>PDF</th>
           </tr>
         </thead>
         <tbody>
+        {pdfRecords.map((record, index) => (
+                        <tr key={index}>
+                            <td>{record.dept}</td>
+                            <td>{record.description}</td>
+                            <td>{record.status}</td>
+                            <td>{record.comment}</td>
+                            <td>
+                                {record.pdf && (
+                                    <a href={`data:application/pdf;base64,${record.pdf}`} target="_blank" rel="noreferrer">View PDF</a>
+                                )}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+                {pdfRecords.map((pdfData, index) => (
+          <div key={index}>
+            <iframe src={`data:application/pdf;base64,${pdfData}`} width="100%" height="500"></iframe>
+            {/* Alternatively, you can provide download links */}
+            <a href={`data:application/pdf;base64,${pdfData}`} download={`pdf_${index}.pdf`}>Download PDF {index}</a>
+          </div>
+        ))}
+        {/* <tbody>
           <tr>
             <td>Computer Science</td>
             <td>
@@ -169,8 +178,8 @@ const fetchData = async () => {
             <label>
         <input
           type="radio"
-          value="option1"
-          checked={selectedOption === 'option1'}
+          value="Approve"
+          checked={selectedOption === 'Approve'}
           onChange={handleOptionChange}
         />
         Approve
@@ -196,10 +205,7 @@ const fetchData = async () => {
             <br></br>
             <div>
       {CSbuttonsVisible && (
-        <button class="tablebutton" onClick={handleFirstCSButtonClick}>Save</button>
-      )}
-      {CSbuttonsVisible && (
-        <button class="tablebutton" onClick={handleSecondCSButtonClick}>Close</button>
+        <button class="tablebutton" onClick={handleSaveCSButtonClick}>Save</button>
       )}
     </div>  
             </td>
@@ -240,10 +246,7 @@ const fetchData = async () => {
             <br></br>
             <div>
       {ITbuttonsVisible && (
-        <button class="tablebutton"onClick={handleFirstITButtonClick}>Save</button>
-      )}
-      {ITbuttonsVisible && (
-        <button class="tablebutton"onClick={handleSecondITButtonClick}>Close</button>
+        <button class="tablebutton"onClick={handleSaveITButtonClick}>Save</button>
       )}
     </div>
             </td>
@@ -284,10 +287,7 @@ const fetchData = async () => {
             <br></br>
             <div>
       {AIbuttonsVisible && (
-        <button class="tablebutton"onClick={handleFirstAIButtonClick}>Save</button>
-      )}
-      {AIbuttonsVisible && (
-        <button class="tablebutton"onClick={handleSecondAIButtonClick}>Close</button>
+        <button class="tablebutton"onClick={handleSaveAIButtonClick}>Save</button>
       )}
     </div>
             </td>
@@ -328,10 +328,7 @@ const fetchData = async () => {
             <br></br>
             <div>
       {DSbuttonsVisible && (
-        <button class="tablebutton"onClick={handleFirstDSButtonClick}>Save</button>
-      )}
-      {DSbuttonsVisible && (
-        <button class="tablebutton"onClick={handleSecondDSButtonClick}>Close</button>
+        <button class="tablebutton"onClick={handleSaveDSButtonClick}>Save</button>
       )}
     </div>
             </td>
@@ -372,10 +369,7 @@ const fetchData = async () => {
             <br></br>
             <div>
       {CVbuttonsVisible && (
-        <button class="tablebutton"onClick={handleFirstCVButtonClick}>Save</button>
-      )}
-      {CVbuttonsVisible && (
-        <button class="tablebutton"onClick={handleSecondCVButtonClick}>Close</button>
+        <button class="tablebutton"onClick={handleSaveCVButtonClick}>Save</button>
       )}
     </div>
             </td>
@@ -416,22 +410,13 @@ const fetchData = async () => {
             <br></br>
             <div>
       {MEbuttonsVisible && (
-        <button class="tablebutton"onClick={handleFirstMEButtonClick}>Save</button>
-      )}
-      {MEbuttonsVisible && (
-        <button class="tablebutton"onClick={handleSecondMEButtonClick}>Close</button>
+        <button class="tablebutton"onClick={handleSaveMEButtonClick}>Save</button>
       )}
     </div>
             </td>
           </tr>
-        </tbody>
+        </tbody> */}
       </table>
-
-      
-      <button class="Edit" onClick={handleDownloadClick}>Edit</button>
-
-    
-      <button class="save" onClick={handleSaveClick}>Save</button>
     </div>
   );
 }
