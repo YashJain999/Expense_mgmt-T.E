@@ -1,0 +1,156 @@
+
+body {
+    text-align: center;
+  }
+  
+  select {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+  }
+    
+  select:focus {
+    outline: none;
+  }
+  
+  table,
+  th,
+  td {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 60%;
+    border: 2px solid black;
+    border-collapse: collapse;
+    margin-top: 20px;
+    position: relative;
+  }
+    .Dashprincipalinp{
+      input[type=text] {
+      /* width: 100%; */
+      padding: 12px 20px;
+      margin: 12px 0;
+      box-sizing: border-box;
+      border-color: black;
+      border: black;
+      text-align: center;
+      /* margin: right 6px;; */
+      }
+    }
+      .save {
+        position: relative;
+        top: 10px;
+        background-color:#000000;
+        color: #fff;
+        border:none;
+        border-radius:60px;
+        font-size: 30px;
+        text-align: center;
+        left: 360px;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-right: 2px;
+      }
+
+      
+      .Edit {
+        position: relative;
+        top: 10px;
+        background-color:#000000;
+        color: #fff;
+        border:none;
+        border-radius:60px;
+        font-size: 30px;
+        text-align: center;
+        left: 340px;
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+      .csbut{
+        color: white;
+        background-color: black;
+        border-radius:60px;
+        border: none;
+      }
+      .inbutton{
+        background-color: #000000;
+      }
+      i{
+        cursor: pointer;
+        size: 10px;
+      }
+.tablebutton {
+color: white;
+background-color: black;
+border-radius:250px;
+border: none;
+padding-left: 7px;
+padding-right: 7px;
+margin-right: 7px;
+      }
+      input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: #0f0f0d;
+  /* border:1px solid rgb(10, 9, 9);
+  width: 180px; */
+
+}
+
+input:-moz-placeholder,
+textarea:-moz-placeholder {
+  color: #e8a216;
+}
+.deptname {
+  width: 100%;
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-top: 25px;
+  padding-bottom: 25px;
+  color: black;
+  font-size: larger;
+  font-weight: bold;
+  top: 10px;
+  margin-right: 2px;
+  top: 5px;
+  width: 10%; 
+}
+.downloadfile{
+  width: 60px;
+  padding-left: 1px;
+  padding-right: 1px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  color: black;
+  top: 10px;
+  margin-right: 2px;
+  top: 5px;
+  
+  
+}
+.fas fa-download fa-2xl{
+  padding-left: 0px;
+}
+.status{
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  font-weight: 600;
+}
+.status input[type="radio"] {
+  margin-right: 2px; 
+}
+.upperedit{
+  position: relative;
+  top: 3px;
+  background-color:#000000;
+  color: #fff;
+  border:none;
+  border-radius:60px;
+  font-size: 21px;
+  text-align: center;
+  left: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-right: 2px;
+}
