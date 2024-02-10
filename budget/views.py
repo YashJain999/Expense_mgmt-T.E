@@ -1,3 +1,4 @@
+import os
 from .models import *
 from . import views
 from budget.pdf_generator import * 
@@ -26,13 +27,13 @@ from reportlab.lib.pagesizes import A2
 from django.views.decorators.csrf import csrf_exempt
 from reportlab.pdfgen import canvas
 from rest_framework import status
-import base64
-from django.http import HttpResponseServerError
 from rest_framework.response import Response
 from .models import pdf, financialyear
-from .serializers import PdfData
+from uuid import uuid4
 from django.http import HttpResponse
-from django.core.files import File
+from django.core.files.base import ContentFile
+from rest_framework.decorators import api_view
+from .models import pdf
 
 
 class LoginView(APIView):
@@ -290,6 +291,11 @@ def upload_budget(request):
         content = file.read()
         content_file = io.BytesIO(content)
         content_file.seek(0)
+        
+        # Generate a unique pdf_id
+        pdf_id = f"{uuid4().hex}"
+        print(pdf_id)
+
         try:
             budget, created = pdf.objects.update_or_create(
                 dept=branch,
@@ -298,14 +304,16 @@ def upload_budget(request):
                     'pdf': ContentFile(content_file.read(), name=file.name),
                     'description': description,
                     'status': status,
-                    'comment': comment
+                    'comment': comment,
+                    'pdf_id': pdf_id  # Assign the generated pdf_id
                 }
             )
-            return Response({"message": "PDF uploaded successfully"}, status=201)
+            return Response({"message": "PDF uploaded successfully", "pdf_id": pdf_id}, status=201)
         except IntegrityError as e:
             return Response({"message": "Failed to upload PDF: " + str(e)}, status=500)
     else:
         return Response({"message": "No file provided"}, status=400)
+
     
 @api_view(['POST'])
 def get_uploaded_docs(request):
@@ -393,8 +401,6 @@ def update_budget_details(request):
                 else:
                     print("Error occur")
 
-                
-
             return Response({'message': 'Budget details updated successfully.'}, status=status.HTTP_200_OK)
 
         except json.JSONDecodeError as e:
@@ -409,20 +415,56 @@ def update_budget_details(request):
     else:
         return Response({'error': 'Invalid request method.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.conf import settings
+import os
+
+@api_view(['GET'])
+def download_pdf(request, pdf_id):
+    try:
+        pdf_instance = get_object_or_404(pdf, pdf_id=pdf_id)
+        if pdf_instance.pdf:
+            # Remove the leading 'b' character and decode the byte string
+            pdf_path = os.path.join(settings.MEDIA_ROOT, str(pdf_instance.pdf)[2:-1])
+            with open(pdf_path, 'rb') as pdf_file:
+                response = HttpResponse(pdf_file.read(), content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="{pdf_instance.pdf_id}.pdf"'
+            return response
+        else:
+            return Response({"error": "PDF not found"}, status=404)
+    except pdf.DoesNotExist:
+        return Response({"error": "PDF not found"}, status=404)
+
+
+
 @api_view(['GET'])
 def get_all_pdf_records(request):
-    selected_year = request.data.get('selected_year')
-    year = financialyear.objects.get(Desc=selected_year).F_year
+    selected_year = request.GET.get('selectedYear', None)
 
-    # Retrieve the required data from the model
+    if not selected_year:
+        return Response({"error": "Selected year is required"}, status=400)
+
     try:
-        pdf_record = pdf.objects.get(f_year=year)
-        response = HttpResponse(pdf_record.pdf, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{pdf_record.pdf.name}"'
-        print(response)
-        return response
+        selected_financial_year = financialyear.objects.get(Desc=selected_year)
+        pdf_records = pdf.objects.filter(f_year=selected_financial_year.F_year)
+
+        # Create a list to store the modified data
+        data = []
+        for record in pdf_records:
+            pdf_data = {
+                'dept': record.dept,
+                'pdf': record.pdf,
+                'pdf_id': record.pdf_id,
+            }
+            data.append(pdf_data)
+
+        return Response(data)
+
+    except financialyear.DoesNotExist:
+        return Response({"error": "Selected financial year not found"}, status=404)
     except pdf.DoesNotExist:
-        return Response({"message": "No data found for the specified branch and year"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "No records found for the selected year"}, status=404)
 
 
 @api_view(['POST'])

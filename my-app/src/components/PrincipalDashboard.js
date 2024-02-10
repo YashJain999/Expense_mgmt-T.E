@@ -3,7 +3,6 @@ import '../assets/css/PrincipalDashboard.module.css';
 import axios from 'axios';
 
 function PrincipalDashboard({isOffcanvasOpen}) {
-  //select finantical year js hai 
   const AppStyle = {
     position:"relative",
     top:"100px",
@@ -12,7 +11,7 @@ function PrincipalDashboard({isOffcanvasOpen}) {
     transition: 'all 0.5s ease',
     zIndex: 1000,
   };
-  const [selectedYear, setSelectedYear] = useState(''); 
+  const [selectedYear, setSelectedYear] = useState('');
   const [YearDetails, setYearDetails] = useState([]);
   const [pdfRecords, setPdfRecords] = useState([]);
   //radio button js hai  
@@ -20,7 +19,6 @@ function PrincipalDashboard({isOffcanvasOpen}) {
   useEffect(() => {
     fetchData();
 }, []);
-
 const fetchData = async () => {
   try {
       const response = await axios.get('http://localhost:8000/dropdown/');
@@ -30,9 +28,6 @@ const fetchData = async () => {
   }
 };
 
-  const handleOptionChange = (e) => {
-    setSelectedOption(e.target.value);
-  };
   
 
   const handleViewDetails = async () => {
@@ -47,77 +42,79 @@ const fetchData = async () => {
       // Handle error
     }
   };
-  
-  const [comment, setCSComment] = useState('');
-  const [CSbuttonsVisible, setCSButtonsVisible] = useState(true);
+  const [departmentStates, setDepartmentStates] = useState(getInitialDepartmentStates());
+  //function to handle department and radiobutton selection
+  const handleOptionChange = (department, option) => {
+    setDepartmentStates((prevStates) => ({
+      ...prevStates,//Spread Operator in js is used to store previous value of state.More detail explanation on pdf
+      [department]: {
+        ...prevStates[department],
+        selectedOption: option,
+        hasPlaceholder: true,
+        editVisible: false,
+      },
+    }));
+  };
+  //function to handle save button in the status column
+  const handleSaveButtonClick = (department) => {
+    setDepartmentStates((prevStates) => ({
+      ...prevStates,
+      [department]: {
+        ...prevStates[department],
+        editVisible: true,
+        hasPlaceholder: false,
+      },
+    }));
+  };
+  //function to handle edit button in the status column
+  const handleEditButtonClick = (department) => {
+    setDepartmentStates((prevStates) => ({
+      ...prevStates,
+      [department]: {
+        ...prevStates[department],
+        editVisible: false,
+        hasPlaceholder: true,
+      },
+    }));
+  };
 
-  const handleSaveCSButtonClick = () => {
-    // Handle the first button click action here
-    const formData = new FormData();
-    formData.append('dept', 'CS'); // Add the constant dept value
-    formData.append('year', selectedYear);
-    formData.append('status', selectedOption);
-    formData.append('comment', comment);
-    
-  
-    axios.post('http://localhost:8000/principal_status/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+  const handleDownloadClick = () => {
+    alert('Download button clicked');
+  };
+  const handleSaveClick = () => {
+    alert('Download button clicked');
+  };
+
+  // const handleSaveClick = (department) => {
+  //   setDepartmentStates((prevStates) => ({
+  //     ...prevStates,
+  //     [department]: {
+  //       ...prevStates[department],
+  //       editVisible: true,
+  //       hasPlaceholder: false,
+  //     },
+  //   }));
+  // };
+  const handleDownloadPDF = (pdfId) => {
+    axios.get(`http://localhost:8000/download_pdf/${pdfId}/`, {
+        responseType: 'blob'  // Ensure response is treated as binary data
     })
-      .then(() => {
-        window.alert("Status update Successful for Dept: CS")
-        // Set CSButtonsVisible to false after the request is completed
-        setCSButtonsVisible(false);
-      })
-      .catch((error) => {
-        // Handle error if needed
-        console.error('Error posting data:', error);
-      });
-  };
+    .then(response => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${pdfId}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link); // Remove the link after downloading
+    })
+    .catch(error => {
+        console.error('Error downloading PDF:', error);
+    });
+};
+
   
-
-  const [AIcomment, setAIComment] = useState('');
-  const [AIbuttonsVisible, setAIButtonsVisible] = useState(true);
-
-  const handleSaveAIButtonClick = () => {
-    // Handle the first button click action here
-    setAIButtonsVisible(false);
-  };
-
-  const [ITcomment, setITComment] = useState('');
-  const [ITbuttonsVisible, setITButtonsVisible] = useState(true);
-
-  const handleSaveITButtonClick = () => {
-    // Handle the first button click action here
-    setITButtonsVisible(false);
-  };
-
-  const [DScomment, setDSComment] = useState('');
-  const [DSbuttonsVisible, setDSButtonsVisible] = useState(true);
-
-  const handleSaveDSButtonClick = () => {
-    // Handle the first button click action here
-    setDSButtonsVisible(false);
-
-  };
-
-  const [CVcomment, setCVComment] = useState('');
-  const [CVbuttonsVisible, setCVButtonsVisible] = useState(true);
-
-  const handleSaveCVButtonClick = () => {
-    // Handle the first button click action here
-    setCVButtonsVisible(false);
-  };
-
-  const [MEcomment, setMEComment] = useState('');
-  const [MEbuttonsVisible, setMEButtonsVisible] = useState(true);
-
-  const handleSaveMEButtonClick = () => {
-    // Handle the first button click action here
-    setMEButtonsVisible(false);
-  };
-
+  
 
 
   return (
@@ -134,291 +131,155 @@ const fetchData = async () => {
                     </option>
                 ))}
       </select>
-      <button class="viewDetails" onClick={handleViewDetails}>View</button>
-      <br></br>
+      <button className='viewDetails' onClick={handleViewDetails}>View</button>
       <table>
         <thead>
           <tr>
           <th>Department</th>
-                        <th>Description</th>
-                        <th>Status</th>
-                        <th>Comment</th>
-                        <th>PDF</th>
+          <th>PDF</th>
           </tr>
         </thead>
         <tbody>
         {pdfRecords.map((record, index) => (
-                        <tr key={index}>
-                            <td>{record.dept}</td>
-                            <td>{record.description}</td>
-                            <td>{record.status}</td>
-                            <td>{record.comment}</td>
-                            <td>
-                                {record.pdf && (
-                                    <a href={`data:application/pdf;base64,${record.pdf}`} target="_blank" rel="noreferrer">View PDF</a>
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-                {pdfRecords.map((pdfData, index) => (
-          <div key={index}>
-            <iframe src={`data:application/pdf;base64,${pdfData}`} width="100%" height="500"></iframe>
-            {/* Alternatively, you can provide download links */}
-            <a href={`data:application/pdf;base64,${pdfData}`} download={`pdf_${index}.pdf`}>Download PDF {index}</a>
-          </div>
-        ))}
-        {/* <tbody>
-          <tr>
-            <td>Computer Science</td>
-            <td>
-            <i class="fa-sharp fa-solid fa-download fa-2xl"></i>
-            </td>
-            <td>
-            <label>
-        <input
-          type="radio"
-          value="Approve"
-          checked={selectedOption === 'Approve'}
-          onChange={handleOptionChange}
-        />
-        Approve
-      </label>
-
-      <label>
-        <input
-          type="radio"
-          value="option2"
-          checked={selectedOption === 'option2'}
-          onChange={handleOptionChange}
-        />
-        Reject
-      </label>
-
-            <textarea
-            rows="3"
-            cols="40"
-              value={comment}
-              onChange={(e) => setCSComment(e.target.value)}
-              placeholder="Comment"
-            />
-            <br></br>
-            <div>
-      {CSbuttonsVisible && (
-        <button class="tablebutton" onClick={handleSaveCSButtonClick}>Save</button>
+  <tr key={index}>
+    <td>{record.dept}</td>
+    <td>
+      {record.pdf && (
+        <div>
+          <i className="fas fa-download fa-2xl" onClick={() => handleDownloadPDF(record.pdf_id)}></i>
+        </div>
       )}
-    </div>  
-            </td>
-          </tr>
+    </td>
+  </tr>
+))}
+
+</tbody>
+</table>
+
+      <table>
+        <colgroup>
+          {/* <col className="department-column" style={{ width: '200px' }} />
+          <col className="sample-column" style={{ width: '40px' }} />
+          <col className="status-column" style={{ width: '90px' }} /> */}
+        </colgroup>
+        <thead>
           <tr>
-            <td>Information Technology</td>
-            <td>
-            <i class="fa-sharp fa-solid fa-download fa-2xl"></i>
-            </td>
-            <td>
-            <label>
-        <input
-          type="radio"
-          value="option3"
-          checked={selectedOption === 'option3'}
-          onChange={handleOptionChange}
-        />
-        Approve
-      </label>
-
-      <label>
-        <input
-          type="radio"
-          value="option4"
-          checked={selectedOption === 'option4'}
-          onChange={handleOptionChange}
-        />
-        Reject
-      </label>
-
-            <textarea
-              rows="3"
-              cols="40"
-              value={ITcomment}
-              onChange={(e) => setITComment(e.target.value)}
-              placeholder="Comment"
-            />
-            <br></br>
-            <div>
-      {ITbuttonsVisible && (
-        <button class="tablebutton"onClick={handleSaveITButtonClick}>Save</button>
-      )}
-    </div>
-            </td>
+            <th style={{ width: '70px'}}>Department</th>
+            <th>Download</th>
+            <th >Status</th>
           </tr>
-          <tr>
-            <td>Artificial Intelligence</td>
-            <td>
-            <i class="fa-sharp fa-solid fa-download fa-2xl"></i>
-            </td>
-            <td>
-            <label>
-        <input
-          type="radio"
-          value="option5"
-          checked={selectedOption === 'option5'}
-          onChange={handleOptionChange}
-        />
-        Approve
-      </label>
+        </thead>
+        <tbody>
+          {Object.keys(departmentStates).map((department) => (//object.keys method in js which gives arrays of object given.|||.map():is a higher-order function in JavaScript that iterates over each element of an array and applies a function to each element, returning a new array with the results.
+            <tr key={department}>                             
+              <td className="deptname">{department}</td>
+              <td className='downloadfile'>
+              <i className="fas fa-download fa-2xl"></i>
+              </td>
+              <td className='status'>
+                <label>
+                  <input
+                    className="Dashprincipalinp"
+                    type="radio"
+                    value="Accept"
+                    checked={departmentStates[department].selectedOption === 'Accept'}
+                    onChange={() => handleOptionChange(department, 'Accept')}
+                  />
+                  Accept
+                </label>
 
-      <label>
-        <input
-          type="radio"
-          value="option6"
-          checked={selectedOption === 'option6'}
-          onChange={handleOptionChange}
-        />
-        Reject
-      </label>
+                <label>
+                  <input
+                    className="Dashprincipalinp"
+                    type="radio"
+                    value="Reject"
+                    checked={departmentStates[department].selectedOption === 'Reject'}
+                    onChange={() => handleOptionChange(department, 'Reject')}
+                  />
+                             Reject
+                </label>
 
-            <textarea
-              rows="3"
-              cols="40"
-              value={AIcomment}
-              onChange={(e) => setAIComment(e.target.value)}
-              placeholder="Comment"
-            />
-            <br></br>
-            <div>
-      {AIbuttonsVisible && (
-        <button class="tablebutton"onClick={handleSaveAIButtonClick}>Save</button>
-      )}
-    </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Data Science</td>
-            <td>
-            <i class="fa-sharp fa-solid fa-download fa-2xl"></i>
-            </td>
-            <td>
-            <label>
-        <input
-          type="radio"
-          value="option7"
-          checked={selectedOption === 'option7'}
-          onChange={handleOptionChange}
-        />
-        Approve
-      </label>
+                {departmentStates[department].hasPlaceholder && (
+                  <div>
+                    <textarea
+                      value={departmentStates[department].placeholderValue}
+                      onChange={(e) =>
+                        setDepartmentStates((prevStates) => ({
+                          ...prevStates,
+                          [department]: {
+                            ...prevStates[department],
+                            placeholderValue: e.target.value,
+                          },
+                        }))
+                      }
+                      placeholder="Comments"
+                      rows={3}
+                      cols={40}
+                      style={{ border: '1px solid black' }}
+                      disabled={departmentStates[department].editVisible}
+                    ></textarea>
+                    <br />
+                    <button
+                      className="tablebutton"
+                      onClick={() => handleSaveButtonClick(department)}
+                      disabled={departmentStates[department].editVisible}
+                    >
+                      Save
+                    </button>
+                  </div>
+                )}
 
-      <label>
-        <input
-          type="radio"
-          value="option8"
-          checked={selectedOption === 'option8'}
-          onChange={handleOptionChange}
-        />
-        Reject
-      </label>
-
-            <textarea
-            rows="3"
-            cols="40"
-              value={DScomment}
-              onChange={(e) => setDSComment(e.target.value)}
-              placeholder="Comment"
-            />
-            <br></br>
-            <div>
-      {DSbuttonsVisible && (
-        <button class="tablebutton"onClick={handleSaveDSButtonClick}>Save</button>
-      )}
-    </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Civil</td>
-            <td>
-            <i class="fa-sharp fa-solid fa-download fa-2xl"></i>
-            </td>
-            <td>
-            <label>
-        <input
-          type="radio"
-          value="option9"
-          checked={selectedOption === 'option9'}
-          onChange={handleOptionChange}
-        />
-        Approve
-      </label>
-
-      <label>
-        <input
-          type="radio"
-          value="option10"
-          checked={selectedOption === 'option10'}
-          onChange={handleOptionChange}
-        />
-        Reject
-      </label>
-
-            <textarea
-              rows="3"
-              cols="40"
-              value={CVcomment}
-              onChange={(e) => setCVComment(e.target.value)}
-              placeholder="Comment"
-            />
-            <br></br>
-            <div>
-      {CVbuttonsVisible && (
-        <button class="tablebutton"onClick={handleSaveCVButtonClick}>Save</button>
-      )}
-    </div>
-            </td>
-          </tr>
-          <tr>
-            <td>Mechanical</td>
-            <td>
-            <i class="fa-sharp fa-solid fa-download fa-2xl"></i>
-            </td>
-            <td>
-            <label>
-        <input
-          type="radio"
-          value="option11"
-          checked={selectedOption === 'option11'}
-          onChange={handleOptionChange}
-        />
-        Approve
-      </label>
-
-      <label>
-        <input
-          type="radio"
-          value="option12"
-          checked={selectedOption === 'option12'}
-          onChange={handleOptionChange}
-        />
-        Reject
-      </label>
-
-            <textarea
-              rows="3"
-              cols="40"
-              value={MEcomment}
-              onChange={(e) => setMEComment(e.target.value)}
-              placeholder="Comment"
-            />
-            <br></br>
-            <div>
-      {MEbuttonsVisible && (
-        <button class="tablebutton"onClick={handleSaveMEButtonClick}>Save</button>
-      )}
-    </div>
-            </td>
-          </tr>
-        </tbody> */}
+                {departmentStates[department].editVisible && (
+                  <div>
+                    <button
+                      className="tablebutton"
+                      onClick={() => handleEditButtonClick(department)}
+                    >
+                      Edit
+                    </button>
+                  </div>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
       </table>
+
+      <button className="Edit" onClick={handleDownloadClick}>
+        Edit
+      </button>
+
+      <button className="save" onClick={handleSaveClick}>
+      {/* <button className="save" onClick={() => handleSaveClick(Object.keys(departmentStates)[0])}></button> */}
+        Save
+      </button>
     </div>
   );
 }
 
 export default PrincipalDashboard;
+
+//arrays in javascript
+function getInitialDepartmentStates() {
+  const departments = [
+    'Computer Science',
+    'Information Technology',
+    'Artificial Intelligence',
+    'Data Science',
+    'Civil',
+    'Mechanical',
+  ];
+
+  const initialState = {};
+
+  departments.forEach((department) => {
+    initialState[department] = {
+      selectedOption: '',
+      hasPlaceholder: false,
+      placeholderValue: '',
+      editVisible: false,
+    };
+  });
+
+  return initialState;
+}
