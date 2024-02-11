@@ -94,3 +94,7 @@ class pdf(models.Model):
         max_length=100,
         unique=True
     )
+    pdf_name = models.CharField(
+        verbose_name= "Pdf_name",
+        max_length = 255,
+    )

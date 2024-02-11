@@ -53,7 +53,7 @@ function UploadBudget({isOffcanvasOpen}) {
           else{
           if (response2.data && Array.isArray(response2.data)) {
             const data = response2.data.map((item) => ({
-              pdf: item.pdf,
+              pdf: item.pdf_name,
               description: item.description,
               status: item.status,
               comment: item.comment

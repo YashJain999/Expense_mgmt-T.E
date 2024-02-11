@@ -1,8 +1,7 @@
-import React, { useState, useEffect} from 'react';
-import '../assets/css/PrincipalDashboard.module.css'; 
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function PrincipalDashboard({isOffcanvasOpen}) {
+function PrincipalDashboard({ isOffcanvasOpen }) {
   const AppStyle = {
     position:"relative",
     top:"100px",
@@ -14,36 +13,8 @@ function PrincipalDashboard({isOffcanvasOpen}) {
   const [selectedYear, setSelectedYear] = useState('');
   const [YearDetails, setYearDetails] = useState([]);
   const [pdfRecords, setPdfRecords] = useState([]);
-  //radio button js hai  
-  const [selectedOption, setSelectedOption] = useState('option1');
-  useEffect(() => {
-    fetchData();
-}, []);
-const fetchData = async () => {
-  try {
-      const response = await axios.get('http://localhost:8000/dropdown/');
-      setYearDetails(response.data);
-  } catch (error) {
-      console.error('Error fetching data:', error);
-  }
-};
-
-  
-
-  const handleViewDetails = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8000/get_all_pdf_records/?selectedYear=${selectedYear}`);
-      console.log('PDF records for the selected year:', response.data);
-      setPdfRecords(response.data);
-      // Handle the PDF records data as needed
-  
-    } catch (error) {
-      console.error('Error fetching PDF records:', error);
-      // Handle error
-    }
-  };
   const [departmentStates, setDepartmentStates] = useState(getInitialDepartmentStates());
-  //function to handle department and radiobutton selection
+
   const handleOptionChange = (department, option) => {
     setDepartmentStates((prevStates) => ({
       ...prevStates,//Spread Operator in js is used to store previous value of state.More detail explanation on pdf
@@ -78,43 +49,47 @@ const fetchData = async () => {
     }));
   };
 
-  const handleDownloadClick = () => {
-    alert('Download button clicked');
-  };
-  const handleSaveClick = () => {
-    alert('Download button clicked');
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/dropdown/');
+      setYearDetails(response.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   };
 
-  // const handleSaveClick = (department) => {
-  //   setDepartmentStates((prevStates) => ({
-  //     ...prevStates,
-  //     [department]: {
-  //       ...prevStates[department],
-  //       editVisible: true,
-  //       hasPlaceholder: false,
-  //     },
-  //   }));
-  // };
-  const handleDownloadPDF = (pdfId) => {
+  const handleViewDetails = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/get_all_pdf_records/?selectedYear=${selectedYear}`);
+      console.log('PDF records for the selected year:', response.data);
+      setPdfRecords(response.data);
+    } catch (error) {
+      console.error('Error fetching PDF records:', error);
+    }
+  };
+
+  const handleDownloadPDF = (pdfId,dept) => {
     axios.get(`http://localhost:8000/download_pdf/${pdfId}/`, {
-        responseType: 'blob'  // Ensure response is treated as binary data
+      responseType: 'blob'
     })
-    .then(response => {
+      .then(response => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', `${pdfId}.pdf`);
+        link.setAttribute('download', `${dept}_${pdfId}.pdf`);
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link); // Remove the link after downloading
-    })
-    .catch(error => {
+        document.body.removeChild(link);
+      })
+      .catch(error => {
         console.error('Error downloading PDF:', error);
-    });
-};
+      });
+  };
 
-  
-  
 
 
   return (
@@ -126,41 +101,57 @@ const fetchData = async () => {
         onChange={(e) => setSelectedYear(e.target.value)}
       >
         {YearDetails.map((item, index) => (
-                    <option key={index} value={item}>
-                        {item}
-                    </option>
-                ))}
+          <option key={index} value={item}>
+            {item}
+          </option>
+        ))}
       </select>
       <button className='viewDetails' onClick={handleViewDetails}>View</button>
+
       <table>
         <thead>
           <tr>
-          <th>Department</th>
-          <th>PDF</th>
+            <th>Department</th>
+            <th>Download</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
-        {pdfRecords.map((record, index) => (
-  <tr key={index}>
-    <td>{record.dept}</td>
-    <td>
-      {record.pdf && (
-        <div>
-          <i className="fas fa-download fa-2xl" onClick={() => handleDownloadPDF(record.pdf_id)}></i>
-        </div>
-      )}
-    </td>
-  </tr>
-))}
+          {pdfRecords.map((record, index) => (
+            <tr key={index}>
+              <td>{record.dept}</td>
+              <td>
+                {record.pdf && (
+                  <i className="fas fa-download fa-2xl" onClick={() => handleDownloadPDF(record.pdf_id,record.dept)}></i>
+                )}
+              </td>
+              <td>
+                <label>
+                  <input
+                    type="radio"
+                    value="Accept"
+                    checked={departmentStates[record.dept]?.selectedOption === 'Accept'}
+                    onChange={() => handleOptionChange(record.dept, 'Accept')}
+                  />
+                  Accept
+                </label>
 
-</tbody>
-</table>
-
+                <label>
+                  <input
+                    type="radio"
+                    value="Reject"
+                    checked={departmentStates[record.dept]?.selectedOption === 'Reject'}
+                    onChange={() => handleOptionChange(record.dept, 'Reject')}
+                  />
+                  Reject
+                </label>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <table>
         <colgroup>
-          {/* <col className="department-column" style={{ width: '200px' }} />
-          <col className="sample-column" style={{ width: '40px' }} />
-          <col className="status-column" style={{ width: '90px' }} /> */}
         </colgroup>
         <thead>
           <tr>
@@ -245,20 +236,11 @@ const fetchData = async () => {
         </tbody>
       </table>
 
-      <button className="Edit" onClick={handleDownloadClick}>
-        Edit
-      </button>
-
-      <button className="save" onClick={handleSaveClick}>
-      {/* <button className="save" onClick={() => handleSaveClick(Object.keys(departmentStates)[0])}></button> */}
-        Save
-      </button>
     </div>
   );
 }
 
 export default PrincipalDashboard;
-
 //arrays in javascript
 function getInitialDepartmentStates() {
   const departments = [
@@ -283,3 +265,4 @@ function getInitialDepartmentStates() {
 
   return initialState;
 }
+   

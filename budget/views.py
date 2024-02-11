@@ -1,4 +1,4 @@
-import os
+from lab import settings
 from .models import *
 from . import views
 from budget.pdf_generator import * 
@@ -9,13 +9,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from rest_framework import status
 from django.db import IntegrityError
 from django.core.files.base import ContentFile
 from django.http import Http404
 from django.db.utils import IntegrityError
-from django.http import JsonResponse
 from django.http import JsonResponse
 from django.http import FileResponse
 from django.http import HttpResponse
@@ -26,14 +24,10 @@ from reportlab.lib.pagesizes import A2
 # new imports
 from django.views.decorators.csrf import csrf_exempt
 from reportlab.pdfgen import canvas
-from rest_framework import status
-from rest_framework.response import Response
-from .models import pdf, financialyear
 from uuid import uuid4
-from django.http import HttpResponse
-from django.core.files.base import ContentFile
-from rest_framework.decorators import api_view
-from .models import pdf
+import os
+from django.shortcuts import get_object_or_404
+
 
 
 class LoginView(APIView):
@@ -294,7 +288,6 @@ def upload_budget(request):
         
         # Generate a unique pdf_id
         pdf_id = f"{uuid4().hex}"
-        print(pdf_id)
 
         try:
             budget, created = pdf.objects.update_or_create(
@@ -305,7 +298,8 @@ def upload_budget(request):
                     'description': description,
                     'status': status,
                     'comment': comment,
-                    'pdf_id': pdf_id  # Assign the generated pdf_id
+                    'pdf_id': pdf_id,  # Assign the generated pdf_id
+                    'pdf_name': file.name  # Save the PDF name
                 }
             )
             return Response({"message": "PDF uploaded successfully", "pdf_id": pdf_id}, status=201)
@@ -313,7 +307,6 @@ def upload_budget(request):
             return Response({"message": "Failed to upload PDF: " + str(e)}, status=500)
     else:
         return Response({"message": "No file provided"}, status=400)
-
     
 @api_view(['POST'])
 def get_uploaded_docs(request):
@@ -323,7 +316,7 @@ def get_uploaded_docs(request):
 
     # Retrieve the required data from the model
     try:
-        data = list(pdf.objects.filter(dept=branch, f_year=year).values('pdf', 'description', 'status', 'comment'))
+        data = list(pdf.objects.filter(dept=branch, f_year=year).values('pdf_name', 'description', 'status', 'comment'))
         
         print(data)  # Assuming you have defined a PdfSerializer for the pdf model
         return Response(data)
@@ -415,10 +408,7 @@ def update_budget_details(request):
     else:
         return Response({'error': 'Invalid request method.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-from django.conf import settings
-import os
+
 
 @api_view(['GET'])
 def download_pdf(request, pdf_id):
