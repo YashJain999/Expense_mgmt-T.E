@@ -483,7 +483,8 @@ def principal_status(request):
 
         # Update fields and save PDF instance
         pdf_instance.status = approval_status
-        # pdf_instance.comment = comment  # Uncomment this if you want to update the comment as well
+        print(pdf_instance.status)
+        # pdf_instance.comment = comment  
         pdf_instance.save()
 
         return Response({'message': 'Success'}, status=status.HTTP_201_CREATED)
