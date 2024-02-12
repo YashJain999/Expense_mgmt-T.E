@@ -15,30 +15,45 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
   const [pdfRecords, setPdfRecords] = useState([]);
   const [departmentStates, setDepartmentStates] = useState(getInitialDepartmentStates());
 
-  const handleOptionChange = (department, option) => {
-    setDepartmentStates((prevStates) => ({
-      ...prevStates,//Spread Operator in js is used to store previous value of state.More detail explanation on pdf
-      [department]: {
-        ...prevStates[department],
-        selectedOption: option,
-        hasPlaceholder: true,
-        editVisible: false,
-      },
-    }));
-  };
-  //function to handle save button in the status column
-  const handleSaveButtonClick = (department) => {
+  const handleOptionChange = async (department, option) => {
+    // Update the selectedOption and hasPlaceholder state locally
     setDepartmentStates((prevStates) => ({
       ...prevStates,
       [department]: {
         ...prevStates[department],
-        editVisible: true,
-        hasPlaceholder: false,
+        selectedOption: option,
+        hasPlaceholder: true, // Assuming the placeholder should still be shown after changing status
       },
     }));
+    
   };
-  //function to handle edit button in the status column
+  
+  const handleSaveButtonClick = async (department) => {
+    try {
+      // Send status and comment to the backend
+      await axios.post('http://localhost:8000/principal_status/', {
+        dept: department,
+        year: selectedYear,
+        status: departmentStates[department].selectedOption,
+        comment: departmentStates[department].placeholderValue // Send the comment from the state
+      });
+      // Update the editVisible and hasPlaceholder state locally
+      setDepartmentStates((prevStates) => ({
+        ...prevStates,
+        [department]: {
+          ...prevStates[department],
+          editVisible: true,
+          hasPlaceholder: false,
+        },
+      }));
+    } catch (error) {
+      console.error('Error saving status:', error);
+      // Handle error
+    }
+  };
+  
   const handleEditButtonClick = (department) => {
+    // Update the editVisible and hasPlaceholder state locally
     setDepartmentStates((prevStates) => ({
       ...prevStates,
       [department]: {
@@ -108,7 +123,7 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
       </select>
       <button className='viewDetails' onClick={handleViewDetails}>View</button>
 
-      <table>
+      {/* <table>
         <thead>
           <tr>
             <th>Department</th>
@@ -149,7 +164,7 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table> */}
       <table>
         <colgroup>
         </colgroup>

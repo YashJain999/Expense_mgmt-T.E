@@ -2,6 +2,7 @@ from django.utils import timezone
 import uuid
 from django.db import models
 
+
 class User(models.Model):
     u_email = models.CharField(max_length=50, primary_key=True)
     u_pass = models.CharField(max_length=50)
@@ -57,21 +58,32 @@ class financialyear(models.Model):
         verbose_name="Financial Year Description",
     )
 
+class Deptmaster(models.Model):
+    dept = models.CharField(
+        primary_key = True,
+        verbose_name = "dept",
+        max_length = 255,
+    )
+    desc = models.CharField(
+        verbose_name = "desc",
+        max_length = 255
+    )
+
 def generate_pdf_filename(instance, filename):
     """Generate unique filename for PDF files."""
     timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
     unique_id = uuid.uuid4().hex[:10]
     return f'pdfs/{timestamp}_{unique_id}.pdf'
 
-class pdf(models.Model):
-    dept = models.CharField(
+class Pdf(models.Model):
+    dept = models.CharField( 
         verbose_name='Department',
         max_length=50,
         default='Default Department'
     )
     f_year = models.IntegerField(
         verbose_name='Financial Year',
-        primary_key=True
+        primary_key = True,
     )
     pdf = models.FileField(
         verbose_name='PDF',
@@ -82,11 +94,9 @@ class pdf(models.Model):
         max_length=500
     )
     status = models.CharField(
-        verbose_name='Status',
         max_length=50
     )
     comment = models.CharField(
-        verbose_name='Comment',
         max_length=500
     )
     pdf_id = models.CharField(
@@ -98,3 +108,5 @@ class pdf(models.Model):
         verbose_name= "Pdf_name",
         max_length = 255,
     )
+
+

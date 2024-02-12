@@ -194,6 +194,7 @@ def update_password(request):
 
     try:
         user = User.objects.get(u_email=email)
+        print(user)
         user.u_pass = u_pass  # Update the password field
         user.save()
         return Response(status=status.HTTP_201_CREATED)
@@ -290,7 +291,7 @@ def upload_budget(request):
         pdf_id = f"{uuid4().hex}"
 
         try:
-            budget, created = pdf.objects.update_or_create(
+            budget, created = Pdf.objects.update_or_create(
                 dept=branch,
                 f_year=year,
                 defaults={
@@ -316,11 +317,11 @@ def get_uploaded_docs(request):
 
     # Retrieve the required data from the model
     try:
-        data = list(pdf.objects.filter(dept=branch, f_year=year).values('pdf_name', 'description', 'status', 'comment'))
+        data = list(Pdf.objects.filter(dept=branch, f_year=year).values('pdf_name', 'description', 'status', 'comment'))
         
         print(data)  # Assuming you have defined a PdfSerializer for the pdf model
         return Response(data)
-    except pdf.DoesNotExist:
+    except Pdf.DoesNotExist:
         return Response({"message": "No data found for the specified branch and year"}, status=status.HTTP_404_NOT_FOUND)
     
 @api_view(['POST'])
@@ -413,7 +414,7 @@ def update_budget_details(request):
 @api_view(['GET'])
 def download_pdf(request, pdf_id):
     try:
-        pdf_instance = get_object_or_404(pdf, pdf_id=pdf_id)
+        pdf_instance = get_object_or_404(Pdf, pdf_id=pdf_id)
         if pdf_instance.pdf:
             # Remove the leading 'b' character and decode the byte string
             pdf_path = os.path.join(settings.MEDIA_ROOT, str(pdf_instance.pdf)[2:-1])
@@ -423,7 +424,7 @@ def download_pdf(request, pdf_id):
             return response
         else:
             return Response({"error": "PDF not found"}, status=404)
-    except pdf.DoesNotExist:
+    except Pdf.DoesNotExist:
         return Response({"error": "PDF not found"}, status=404)
 
 
@@ -437,7 +438,7 @@ def get_all_pdf_records(request):
 
     try:
         selected_financial_year = financialyear.objects.get(Desc=selected_year)
-        pdf_records = pdf.objects.filter(f_year=selected_financial_year.F_year)
+        pdf_records = Pdf.objects.filter(f_year=selected_financial_year.F_year)
 
         # Create a list to store the modified data
         data = []
@@ -453,7 +454,7 @@ def get_all_pdf_records(request):
 
     except financialyear.DoesNotExist:
         return Response({"error": "Selected financial year not found"}, status=404)
-    except pdf.DoesNotExist:
+    except Pdf.DoesNotExist:
         return Response({"error": "No records found for the selected year"}, status=404)
 
 
@@ -461,23 +462,30 @@ def get_all_pdf_records(request):
 def principal_status(request):
     branch = request.data.get('dept')
     selectedYear = request.data.get('year')
-    status = request.data.get('status')
+    approval_status = request.data.get('status')
     comment = request.data.get('comment')
+    print(branch, selectedYear, approval_status, comment)
 
     try:
         year = financialyear.objects.get(Desc=selectedYear).F_year
     except financialyear.DoesNotExist:
-        raise NotFound(detail="Specified year not found")
+        return Response({'error': 'Specified year not found'}, status=status.HTTP_404_NOT_FOUND)
 
     try:
-        # Update pdf instance
-        pdf_instance = pdf.objects.get(dept=branch, f_year=year)
-        pdf_instance.status = status
-        pdf_instance.comment = comment
+        dept_desc = Deptmaster.objects.get(desc=branch).dept
+    except Deptmaster.DoesNotExist:
+        return Response({'error': 'Department not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        # Check if PDF instance exists for the specified department and year
+        pdf_instance, created = Pdf.objects.get_or_create(dept=dept_desc, f_year=year)
+        print(pdf_instance)
+
+        # Update fields and save PDF instance
+        pdf_instance.status = approval_status
+        # pdf_instance.comment = comment  # Uncomment this if you want to update the comment as well
         pdf_instance.save()
 
         return Response({'message': 'Success'}, status=status.HTTP_201_CREATED)
-    except pdf.DoesNotExist:
-        return Response({'message': 'PDF not found for approval'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

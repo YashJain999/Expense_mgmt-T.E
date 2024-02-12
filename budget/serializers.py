@@ -13,7 +13,7 @@ class PdfSerializer(serializers.ModelSerializer):
 
 class PdfData(serializers.ModelSerializer):
     class Meta:
-        model = pdf
+        model = Pdf
         fields = "__all__"
 
 class BudgetDataSerializer(serializers.ModelSerializer):
@@ -21,4 +21,8 @@ class BudgetDataSerializer(serializers.ModelSerializer):
         model = budget
         fields = "__all__"
 
+class deptMasterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Deptmaster
+        fields = "__all__"
 
