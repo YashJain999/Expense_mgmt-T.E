@@ -4,11 +4,10 @@ from django.db import models
 
 
 class User(models.Model):
-    u_email = models.CharField(max_length=50, primary_key=True)
+    u_email = models.EmailField(max_length=50, primary_key=True)
     u_pass = models.CharField(max_length=50)
     u_desig = models.CharField(max_length=30)
     u_dep = models.CharField(max_length=50, default='Default Department')
-
 
 class itemmaster(models.Model):
     item_desc = models.TextField(
@@ -16,9 +15,10 @@ class itemmaster(models.Model):
         verbose_name="Items",
         default = "Default Itemmaster"
     )
-    item = models.TextField(
+    item = models.CharField(
         max_length=255,
         primary_key=True,
+        default = "Default Itemmaster"
     )
     
 
@@ -108,5 +108,4 @@ class Pdf(models.Model):
         verbose_name= "Pdf_name",
         max_length = 255,
     )
-
 

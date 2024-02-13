@@ -10,14 +10,19 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
+        migrations.AddField(
             model_name='user',
             name='email',
+            field=models.CharField(max_length=50, serialize=False),
         ),
-        migrations.RemoveField(
+        
+        migrations.AddField(
             model_name='user',
             name='id',
+            field=models.CharField(max_length=50, serialize=False),
+
         ),
+        
         migrations.AddField(
             model_name='user',
             name='u_dep',
@@ -40,5 +45,13 @@ class Migration(migrations.Migration):
             name='u_pass',
             field=models.CharField(default='DEFAULT_VALUE', max_length=50),
             preserve_default=False,
+        ),
+        migrations.RemoveField(
+            model_name='user',
+            name='email',
+        ),
+        migrations.RemoveField(
+            model_name='user',
+            name='id',
         ),
     ]

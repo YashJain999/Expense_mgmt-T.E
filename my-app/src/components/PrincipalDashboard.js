@@ -31,11 +31,11 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
   const handleSaveButtonClick = async (department) => {
     try {
       // Send status and comment to the backend
-      await axios.post('http://localhost:8000/principal_status/', {
+      await axios.post("http://localhost:8000/principal_status/", {
         dept: department,
         year: selectedYear,
         status: departmentStates[department].selectedOption,
-        comment: departmentStates[department].placeholderValue // Send the comment from the state
+        comment: departmentStates[department].placeholderValue, // Send the comment from the state
       });
       // Update the editVisible and hasPlaceholder state locally
       setDepartmentStates((prevStates) => ({
@@ -47,10 +47,11 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
         },
       }));
     } catch (error) {
-      console.error('Error saving status:', error);
+      console.error("Error saving status:", error);
       // Handle error
     }
   };
+  
   
   const handleEditButtonClick = (department) => {
     // Update the editVisible and hasPlaceholder state locally
@@ -122,8 +123,8 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
         ))}
       </select>
       <button className='viewDetails' onClick={handleViewDetails}>View</button>
-
-      {/* <table>
+  
+      <table>
         <thead>
           <tr>
             <th>Department</th>
@@ -132,55 +133,13 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
           </tr>
         </thead>
         <tbody>
-          {pdfRecords.map((record, index) => (
+        {Object.keys(departmentStates).map((department, index) => (
             <tr key={index}>
-              <td>{record.dept}</td>
+              <td>{department}</td>
               <td>
-                {record.pdf && (
-                  <i className="fas fa-download fa-2xl" onClick={() => handleDownloadPDF(record.pdf_id,record.dept)}></i>
+                {pdfRecords.some((record) => record.dept === department) && (
+                  <i className="fas fa-download fa-2xl" onClick={() => handleDownloadPDF(pdfRecords.find((record) => record.dept === department)?.pdf_id, department)}></i>
                 )}
-              </td>
-              <td>
-                <label>
-                  <input
-                    type="radio"
-                    value="Accept"
-                    checked={departmentStates[record.dept]?.selectedOption === 'Accept'}
-                    onChange={() => handleOptionChange(record.dept, 'Accept')}
-                  />
-                  Accept
-                </label>
-
-                <label>
-                  <input
-                    type="radio"
-                    value="Reject"
-                    checked={departmentStates[record.dept]?.selectedOption === 'Reject'}
-                    onChange={() => handleOptionChange(record.dept, 'Reject')}
-                  />
-                  Reject
-                </label>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table> */}
-      <table>
-        <colgroup>
-        </colgroup>
-        <thead>
-          <tr>
-            <th style={{ width: '70px'}}>Department</th>
-            <th>Download</th>
-            <th >Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.keys(departmentStates).map((department) => (//object.keys method in js which gives arrays of object given.|||.map():is a higher-order function in JavaScript that iterates over each element of an array and applies a function to each element, returning a new array with the results.
-            <tr key={department}>                             
-              <td className="deptname">{department}</td>
-              <td className='downloadfile'>
-              <i className="fas fa-download fa-2xl"></i>
               </td>
               <td className='status'>
                 <label>
@@ -188,27 +147,27 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
                     className="Dashprincipalinp"
                     type="radio"
                     value="Accept"
-                    checked={departmentStates[department].selectedOption === 'Accept'}
+                    checked={departmentStates[department]?.selectedOption === 'Accept'}
                     onChange={() => handleOptionChange(department, 'Accept')}
                   />
                   Accept
                 </label>
-
+  
                 <label>
                   <input
                     className="Dashprincipalinp"
                     type="radio"
                     value="Reject"
-                    checked={departmentStates[department].selectedOption === 'Reject'}
+                    checked={departmentStates[department]?.selectedOption === 'Reject'}
                     onChange={() => handleOptionChange(department, 'Reject')}
                   />
-                             Reject
+                  Reject
                 </label>
-
-                {departmentStates[department].hasPlaceholder && (
+  
+                {departmentStates[department]?.hasPlaceholder && (
                   <div>
                     <textarea
-                      value={departmentStates[department].placeholderValue}
+                      value={departmentStates[department]?.placeholderValue}
                       onChange={(e) =>
                         setDepartmentStates((prevStates) => ({
                           ...prevStates,
@@ -222,20 +181,21 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
                       rows={3}
                       cols={40}
                       style={{ border: '1px solid black' }}
-                      disabled={departmentStates[department].editVisible}
+                      disabled={departmentStates[department]?.editVisible}
                     ></textarea>
                     <br />
                     <button
-                      className="tablebutton"
-                      onClick={() => handleSaveButtonClick(department)}
-                      disabled={departmentStates[department].editVisible}
-                    >
-                      Save
-                    </button>
+                        className="tablebutton"
+                        onClick={() => handleSaveButtonClick(department)}
+                        disabled={departmentStates[department].editVisible}
+                      >
+                        Save
+                      </button>
+
                   </div>
                 )}
-
-                {departmentStates[department].editVisible && (
+  
+                {departmentStates[department]?.editVisible && (
                   <div>
                     <button
                       className="tablebutton"
@@ -250,7 +210,6 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
           ))}
         </tbody>
       </table>
-
     </div>
   );
 }

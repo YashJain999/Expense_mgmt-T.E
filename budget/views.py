@@ -29,7 +29,6 @@ import os
 from django.shortcuts import get_object_or_404
 
 
-
 class LoginView(APIView):
     def post(self, request):
         u_email = request.data.get('username')  # Assuming 'u_email' is the username field
@@ -443,20 +442,20 @@ def get_all_pdf_records(request):
         # Create a list to store the modified data
         data = []
         for record in pdf_records:
+            dept = Deptmaster.objects.get(dept = record.dept).desc
             pdf_data = {
-                'dept': record.dept,
+                'dept' : dept,
                 'pdf': record.pdf,
                 'pdf_id': record.pdf_id,
             }
             data.append(pdf_data)
-
+            print(pdf_data)
         return Response(data)
 
     except financialyear.DoesNotExist:
         return Response({"error": "Selected financial year not found"}, status=404)
     except Pdf.DoesNotExist:
         return Response({"error": "No records found for the selected year"}, status=404)
-
 
 @api_view(['POST'])
 def principal_status(request):
@@ -484,9 +483,12 @@ def principal_status(request):
         # Update fields and save PDF instance
         pdf_instance.status = approval_status
         print(pdf_instance.status)
-        # pdf_instance.comment = comment  
+        print(pdf_instance.comment)
+        pdf_instance.comment = comment  
         pdf_instance.save()
 
         return Response({'message': 'Success'}, status=status.HTTP_201_CREATED)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
