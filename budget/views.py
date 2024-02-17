@@ -455,7 +455,6 @@ def get_all_pdf_records(request):
     except Pdf.DoesNotExist:
         return Response({"error": "No records found for the selected year"}, status=404)
     
-    
 @api_view(['POST'])
 def principal_status(request):
     branch = request.data.get('dept')
