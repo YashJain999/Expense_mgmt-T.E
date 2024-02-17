@@ -220,7 +220,7 @@ function getInitialDepartmentStates() {
   const departments = [
     'Computer Science',
     'Information Technology',
-    'Artificial Intelligence',
+    'Artificial Intelligence and Machine Learning',
     'Data Science',
     'Civil',
     'Mechanical',

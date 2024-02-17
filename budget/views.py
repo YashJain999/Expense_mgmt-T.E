@@ -278,8 +278,8 @@ def upload_budget(request):
 
     file = request.FILES.get('file')
     description = request.data.get('description')
-    status = 'reject'
-    comment = 'null'
+    status = ''
+    comment = ''
 
     if file:
         content = file.read()
@@ -427,7 +427,6 @@ def download_pdf(request, pdf_id):
         return Response({"error": "PDF not found"}, status=404)
 
 
-
 @api_view(['GET'])
 def get_all_pdf_records(request):
     selected_year = request.GET.get('selectedYear', None)
@@ -445,7 +444,6 @@ def get_all_pdf_records(request):
             dept = Deptmaster.objects.get(dept = record.dept).desc
             pdf_data = {
                 'dept' : dept,
-                'pdf': record.pdf,
                 'pdf_id': record.pdf_id,
             }
             data.append(pdf_data)
@@ -456,14 +454,14 @@ def get_all_pdf_records(request):
         return Response({"error": "Selected financial year not found"}, status=404)
     except Pdf.DoesNotExist:
         return Response({"error": "No records found for the selected year"}, status=404)
-
+    
+    
 @api_view(['POST'])
 def principal_status(request):
     branch = request.data.get('dept')
     selectedYear = request.data.get('year')
     approval_status = request.data.get('status')
     comment = request.data.get('comment')
-    print(branch, selectedYear, approval_status, comment)
 
     try:
         year = financialyear.objects.get(Desc=selectedYear).F_year
@@ -477,18 +475,13 @@ def principal_status(request):
 
     try:
         # Check if PDF instance exists for the specified department and year
-        pdf_instance, created = Pdf.objects.get_or_create(dept=dept_desc, f_year=year)
-        print(pdf_instance)
+        pdf_instance = Pdf.objects.filter(f_year=year,dept=dept_desc)
 
-        # Update fields and save PDF instance
-        pdf_instance.status = approval_status
-        print(pdf_instance.status)
-        print(pdf_instance.comment)
-        pdf_instance.comment = comment  
-        pdf_instance.save()
-
-        return Response({'message': 'Success'}, status=status.HTTP_201_CREATED)
+        if pdf_instance:
+            # Update fields using update()
+            pdf_instance.update(status=approval_status, comment=comment)
+            return Response({'message': 'Success'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'error': 'PDF instance not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-

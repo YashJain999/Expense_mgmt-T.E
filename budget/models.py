@@ -108,4 +108,3 @@ class Pdf(models.Model):
         verbose_name= "Pdf_name",
         max_length = 255,
     )
-
