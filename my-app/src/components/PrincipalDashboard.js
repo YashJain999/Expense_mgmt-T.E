@@ -165,44 +165,45 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
                 </label>
   
                 {departmentStates[department]?.hasPlaceholder && (
-  <div>
-    <textarea
-      value={departmentStates[department]?.placeholderValue}
-      onChange={(e) =>
-        setDepartmentStates((prevStates) => ({
-          ...prevStates,
-          [department]: {
-            ...prevStates[department],
-            placeholderValue: e.target.value,
-          },
-        }))
-      }
-      placeholder="Comments"
-      rows={3}
-      cols={40}
-      style={{ border: '1px solid black' }}
-      disabled={departmentStates[department]?.editVisible}
-    ></textarea>
-    <br />
-    <button
-      className="tablebutton"
-      onClick={() => handleSaveButtonClick(department)}
-      disabled={departmentStates[department].editVisible}
-    >
-      Save
-    </button>
-  </div>
-)}
+                  <div>
+                    <textarea
+                      value={departmentStates[department]?.placeholderValue}
+                      onChange={(e) =>
+                        setDepartmentStates((prevStates) => ({
+                          ...prevStates,
+                          [department]: {
+                            ...prevStates[department],
+                            placeholderValue: e.target.value,
+                          },
+                        }))
+                      }
+                      placeholder="Comments"
+                      rows={3}
+                      cols={40}
+                      style={{ border: '1px solid black' }}
+                      disabled={departmentStates[department]?.editVisible}
+                    ></textarea>
+                    <br />
+                    <button
+                        className="tablebutton"
+                        onClick={() => handleSaveButtonClick(department)}
+                        disabled={departmentStates[department].editVisible}
+                      >
+                        Save
+                      </button>
 
-{departmentStates[department]?.editVisible && (
-  <div>
-    <button
-      className="tablebutton"
-      onClick={() => handleEditButtonClick(department)}
-    >
-      Edit
-    </button>
-  </div>
+                  </div>
+                )}
+  
+                {departmentStates[department]?.editVisible && (
+                  <div>
+                    <button
+                      className="tablebutton"
+                      onClick={() => handleEditButtonClick(department)}
+                    >
+                      Edit
+                    </button>
+                  </div>
                 )}
               </td>
             </tr>
@@ -239,3 +240,4 @@ function getInitialDepartmentStates() {
   return initialState;
 }
    
+
