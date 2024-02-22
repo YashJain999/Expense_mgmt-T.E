@@ -6,6 +6,7 @@ function EnterBudget({isOffcanvasOpen}) {
     const [selectedYear, setSelectedYear] = useState('');
     const [budgetData, setBudgetData] = useState([]);
     const [fetchedData, setFetchedData] = useState([]);
+    const [isEditing, setIsEditing] = useState(false); // State to track editing status
     const AppStyle = {
       position:"relative",
       top:"100px",
@@ -40,13 +41,18 @@ function EnterBudget({isOffcanvasOpen}) {
                 let column2 = 0;
                 let column1 = 0;
                 let item_test = [];
-                response1.data.forEach((data, index) => {
-                    item_test.push(data.item);
-                    tableRows[index].cells[1].textContent = data.budgeted_amt;
-                    column1 += Number(data.budgeted_amt);
-                    tableRows[index].cells[2].textContent = data.actual_exp;
-                    column2 += Number(data.actual_exp);
-                });
+                if (response1.data.length > 0) {
+                    response1.data.forEach((data, index) => {
+                        item_test.push(data.item);
+                        tableRows[index].cells[1].textContent = data.budgeted_amt;
+                        column1 += Number(data.budgeted_amt);
+                        tableRows[index].cells[2].textContent = data.actual_exp;
+                        column2 += Number(data.actual_exp);
+                    });
+                } else {
+                    alert('no data available');
+                    handleEditClick();
+                }
                 const existingTotalRows = document.querySelectorAll('tr.total-row');
                 existingTotalRows.forEach(row => row.remove());
     
@@ -88,6 +94,7 @@ function EnterBudget({isOffcanvasOpen}) {
                 cells[j].appendChild(inputField);
             }
         }
+        setIsEditing(true); // Set editing status to true
     };
     const handleSaveClick = async () => {
         const tableRows = document.querySelectorAll('table tbody tr');
@@ -189,9 +196,7 @@ function EnterBudget({isOffcanvasOpen}) {
 
       
       <button class="Edit" onClick={handleEditClick}>Edit</button>
-
-    
-      <button class="save" onClick={handleSaveClick}>Save</button>
+      <button class="save" onClick={handleSaveClick} disabled={!isEditing}>Save</button> {/* Disable save button if not editing */}
     </div>
   );
 }

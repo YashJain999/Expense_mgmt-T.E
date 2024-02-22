@@ -12,13 +12,20 @@ function ViewBudget({isOffcanvasOpen}) {
     transition: 'all 0.5s ease',
     zIndex: 1000,
   };
-    const [selectedYear, setSelectedYear] = useState('');
-    const [budgetData, setBudgetData] = useState([]);
-      const handleDownloadClick = async () => {
-        try {
+  const [selectedYear, setSelectedYear] = useState('');
+  const [budgetData, setBudgetData] = useState([]);
+  
+  const handleDownloadClick = async () => {
+      try {
           const response = await fetch(`http://localhost:8000/generate_pdf/?selectedYear=${selectedYear}`, {
               method: 'GET',
           });
+  
+          // Check if response status is 400
+          if (response.status === 400) {
+              alert('Please select a financial year.');
+              return; // Stop execution further
+          }
   
           const blob = await response.blob();
           const url = window.URL.createObjectURL(new Blob([blob]));
@@ -33,9 +40,7 @@ function ViewBudget({isOffcanvasOpen}) {
           alert('Error in downloading');
       }
   };
-      
-      
-
+  
   useEffect(() => {
     fetchData();
   }, []);
@@ -73,14 +78,7 @@ function ViewBudget({isOffcanvasOpen}) {
       const rowData = [];
   
       const totalRows = table.querySelectorAll('tr.total');
-      let column7 = 0;
-    let column8 = 0;
-    let column6 = 0;
-    let column5 = 0;
-    let column4 = 0;
-    let column3 = 0;
-    let column2 = 0;
-    let column1 = 0;
+
     // Initialize column sums
 let columnSums = Array.from({ length: 8 }, () => 0);
 
@@ -174,15 +172,16 @@ table.appendChild(individualSumsRow);
       <table>
         <thead>
           <tr>
-            <th>Items</th>
-            <th>Budget in CFY</th>
-            <th>Actual Expenses In CFY</th>
-            <th>Budgeted in CFY m1</th>
-            <th>Actual Expenses in CFY m1</th>
-            <th>Budgeted in CFY m2</th>
-            <th>Actual Expenses in CFY m2</th>
-            <th>Budgeted in CFY m3</th>
-            <th>Actual Expenses in CFY m3</th>
+          <th>Items</th>
+<th>Budget in CFY ({parseInt(selectedYear)}-{parseInt(selectedYear) + 1})</th>
+<th>Actual Expenses In CFY ({parseInt(selectedYear)}-{parseInt(selectedYear)+1})</th>
+<th>Budgeted in CFY ({parseInt(selectedYear) - 1}-{parseInt(selectedYear)})</th>
+<th>Actual Expenses in CFY ({parseInt(selectedYear) - 1}-{parseInt(selectedYear)})</th>
+<th>Budgeted in CFY ({parseInt(selectedYear) - 2}-{parseInt(selectedYear) -1})</th>
+<th>Actual Expenses in CFY ({parseInt(selectedYear) - 2}-{parseInt(selectedYear) -1})</th>
+<th>Budgeted in CFY ({parseInt(selectedYear) - 3}-{parseInt(selectedYear) - 2})</th>
+<th>Actual Expenses in CFY ({parseInt(selectedYear) - 3}-{parseInt(selectedYear) - 2})</th>
+
           </tr>
         </thead>
         <tbody>
@@ -263,17 +262,6 @@ table.appendChild(individualSumsRow);
             <td></td>
             <td></td>
           </tr>
-          {/* <tr>
-            <td>Total</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr> */}
         </tbody>
       </table>
       <button class="Edit" onClick={handleDownloadClick}>Download</button>

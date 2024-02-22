@@ -49,6 +49,7 @@ function UploadBudget({isOffcanvasOpen}) {
         if (response2.status === 200) {
           if(response2.data.length === 0){
             alert('no data available')
+            handleUploadClick()
           }
           else{
           if (response2.data && Array.isArray(response2.data)) {
@@ -91,8 +92,19 @@ function UploadBudget({isOffcanvasOpen}) {
   };
 
   const handleSaveClick = () => {
-    const fileInput = document.getElementById('file');
-    const file = fileInput.files[0];
+    // Check if the file is selected
+  const fileInput = document.getElementById('file');
+  const file = fileInput.files[0];
+  if (!file) {
+    alert('Please select a file');
+    return;
+  }
+
+  // Check if the branch is selected
+  if (!selectedOption) {
+    alert('Please select a branch');
+    return;
+  }
   
     const formData = new FormData();
     formData.append('branch', selectedOption);

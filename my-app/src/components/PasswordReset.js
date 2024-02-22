@@ -96,6 +96,14 @@ function PasswordReset() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
+
+    // Validate new password format
+    if (!passwordRegex.test(formData.new)) {
+      alert('Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one number, and one special character (!@#$%^&*)');
+      return;
+    }
+  
     handleVerification();
     handlePasscodeVerification();
     handlePasswordUpdate();
@@ -174,8 +182,6 @@ function PasswordReset() {
             <div>
               <button type="submit">Update</button>
             </div>
-            {isPasswordUpdated && <p style={{ color: 'green' }}>{passwordUpdateMessage}</p>}
-            {!isPasswordUpdated && <p style={{ color: 'red' }}>{passwordUpdateMessage}</p>}
           </form>
         </div>
       </div>

@@ -27,7 +27,7 @@ from reportlab.pdfgen import canvas
 from uuid import uuid4
 import os
 from django.shortcuts import get_object_or_404
-
+from django.db.models import Q
 
 class LoginView(APIView):
     def post(self, request):
@@ -75,6 +75,7 @@ class EmailVerificationView(APIView):
         # For simplicity, we assume verification is successful if the email exists.
         return Response({"is_verified": True}, status=200)
 
+
 def generate_pdf_view(request):
     selected_year = request.GET.get('selectedYear', None)
 
@@ -108,10 +109,6 @@ def generate_pdf_view(request):
     college_name = 'A. P. Shah Institute of Technology'
     title = Paragraph(college_name, title_style)
     elements.append(title)
-    # Add image to the right corner
-    image_path = './images/apsit_logo.jpg'  # Update the path accordingly
-    doc.build([Paragraph(" ", title_style)])  # Add some space for the image
-    doc.drawImage(image_path, doc.width - 150, doc.height - 150, width=100, height=100)
 
     # Add blank paragraphs for spacing
     elements.extend([Paragraph(" ", title_style) for _ in range(7)])
@@ -131,16 +128,20 @@ def generate_pdf_view(request):
     f_years = [f"{year}-{year + 1}" for year in previous_years]
 
     # Create a list to hold the data for the PDF table
-    data = [['Items'] + ['Budget in CFY', 'Actual Expenses in CFY', 'Budget in CFYm1', 'Actual Expenses in CFYm1', 'Budget in CFYm2', 'Actual Expenses in CFYm2', 'Budget in CFYm3', 'Actual Expenses in CFYm3']]
+    data = [['Items'] + [f'Budget in CFY {f_year_value}', f'Actual Expenses in CFY {f_year_value}', f'Budget in CFY {f_year_value-1}', f'Actual Expenses in CFY {f_year_value-1}', f'Budget in CFY {f_year_value-2}', f'Actual Expenses in CFY {f_year_value-2}', f'Budget in CFY {f_year_value-3}', f'Actual Expenses in CFY {f_year_value-3}']]
+
 
     # Fetch and organize data for each row
     for obj in queryset_itemmaster:
         data_row = [obj.item_desc]  # Use the item_desc field directly
         for f_y in f_years:
             queryset_budget = budget.objects.filter(dept=dept_value, f_year=f_y, item=obj.item)
-            for budget_obj in queryset_budget:
+            budget_obj = queryset_budget.first()  # Retrieve the first budget object
+            if budget_obj:  # Check if budget data exists
                 data_row.append(str(budget_obj.budgeted_amt))
                 data_row.append(str(budget_obj.actual_exp))
+            else:  # If budget data is missing, append default values of 0
+                data_row.extend(['0', '0'])
 
         data.append(data_row)
 
@@ -149,17 +150,17 @@ def generate_pdf_view(request):
     data.append(total_row)
 
     # Create a table with the data
-    table = Table(data, colWidths=[120] * len(data[0]))
+    table = Table(data, colWidths=None)  # Set colWidths to None for automatic adjustment
 
-    # Define the style for the table
+# Define the style for the table
     style = TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.red),  # Color the headers
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # Set text color for headers
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Add grid lines
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 20),  # Space after each row
-        ('TOPPADDING', (0, 0), (-1, -1), 20),  # Space before each row
-        ('WORDWRAP', (1, 0), (-1, -1), True),  # Allow word wrap within the specified column width
-    ])
+    ('BACKGROUND', (0, 0), (-1, 0), colors.red),  # Color the headers
+    ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # Set text color for headers
+    ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Add grid lines
+    ('BOTTOMPADDING', (0, 0), (-1, -1), 20),  # Space after each row
+    ('TOPPADDING', (0, 0), (-1, -1), 20),  # Space before each row
+    ('WORDWRAP', (0, 0), (-1, -1), False),  # Disable word wrap
+])
 
     # Apply the style to the table
     table.setStyle(style)
@@ -227,7 +228,7 @@ def get_budget_data(request):
     # Convert the years to the required format
     previous_years = [f"{year}-{year + 1}" for year in range(desc, desc - 4, -1)]
 
-    budget_data = list(budget.objects.filter(dept='IT', f_year__in=previous_years).values('item', 'budgeted_amt', 'actual_exp'))
+    budget_data = list(budget.objects.filter(dept='IT', f_year__in=previous_years).values('f_year','item', 'budgeted_amt', 'actual_exp'))
     print(budget_data)
     return Response(budget_data)
 

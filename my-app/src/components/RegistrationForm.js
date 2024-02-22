@@ -12,6 +12,7 @@ function CreateUser() {
     u_dep: '',
   });
   const navigate = useNavigate();
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,6 +24,18 @@ function CreateUser() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
+    if (!passwordRegex.test(userData.u_pass)) {
+      alert('Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, one number, and one special character (!@#$%^&*)');
+      return;
+    }
+
+    // Email domain validation
+    if (!userData.u_email.endsWith('@apsit.edu.in')) {
+      alert('Email domain should be @apsit.edu.in');
+      return;
+    }
     try {
       const response = await axios.post('http://127.0.0.1:8000/create-user/', {
         u_email: userData.u_email,
@@ -93,30 +106,33 @@ function CreateUser() {
             <option value="Principal">Principal</option>
           </select>
         </div>
-        <div>
-        <label>Deparment:</label>
-          <select
-            name="u_dep"
-            value={userData.u_dep}
-            onChange={handleChange}
-            required
-            style={{
-              width: '100%',
-              padding: '10px',
-              marginBottom: '15px',
-              border: '1px solid #ccc',
-              borderRadius: '3px',
-            }}
-          >
-            <option ></option>
-            <option value="IT">IT</option>
-            <option value="CS">CS</option>
-            <option value="DS">DS</option>
-            <option value="AIML">AIML</option>
-            <option value="CIVIL">CIVIL</option>
-            <option value="MEC">MEC</option>
-          </select>
-        </div>
+        {/* Conditionally render the department field */}
+        {userData.u_desig !== 'Principal' && (
+          <div>
+            <label>Deparment:</label>
+            <select
+              name="u_dep"
+              value={userData.u_dep}
+              onChange={handleChange}
+              required
+              style={{
+                width: '100%',
+                padding: '10px',
+                marginBottom: '15px',
+                border: '1px solid #ccc',
+                borderRadius: '3px',
+              }}
+            >
+              <option></option>
+              <option value="IT">IT</option>
+              <option value="CS">CS</option>
+              <option value="DS">DS</option>
+              <option value="AIML">AIML</option>
+              <option value="CIVIL">CIVIL</option>
+              <option value="MEC">MEC</option>
+            </select>
+          </div>
+        )}
         <br></br>
         <div id="fg">
               <Link to="/">goto login</Link>
