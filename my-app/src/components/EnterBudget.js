@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../assets/css/EnterBudget.module.css'; 
+import '../assets/css/EnterBudget.css'; 
 import axios from 'axios';
 import {useParams } from "react-router-dom";
 
@@ -12,7 +12,7 @@ function EnterBudget({isOffcanvasOpen}) {
     const AppStyle = {
       position:"relative",
       top:"-100px",
-      left : isOffcanvasOpen ? '130px': '0%'  ,
+      left : isOffcanvasOpen ? '0px': '0%'  ,
       width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
       transition: 'all 0.5s ease',
       zIndex: 1000,
@@ -198,8 +198,8 @@ function EnterBudget({isOffcanvasOpen}) {
       </table>
 
       
-      <button class="Edit" onClick={handleEditClick}>Edit</button>
-      <button class="save" onClick={handleSaveClick} disabled={!isEditing}>Save</button> {/* Disable save button if not editing */}
+      <button class="Editenterbudget" onClick={handleEditClick}>Edit</button>
+      <button class="saveenterbudget" onClick={handleSaveClick} disabled={!isEditing}>Save</button> {/* Disable save button if not editing */}
     </div>
   );
 }

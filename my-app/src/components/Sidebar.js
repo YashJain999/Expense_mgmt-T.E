@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
-import "../assets/css/Sidebar.module.css";
+import "../assets/css/Sidebar.css";
 
 export default function Sidebar({ isOffcanvasOpen, closeOffcanvas }) {
   //style for navlink

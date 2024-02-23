@@ -7,19 +7,6 @@ html{
     text-align: center;
     background-color: white;
   }
-  .offcanvas-body .btn{
-    padding: 10px;
-    height: 100%;
-    display: inline-block;
-    width: 30%;
-    border-radius: 12px;  
-    display: flex;
-    justify-content:space-between;
-    color: #fff;
-    cursor: pointer;
-    z-index: 99;
-    justify-content: center;
-  }
   .btn i{
     font-size: 20px;
     color:white;

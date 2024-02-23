@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../assets/css/ViewBudget.module.css';
+import '../assets/css/ViewBudget.css';
 import axios from 'axios';
 import {useParams } from "react-router-dom";
 
@@ -9,8 +9,8 @@ function ViewBudget({isOffcanvasOpen}) {
   const AppStyle = {
     position:"relative",
     top:"-100px",
-    left : isOffcanvasOpen ? '130px': '0%'  ,
-    width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
+    left : isOffcanvasOpen ? '0px': '0%'  ,
+    width: isOffcanvasOpen ? 'calc(100% - 360px)': '100%'  ,
     transition: 'all 0.5s ease',
     zIndex: 1000,
   };
@@ -167,7 +167,7 @@ table.appendChild(individualSumsRow);
   ))}
 </select>
 
-<button class="viewbutton" onClick={handleYearSubmit}>View</button>
+<button class="viewbuttonviewbudget" onClick={handleYearSubmit}>View</button>
 
 
       <br></br>
@@ -266,7 +266,7 @@ table.appendChild(individualSumsRow);
           </tr>
         </tbody>
       </table>
-      <button class="Edit" onClick={handleDownloadClick}>Download</button>
+      <button class="Downloadviewbudget" onClick={handleDownloadClick}>Download</button>
     </div>
   );
 }

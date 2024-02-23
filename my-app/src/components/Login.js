@@ -44,7 +44,7 @@ function Login() {
         LAB INVENTORY & <br />
         EXPENSES MANAGER.
       </span>
-      <div className="container glass">
+      <div className="containerlog glass">
         <div className="login-container">
           <h3>Login</h3>
           <form className="login-form" onSubmit={handleLogin} >

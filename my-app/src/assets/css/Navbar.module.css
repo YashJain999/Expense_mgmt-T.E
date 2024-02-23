@@ -1,23 +1,23 @@
 /* Navbar.css */
 .navbar {
-    transition: all 0.5s ease; /*Add a smooth transition for the Navbar */
-    box-sizing: content-box;
-  } 
+  transition: all 0.5s ease; /*Add a smooth transition for the Navbar */
+  box-sizing: content-box;
+} 
 
 /* .navbar.navbar-open {
-  left: 255px;
-  width: calc(100% - 255px); /* Adjust the width to match the offcanvas width */
-  /* transition: all 0.5s ease; */
-  /* Add transition for smooth resizing */
+left: 255px;
+width: calc(100% - 255px); /* Adjust the width to match the offcanvas width */
+/* transition: all 0.5s ease; */
+/* Add transition for smooth resizing */
 
 /* 
 .navbar.navbar-closed {
-  width: 100%;
+width: 100%;
 } */
 
 @media (max-width: 425px) {
 
-  html{
-    font-size: 60%;
-  }
-  }
+html{
+  font-size: 60%;
+}
+}

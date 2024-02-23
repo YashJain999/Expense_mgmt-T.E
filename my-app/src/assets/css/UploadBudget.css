@@ -25,18 +25,23 @@ body {
   }
 
       
-      .save {
-        position: relative;
-        top: 10px;
-        background-color:#000000;
-        color: #fff;
-        border:none;
-        border-radius:60px;
-        font-size: 30px;
-        text-align: center;
-        left: 200px;
-        padding: 3px 25px;
+      .uploadbutton {
+      position: relative;
+      top: 20px;
+      background-color:#000000;
+      color: #fff;
+      border-radius:20px;
+      font-size: 30px;
+      text-align: center;
+      left: 30px;
+      width: 190px;
       }
+
+      .uploadbutton:hover{
+        background-color: white;
+        color: black;
+      }
+
       .Edit {
         position: relative;
         top: 10px;
@@ -49,6 +54,37 @@ body {
         left: 180px;
         padding: 3px 25px;
       }
+
+      .viewbuttonupload{
+      position: relative;
+      left: 20px;
+      background-color: #000000;
+      color: #fff;
+      border-radius: 5px;
+      font-size: 15px;
+      }
+
+      .viewbuttonupload:hover{
+        font-size: 16px;
+        color: black;
+        background-color: white;
+      }
+
+      .submituploadbudget{
+        position: relative;
+        left: 10px;
+        background-color: #000000;
+        color: #fff;
+        border-radius: 5px;
+        font-size: 15px;
+        }
+  
+        .submituploadbudget:hover{
+          font-size: 16px;
+          color: black;
+          background-color: white;
+        }
+
       .table{
         padding: 30px 40px;
       }
@@ -72,6 +108,4 @@ body {
         width: 50%;
         margin: 0 auto; /* Add this line to center the fieldset horizontally */
       }
- 
-      
       

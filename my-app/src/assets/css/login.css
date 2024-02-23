@@ -9,9 +9,9 @@
   overflow: hidden;
 }
 
-.container{
+.containerlog{
   position: relative;
-  left: 30%; top:30px ;
+  right: 10%; top:30px ;
   width: 430px;
   height: 450px; 
 } 

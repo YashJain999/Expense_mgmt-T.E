@@ -313,8 +313,9 @@ def post_year_desc(request):
     
 @api_view(['POST'])
 def upload_budget(request):
-    branch = request.data.get('branch')
+    username = request.data.get('username')
     selectedYear = request.data.get('selectedYear')
+    branch=User.objects.get(u_email=username).u_dep
 
     try:
         year = financialyear.objects.get(Desc=selectedYear).F_year
@@ -357,7 +358,8 @@ def upload_budget(request):
 
 @api_view(['POST'])
 def get_uploaded_docs(request):
-    branch = request.data.get('branch')
+    username = request.data.get('username')
+    branch=User.objects.get(u_email=username).u_dep
     selectedYear = request.data.get('selectedYear')
     year = financialyear.objects.get(Desc=selectedYear).F_year
 

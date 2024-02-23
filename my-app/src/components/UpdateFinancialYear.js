@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../assets/css/UpdateFinancialYear.module.css';   // name changed og name was UpdationTable.css
+import '../assets/css/UpdateFinancialYear.css';   // name changed og name was UpdationTable.css
 import axios from 'axios'; 
 
 function UpdateFinancialYear({isOffcanvasOpen}) {
