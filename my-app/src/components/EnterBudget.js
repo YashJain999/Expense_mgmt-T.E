@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import '../assets/css/EnterBudget.module.css'; 
 import axios from 'axios';
+import {useParams } from "react-router-dom";
 
 function EnterBudget({isOffcanvasOpen}) {
     const [selectedYear, setSelectedYear] = useState('');
     const [budgetData, setBudgetData] = useState([]);
     const [fetchedData, setFetchedData] = useState([]);
+    const { username } = useParams();
+    const [isEditing, setIsEditing] = useState(false); // State to track editing status
     const AppStyle = {
       position:"relative",
-      top:"100px",
+      top:"-100px",
       left : isOffcanvasOpen ? '130px': '0%'  ,
       width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
       transition: 'all 0.5s ease',
@@ -33,20 +36,25 @@ function EnterBudget({isOffcanvasOpen}) {
             const response = await axios.post('http://localhost:8000/submit_year/', { selectedYear });
             console.log('Year selection successful:', response.data);
             try {
-                const response1 = await axios.post('http://localhost:8000/get_budget_details/', { selectedYear });
+                const response1 = await axios.post('http://localhost:8000/get_budget_details/', { selectedYear ,username });
                 console.log(response1.data);
                 const tableRows = document.querySelectorAll('table tbody tr');
                 const table = document.querySelector('table');
                 let column2 = 0;
                 let column1 = 0;
                 let item_test = [];
-                response1.data.forEach((data, index) => {
-                    item_test.push(data.item);
-                    tableRows[index].cells[1].textContent = data.budgeted_amt;
-                    column1 += Number(data.budgeted_amt);
-                    tableRows[index].cells[2].textContent = data.actual_exp;
-                    column2 += Number(data.actual_exp);
-                });
+                if (response1.data.length > 0) {
+                    response1.data.forEach((data, index) => {
+                        item_test.push(data.item);
+                        tableRows[index].cells[1].textContent = data.budgeted_amt;
+                        column1 += Number(data.budgeted_amt);
+                        tableRows[index].cells[2].textContent = data.actual_exp;
+                        column2 += Number(data.actual_exp);
+                    });
+                } else {
+                    alert('no data available');
+                    handleEditClick();
+                }
                 const existingTotalRows = document.querySelectorAll('tr.total-row');
                 existingTotalRows.forEach(row => row.remove());
     
@@ -88,34 +96,41 @@ function EnterBudget({isOffcanvasOpen}) {
                 cells[j].appendChild(inputField);
             }
         }
+        setIsEditing(true); // Set editing status to true
     };
     const handleSaveClick = async () => {
         const tableRows = document.querySelectorAll('table tbody tr');
-
         const updatedData = [];
-tableRows.forEach(row => {
-    const cells = row.cells;
-    const itemName = row.cells[0].textContent;
-    if (itemName.toLowerCase() !== 'total') {
-        const budgetedInput = cells[1].querySelector('input');
-        const actualInput = cells[2].querySelector('input');
-        const rowData = {
-            item: itemName,
-            budgeted_amt: budgetedInput !== null ? budgetedInput.value : '',
-            actual_exp: actualInput !== null ? actualInput.value : ''
-        };
-        updatedData.push(rowData);
-    }
-});
-
-        // const item_test = ['LAB-CONSUME', 'LAB-EQ', 'MAINT-SPARE', 'MISC', 'RND', 'SOFT', 'T&T']
+    
+        tableRows.forEach((row, index) => {
+            const cells = row.cells;
+            const itemName = row.cells[0].textContent;
+            if (itemName.toLowerCase() !== 'total') {
+                const budgetedInput = cells[1].querySelector('input');
+                const actualInput = cells[2].querySelector('input');
+                const rowData = {
+                    item: itemName,
+                    budgeted_amt: budgetedInput !== null ? budgetedInput.value : '',
+                    actual_exp: actualInput !== null ? actualInput.value : ''
+                };
+                updatedData.push(rowData);
+            }
+        });
+    
         try {
-            const response = await axios.post('http://localhost:8000/update_budget_details/', { selectedYear ,updatedData });
+            const response = await axios.post('http://localhost:8000/update_budget_details/', {
+                selectedYear,
+                updatedData,
+                username
+            });
             console.log('Data successfully updated:', response.data);
+            window.alert("Data Updated Success")
+            handleYearSubmit();
         } catch (error) {
             console.error('Error updating data:', error);
         }
     };
+    
     return (
         <div className='container p-2 mw-5' style={AppStyle}>
             {/*dropdown component */}
@@ -155,7 +170,7 @@ tableRows.forEach(row => {
             <td></td>
           </tr>
           <tr>
-            <td>Maintenance & Spares</td>
+            <td>Maintenance and Spares</td>
             <td></td>
             <td></td>
           </tr>
@@ -165,7 +180,7 @@ tableRows.forEach(row => {
             <td></td>
           </tr>
           <tr>
-            <td>Research & Development</td>
+            <td>Research and Development</td>
             <td></td>
             <td></td>
           </tr>
@@ -175,7 +190,7 @@ tableRows.forEach(row => {
             <td></td>
           </tr>
           <tr>
-            <td>Travel and Training</td>
+            <td>Training and Travel</td>
             <td></td>
             <td></td>
           </tr>
@@ -184,9 +199,7 @@ tableRows.forEach(row => {
 
       
       <button class="Edit" onClick={handleEditClick}>Edit</button>
-
-    
-      <button class="save" onClick={handleSaveClick}>Save</button>
+      <button class="save" onClick={handleSaveClick} disabled={!isEditing}>Save</button> {/* Disable save button if not editing */}
     </div>
   );
 }

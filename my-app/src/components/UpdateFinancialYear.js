@@ -5,8 +5,8 @@ import axios from 'axios';
 function UpdateFinancialYear({isOffcanvasOpen}) {
   const AppStyle = {
     position:"relative",
-    top:"100px",
-    left : isOffcanvasOpen ? '130px': '0%'  ,
+    top:"-100px",
+    left : isOffcanvasOpen ? '10px': '0%'  ,
     width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
     transition: 'all 0.5s ease',
     zIndex: 1000,

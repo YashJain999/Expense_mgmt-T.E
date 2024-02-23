@@ -1,23 +1,46 @@
 .offcanvas {
   width: 0; /* Initially hidden */
-  transition: width 0.3s ease;
-  box-sizing: content-box;
-  overflow: hidden;
-
-}
+  /* transition: width 0.3s ease; */
+  /* box-sizing: content-box; */
+  overflow: hidden; 
+} 
 
 .list-group-flush button:hover{
-  background: darkblue
+  left: -100;
+  width:200px;
+  color: black;
+  background: white;
 }
 
-.menu-scrollable {
+/* .list-group-item i{
+  position:absolute;
+  left: 5px;
+  top: 21px;
+  color: white;
+} */
+
+/* .list-group-flush i:hover{
+  color: black;
+  background: white;
+} */
+
+.offcanvas-body .btn{
+  /* width:100%; */
+}
+
+/* .menu-scrollable {
   max-height: 0px; /* Set the desired fixed height */
-  overflow-y: auto; /* Enable vertical scrolling when content overflows */
-}
+  /* overflow-y: auto; Enable vertical scrolling when content overflows */
+/* } */
 
-.offcanvas.close ~ .navbar{
+/* .offcanvas.close ~ .navbar{
   left: 0;
   width: 100%;  
+} */
+
+.active{
+  color: black;
+  background-color: white;
 }
 
 @media (max-width: 425px) {
