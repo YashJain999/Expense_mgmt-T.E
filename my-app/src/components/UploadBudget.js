@@ -429,8 +429,9 @@ function UploadBudget({isOffcanvasOpen}) {
           <br />
           Upload Your File Here : <input type="file" name="file" id="file" />
           <br />
-          Description : 
+          Description :
     <input 
+      className="des-budget"
       type='text' 
       name='description' 
       id='description' 

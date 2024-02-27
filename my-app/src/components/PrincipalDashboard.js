@@ -127,8 +127,8 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
       <table>
         <thead>
           <tr>
-            <th>Department</th>
-            <th>Download</th>
+            <th style={{width : "100px"}}>Department</th>
+            <th >Download</th>
             <th>Status</th>
           </tr>
         </thead>
