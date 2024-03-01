@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import "../assets/css/Navbar.module.css"; 
+import "../assets/css/Navbar.css"; 
 import {useParams } from "react-router-dom";
 // import { NavLink} from "react-router-dom";
 

@@ -182,7 +182,8 @@ def generate_pdf_view(request):
         fontSize=14,
         fontName='Helvetica-Bold',
     )
-    footer_text = 'Department of Information Technology'
+    department = Deptmaster.objects.get(dept=dept_value).desc
+    footer_text = f'Department of {department}'
     footer = Paragraph(footer_text, footer_style)
     elements.append(footer)
 
