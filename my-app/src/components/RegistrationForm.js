@@ -16,11 +16,21 @@ function CreateUser() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUserData({
-      ...userData,
-      [name]: value,
-    });
-  };
+
+    // If the changed field is "u_desig" and the new value is not "Principal", set "u_dep" to an empty string
+    if (name === "u_desig" && value !== "Principal") {
+        setUserData({
+            ...userData,
+            [name]: value,
+            u_dep: "", // Set u_dep to an empty string
+        });
+    } else {
+        setUserData({
+            ...userData,
+            [name]: value,
+        });
+    }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -129,13 +139,13 @@ function CreateUser() {
               <option value="DS">DS</option>
               <option value="AIML">AIML</option>
               <option value="CIVIL">CIVIL</option>
-              <option value="MEC">MEC</option>
+              <option value="MECH">MECH</option>
             </select>
           </div>
         )}
         <br></br>
         <div id="fg">
-              <Link to="/">goto login</Link>
+              <Link to="/">Login</Link>
         </div>
         <div>
           <button type="submit">Register</button>

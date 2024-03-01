@@ -16,10 +16,17 @@ function Login() {
           username: username,
           password: password,
         });
+        const responsedata=response.data;
+        console.log(responsedata)
   
         if (response.status === 200) {
           window.alert('Login successful');
-          navigate(`/home/${username}`);
+          if (responsedata['u_desig'] === 'HOD'){
+            navigate(`/home/${username}/${responsedata['u_dep']}`);
+          }
+          else if (responsedata['u_desig'] === 'Principal'){
+            navigate(`/principal`);
+          }
         } 
         else if (response.status === 401) {
           window.alert('Invalid credentials');
@@ -37,35 +44,28 @@ function Login() {
         LAB INVENTORY & <br />
         EXPENSES MANAGER.
       </span>
-      <div className="container glass">
+      <div className="containerlog glass">
         <div className="login-container">
           <h3>Login</h3>
           <form className="login-form" onSubmit={handleLogin} >
             <div className="input-box">
-              <span className="icon">
-                <i className="fa-solid fa-user"></i>
-              </span>
-              <input type="text" name="username" placeholder="Email" id="Username" value={username} onChange={(e) => setUsername(e.target.value)} required/>
+              <input type="username" name="username" placeholder="Email" id="Username" value={username} onChange={(e) => setUsername(e.target.value)} required/>
               <br />
               <br />
             </div>
             <div className="input-box">
-              <span className="icon">
-                <i className="fa-solid fa-lock"></i>
-              </span>
               <input type="password" name="password" placeholder="Password" id="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
               <br />
               <br />
               <br />
               <br />
             </div>
-            {/* <Link to="/home">home</Link> */}
             <button type="submit" >Submit</button>
             <br />
             <br />
-            <div id="fg">
-              <Link to="/register" >Register Now!</Link>
-              <Link to="/password-reset" style={{ marginLeft: '80px'}}>Forgot Password?</Link>
+            <div id="opt">
+              <Link to="/register" style={{ marginRight: '120px' }}>Register Now!</Link>
+              <Link to="/password-reset">Forgot Password?</Link>
             </div>
           </form>
         </div>

@@ -16,14 +16,13 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from budget.views import *
 from budget.models import *
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-
     path('admin/', admin.site.urls),
     path('login/',LoginView.as_view(), name='login'),
     path('create-user/', CreateUserView.as_view(), name='create-user'),
@@ -41,10 +40,9 @@ urlpatterns = [
     path('get_uploaded_docs/',views.get_uploaded_docs,name='anything'),
     path('get_budget_details/', views.get_budget_details, name='anything'),
     path('update_budget_details/',views.update_budget_details,name='anything'),
-     path('get_all_pdf_records/', views.get_all_pdf_records, name='get_all_pdf_records'),
+    path('get_all_pdf_records/', views.get_all_pdf_records, name='get_all_pdf_records'),
     path('download_pdf/<pdf_id>/', views.download_pdf, name='download_pdf'),
     path('principal_status/', views.principal_status,name='anything')
 ]
-
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

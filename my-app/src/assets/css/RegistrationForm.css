@@ -1,103 +1,103 @@
 .registration-container {
-    background-image: url(../images/login.png);
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    justify-content: right;
-    align-items: center;
-    height: 100vh; /* You can adjust this for desired height */
-  }
-  .registration-container h1{
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    font-style: italic;
-    font-size: 35px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight:700;
-    background:linear-gradient(to bottom,white,#9292df);
-    -webkit-text-fill-color: transparent;
-    -webkit-background-clip: text;
-    /* color: white; */
-    text-decoration: solid;
-    padding: 10px ;
-  }
-  .registration-form {
-    position: relative;
-    right: 60px;
-    background-color: rgba(245, 235, 235, 0.8); /* Semi-transparent white background */
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    max-width: 300px;
-    width: 100%;
-    background: linear-gradient(135deg, rgba(43, 169, 34, 0), rgba(255, 255, 255, 0.1));
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 25px;
-    border:1px solid rgba(239, 225, 225, 0.98);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  }
-    
-  .registration-form h2 {
-    text-align: center;
-    margin-bottom: 5px;
-    color: #ccc;
-  }
-    
-  .registration-form label {
-    display: block;
-    margin-bottom: 5px;
-    color: rgb(160, 204, 241);
-  }
-    
-  .registration-form input[type="text"],
-  .registration-form input[type="email"],
-  .registration-form input[type="password"] {
-    width: 90%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    /* color: transparent; */
-  }
-    
-  .registration-form button[type="submit"] {
-    background-color: #007bff;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 16px;
-    width: 100%;
-  }
-    
-  .registration-form button[type="submit"]:hover {
-    background-color: #0056b3;
-  }
-  #logo-desc{
-    position: absolute; top: 350px; left: 150px;
-    color: white;
-    font-family:Arial, Helvetica, sans-serif;
-    font-weight:550;
-    font-size: 50px;
-    font-style: italic;
-  } 
+  background-image: url(../images/login.png);
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  height: 100vh; /* You can adjust this for desired height */
+}
+.registration-container h1{
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  font-style: italic;
+  font-size: 35px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight:700;
+  background:linear-gradient(to bottom,white,#9292df);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  /* color: white; */
+  text-decoration: solid;
+  padding: 10px ;
+}
+.registration-form {
+  position: relative;
+  right: 60px;
+  background-color: rgba(245, 235, 235, 0.8); /* Semi-transparent white background */
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  width: 100%;
+  background: linear-gradient(135deg, rgba(43, 169, 34, 0), rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 25px;
+  border:1px solid rgba(239, 225, 225, 0.98);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
   
-  /* Optional: Add media queries for responsive design */
-  @media (max-width: 600px) {
-    .registration-container {
-      height: auto;
-    }
-  }
-  #fg a{
-    position: relative; bottom: 0px ;left: 0px; top: -10px;
-    color: white;
-    text-decoration-line: none;
-  }
+.registration-form h2 {
+  text-align: center;
+  margin-bottom: 5px;
+  color: #ccc;
+}
   
-  #fg a:hover{
-    color: black;
+.registration-form label {
+  display: block;
+  margin-bottom: 5px;
+  color: rgb(160, 204, 241);
+}
+  
+.registration-form input[type="text"],
+.registration-form input[type="email"],
+.registration-form input[type="password"] {
+  width: 90%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  /* color: transparent; */
+}
+  
+.registration-form button[type="submit"] {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 100%;
+}
+  
+.registration-form button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+#logo-desc{
+  position: absolute; top: 350px; left: 150px;
+  color: white;
+  font-family:Arial, Helvetica, sans-serif;
+  font-weight:550;
+  font-size: 50px;
+  font-style: italic;
+} 
+
+/* Optional: Add media queries for responsive design */
+@media (max-width: 600px) {
+  .registration-container {
+    height: auto;
   }
-    
+}
+#fg a{
+  position: relative; bottom: 0px ;left: 0px; top: -10px;
+  color: white;
+  text-decoration-line: none;
+}
+
+#fg a:hover{
+  color: black;
+}
+  

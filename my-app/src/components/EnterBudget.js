@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import '../assets/css/EnterBudget.module.css'; 
+import '../assets/css/EnterBudget.css'; 
 import axios from 'axios';
+import {useParams } from "react-router-dom";
 
 function EnterBudget({isOffcanvasOpen}) {
     const [selectedYear, setSelectedYear] = useState('');
     const [budgetData, setBudgetData] = useState([]);
     const [fetchedData, setFetchedData] = useState([]);
+    const { username } = useParams();
     const [isEditing, setIsEditing] = useState(false); // State to track editing status
     const AppStyle = {
       position:"relative",
-      top:"100px",
-      left : isOffcanvasOpen ? '130px': '0%'  ,
+      top:"-100px",
+      left : isOffcanvasOpen ? '0px': '0%'  ,
       width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
       transition: 'all 0.5s ease',
       zIndex: 1000,
@@ -34,7 +36,7 @@ function EnterBudget({isOffcanvasOpen}) {
             const response = await axios.post('http://localhost:8000/submit_year/', { selectedYear });
             console.log('Year selection successful:', response.data);
             try {
-                const response1 = await axios.post('http://localhost:8000/get_budget_details/', { selectedYear });
+                const response1 = await axios.post('http://localhost:8000/get_budget_details/', { selectedYear ,username });
                 console.log(response1.data);
                 const tableRows = document.querySelectorAll('table tbody tr');
                 const table = document.querySelector('table');
@@ -118,7 +120,8 @@ function EnterBudget({isOffcanvasOpen}) {
         try {
             const response = await axios.post('http://localhost:8000/update_budget_details/', {
                 selectedYear,
-                updatedData
+                updatedData,
+                username
             });
             console.log('Data successfully updated:', response.data);
             window.alert("Data Updated Success")
@@ -195,8 +198,8 @@ function EnterBudget({isOffcanvasOpen}) {
       </table>
 
       
-      <button class="Edit" onClick={handleEditClick}>Edit</button>
-      <button class="save" onClick={handleSaveClick} disabled={!isEditing}>Save</button> {/* Disable save button if not editing */}
+      <button class="Editenterbudget" onClick={handleEditClick}>Edit</button>
+      <button class="saveenterbudget" onClick={handleSaveClick} disabled={!isEditing}>Save</button> {/* Disable save button if not editing */}
     </div>
   );
 }

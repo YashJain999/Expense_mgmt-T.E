@@ -19,7 +19,7 @@ td {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-  width: 60%;
+  /* width: 60%; */
   border: 2px solid black;
   border-collapse: collapse;
   margin-top: 20px;
@@ -37,35 +37,6 @@ td {
     /* margin: right 6px;; */
     }
   }
-    .save {
-      position: relative;
-      top: 10px;
-      background-color:#000000;
-      color: #fff;
-      border:none;
-      border-radius:60px;
-      font-size: 30px;
-      text-align: center;
-      left: 360px;
-      padding-left: 10px;
-      padding-right: 10px;
-      margin-right: 2px;
-    }
-
-    
-    .Edit {
-      position: relative;
-      top: 10px;
-      background-color:#000000;
-      color: #fff;
-      border:none;
-      border-radius:60px;
-      font-size: 30px;
-      text-align: center;
-      left: 340px;
-      padding-left: 15px;
-      padding-right: 15px;
-    }
     .csbut{
       color: white;
       background-color: black;
@@ -140,7 +111,7 @@ font-weight: 600;
 .status input[type="radio"] {
 margin-right: 2px; 
 }
-.upperedit{
+.viewDetails{
 position: relative;
 top: 3px;
 background-color:#000000;

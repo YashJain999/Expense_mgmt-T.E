@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import '../assets/css/UploadBudget.module.css';
+import '../assets/css/UploadBudget.css';
 import axios from 'axios';
+import {useParams } from "react-router-dom";
+
 
 function UploadBudget({isOffcanvasOpen}) {
   const [selectedYear, setSelectedYear] = useState('');
@@ -10,10 +12,12 @@ function UploadBudget({isOffcanvasOpen}) {
   const [descValue, setDescValue] = useState('');
   const [selectedOption, setSelectedOption] = useState('');
   const [fetchedData, setFetchedData] = useState([]);
+  const { username } = useParams();
+
   const AppStyle = {
     position:"relative",
-    top:"100px",
-    left : isOffcanvasOpen ? '130px': '0%'  ,
+    top:"-100px",
+    left : isOffcanvasOpen ? '0px': '0%'  ,
     width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
     transition: 'all 0.5s ease',
     zIndex: 1000,
@@ -39,7 +43,7 @@ function UploadBudget({isOffcanvasOpen}) {
       // Handle successful submission
       try {
         const Data = new FormData();
-        Data.append('branch', 'IT');
+        Data.append('username', username);
         Data.append('selectedYear', selectedYear);
         const response2 = await axios.post('http://localhost:8000/get_uploaded_docs/', Data, {
           headers: {
@@ -100,14 +104,9 @@ function UploadBudget({isOffcanvasOpen}) {
     return;
   }
 
-  // Check if the branch is selected
-  if (!selectedOption) {
-    alert('Please select a branch');
-    return;
-  }
   
     const formData = new FormData();
-    formData.append('branch', selectedOption);
+    formData.append('username', username);
     formData.append('selectedYear', selectedYear);
     formData.append('file', file);
     formData.append('description', descValue);
@@ -149,7 +148,7 @@ function UploadBudget({isOffcanvasOpen}) {
           </option>
         ))}
       </select>
-      <button className="viewbutton" onClick={handleYearSubmit}>
+      <button className="viewbuttonupload" onClick={handleYearSubmit}>
         View
       </button>
       <br></br>
@@ -174,67 +173,18 @@ function UploadBudget({isOffcanvasOpen}) {
 </tbody>
       </table>
 
-      <button className="save" onClick={handleUploadClick}>
+      <button className="uploadbutton" onClick={handleUploadClick}>
         Upload
       </button>
 <br></br><br></br><br></br>
       {showInputs && (
         <fieldset>
-          <div>
-            Select Your Branch   <input
-              type="radio"
-              name="branch"
-              value="AIML"
-              checked={selectedOption === "AIML"}
-              onChange={() => setSelectedOption("AIML")}
-            />
-            <label htmlFor="AIML">AIML</label>
-            <input
-              type="radio"
-              name="branch"
-              value="CIVIL"
-              checked={selectedOption === "CIVIL"}
-              onChange={() => setSelectedOption("CIVIL")}
-            />
-            <label htmlFor="CIVIL">CIVIL</label>
-            <input
-              type="radio"
-              name="branch"
-              value="CS"
-              checked={selectedOption === "CS"}
-              onChange={() => setSelectedOption("CS")}
-            />
-            <label htmlFor="CS">CS</label>
-            <input
-              type="radio"
-              name="branch"
-              value="DS"
-              checked={selectedOption === "DS"}
-              onChange={() => setSelectedOption("DS")}
-            />
-            <label htmlFor="DS">DS</label>
-            <input
-              type="radio"
-              name="branch"
-              value="IT"
-              checked={selectedOption === "IT"}
-              onChange={() => setSelectedOption("IT")}
-            />
-            <label htmlFor="IT">IT</label>
-            <input
-              type="radio"
-              name="branch"
-              value="MECH"
-              checked={selectedOption === "MECH"}
-              onChange={() => setSelectedOption("MECH")}
-            />
-            <label htmlFor="MECH">MECH</label>
-          </div>
           <br />
           Upload Your File Here : <input type="file" name="file" id="file" />
           <br />
-          Description : 
+          Description :
     <input 
+      className="des-budget"
       type='text' 
       name='description' 
       id='description' 
@@ -242,7 +192,7 @@ function UploadBudget({isOffcanvasOpen}) {
       value={descValue}
       onChange={(e) => setDescValue(e.target.value)}
     />
-          <button className="save" onClick={handleSaveClick}>
+          <button className="submituploadbudget" onClick={handleSaveClick}>
             Submit
           </button>
         </fieldset>

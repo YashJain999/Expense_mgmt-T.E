@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import '../assets/css/PrincipalDashboard.css'; 
 function PrincipalDashboard({ isOffcanvasOpen }) {
   const AppStyle = {
     position:"relative",
-    top:"100px",
+    top:"0px",
     left : isOffcanvasOpen ? '130px': '0%'  ,
     width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
     transition: 'all 0.5s ease',
@@ -127,16 +127,16 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
       <table>
         <thead>
           <tr>
-            <th>Department</th>
-            <th>Download</th>
+            <th style={{width : "100px"}}>Department</th>
+            <th >Download</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody>
         {Object.keys(departmentStates).map((department, index) => (
             <tr key={index}>
-              <td>{department}</td>
-              <td>
+              <td className='deptname'>{department}</td>
+              <td className='downloadfile'>
                 {pdfRecords.some((record) => record.dept === department) && (
                   <i className="fas fa-download fa-2xl" onClick={() => handleDownloadPDF(pdfRecords.find((record) => record.dept === department)?.pdf_id, department)}></i>
                 )}
@@ -239,5 +239,3 @@ function getInitialDepartmentStates() {
 
   return initialState;
 }
-   
-

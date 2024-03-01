@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import '../assets/css/UpdateFinancialYear.module.css';   // name changed og name was UpdationTable.css
+import '../assets/css/UpdateFinancialYear.css';   // name changed og name was UpdationTable.css
 import axios from 'axios'; 
 
 function UpdateFinancialYear({isOffcanvasOpen}) {
   const AppStyle = {
     position:"relative",
-    top:"100px",
-    left : isOffcanvasOpen ? '130px': '0%'  ,
+    top:"-100px",
+    left : isOffcanvasOpen ? '10px': '0%'  ,
     width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
     transition: 'all 0.5s ease',
     zIndex: 1000,
