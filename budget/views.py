@@ -239,28 +239,28 @@ def get_budget_data(request):
     print(budget_data)
     return Response(budget_data)
 
-@api_view(['POST'])
-def show_enter_data(request):
-    selected_year = request.data.get('selectedYear')
-    financial_year = financialyear.objects.get(Desc=selected_year)
-    desc = financial_year.F_year
-    enter_data = list(budget.objects.filter(dept='IT',f_year__in=desc).values('budgeted_amt','actual_exp'))
-    print(enter_data)
-    return Response(enter_data)
+# @api_view(['POST'])
+# def show_enter_data(request):
+#     selected_year = request.data.get('selectedYear')
+#     financial_year = financialyear.objects.get(Desc=selected_year)
+#     desc = financial_year.F_year
+#     enter_data = list(budget.objects.filter(dept='IT',f_year__in=desc).values('budgeted_amt','actual_exp'))
+#     print(enter_data)
+#     return Response(enter_data)
 
 
-class ExpenseList(APIView):
-    def get(self, request):
-        financial_year = request.GET.get('financial_year')
-        if financial_year:
+# class Ex1penseList(APIView):
+#     def get(self, request):
+#         financial_year = request.GET.get('financial_year')
+#         if financial_year:
 
-            expenses = budget.objects.all()  # Query your MySQL database for expenses
-            # Assuming 'Expense' model has fields: 'item', 'budget', and 'actual_expenses'
-            data = [{'item': budget.item, 'budget': budget.budgeted_amt, 'actual_expenses': budget.actual_exp} for budget in expenses]
+#             expenses = budget.objects.all()  # Query your MySQL database for expenses
+#             # Assuming 'Expense' model has fields: 'item', 'budget', and 'actual_expenses'
+#             data = [{'item': budget.item, 'budget': budget.budgeted_amt, 'actual_expenses': budget.actual_exp} for budget in expenses]
 
-            return Response(data)
-        else:
-            return JsonResponse({'error': 'Financial year not provided'}, status=400)
+#             return Response(data)
+#         else:
+#             return JsonResponse({'error': 'Financial year not provided'}, status=400)
     
 @api_view(['POST'])
 def post_year_desc(request):
@@ -501,6 +501,7 @@ def get_all_pdf_records(request):
                 'dept' : dept,
                 'pdf_id': record.pdf_id,
                 'comment': record.comment, 
+                'status' :record.status,
             }
             data.append(pdf_data)
             print(pdf_data)

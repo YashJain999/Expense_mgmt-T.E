@@ -16,17 +16,38 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
   const [departmentStates, setDepartmentStates] = useState(getInitialDepartmentStates());
 
   const handleOptionChange = async (department, option) => {
-    // Update the selectedOption and hasPlaceholder state locally
     setDepartmentStates((prevStates) => ({
       ...prevStates,
       [department]: {
         ...prevStates[department],
         selectedOption: option,
-        hasPlaceholder: true, // Assuming the placeholder should still be shown after changing status
       },
     }));
-    
   };
+
+  const handleEditButtonClick = (department) => {
+    setDepartmentStates((prevStates) => ({
+      ...prevStates,
+      [department]: {
+        ...prevStates[department],
+         editVisible: !prevStates[department].editVisible,
+        // editVisible: false,
+        hasPlaceholder: true, // Toggle editVisible state
+      },
+    }));
+  };
+
+  const handleCommentChange = (department, value) => {
+    // Update the placeholderValue state for the comment box
+    setDepartmentStates((prevStates) => ({
+      ...prevStates,
+      [department]: {
+        ...prevStates[department],
+        placeholderValue: value,
+      },
+    }));
+  };
+  
   
   const handleSaveButtonClick = async (department) => {
     try {
@@ -37,12 +58,11 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
         status: departmentStates[department].selectedOption,
         comment: departmentStates[department].placeholderValue, // Send the comment from the state
       });
-      // Update the editVisible and hasPlaceholder state locally
       setDepartmentStates((prevStates) => ({
         ...prevStates,
         [department]: {
           ...prevStates[department],
-          editVisible: true,
+          editVisible: false,
           hasPlaceholder: false,
         },
       }));
@@ -52,19 +72,6 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
     }
   };
   
-  
-  const handleEditButtonClick = (department) => {
-    // Update the editVisible and hasPlaceholder state locally
-    setDepartmentStates((prevStates) => ({
-      ...prevStates,
-      [department]: {
-        ...prevStates[department],
-        editVisible: false,
-        hasPlaceholder: true,
-      },
-    }));
-  };
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -81,8 +88,17 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
   const handleViewDetails = async () => {
     try {
       const response = await axios.get(`http://localhost:8000/get_all_pdf_records/?selectedYear=${selectedYear}`);
-      console.log('PDF records for the selected year:', response.data);
       setPdfRecords(response.data);
+      const updatedDepartmentStates = { ...departmentStates };
+      response.data.forEach((record) => {
+        updatedDepartmentStates[record.dept] = {
+          ...updatedDepartmentStates[record.dept],
+          selectedOption: record.status, // Set selectedOption based on backend data
+          hasPlaceholder: true,
+          placeholderValue: record.comment || '', // Set comment value if available
+        };
+      });
+      setDepartmentStates(updatedDepartmentStates);
     } catch (error) {
       console.error('Error fetching PDF records:', error);
     }
@@ -105,8 +121,6 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
         console.error('Error downloading PDF:', error);
       });
   };
-
-
 
   return (
     <div className='container p-2 mw-5' style={AppStyle}>
@@ -142,70 +156,51 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
                 )}
               </td>
               <td className='status'>
-                <label>
-                  <input
-                    className="Dashprincipalinp"
-                    type="radio"
-                    value="Accept"
-                    checked={departmentStates[department]?.selectedOption === 'Accept'}
-                    onChange={() => handleOptionChange(department, 'Accept')}
-                  />
-                  Accept
-                </label>
+              <label>
+                <input
+                  className="Dashprincipalinp"
+                  type="radio"
+                  name={department}
+                  value='Accept'
+                  checked={departmentStates[department]?.selectedOption === 'Accept'}
+                  onChange={() => handleOptionChange(department, 'Accept')}
+                />
+                Accept
+              </label>
+              <label>
+                <input
+                  className="Dashprincipalinp"
+                  type="radio"
+                  name={department}
+                  value='Reject'
+                  checked={departmentStates[department]?.selectedOption === 'Reject'}
+                  onChange={() => handleOptionChange(department, 'Reject')}
+                />
+                Reject
+              </label>
   
-                <label>
-                  <input
-                    className="Dashprincipalinp"
-                    type="radio"
-                    value="Reject"
-                    checked={departmentStates[department]?.selectedOption === 'Reject'}
-                    onChange={() => handleOptionChange(department, 'Reject')}
-                  />
-                  Reject
-                </label>
-  
-                {departmentStates[department]?.hasPlaceholder && (
-                  <div>
-                    <textarea
-                      value={departmentStates[department]?.placeholderValue}
-                      onChange={(e) =>
-                        setDepartmentStates((prevStates) => ({
-                          ...prevStates,
-                          [department]: {
-                            ...prevStates[department],
-                            placeholderValue: e.target.value,
-                          },
-                        }))
-                      }
-                      placeholder="Comments"
-                      rows={3}
-                      cols={40}
-                      style={{ border: '1px solid black' }}
-                      disabled={departmentStates[department]?.editVisible}
-                    ></textarea>
-                    <br />
-                    <button
-                        className="tablebutton"
-                        onClick={() => handleSaveButtonClick(department)}
-                        disabled={departmentStates[department].editVisible}
-                      >
-                        Save
-                      </button>
-
-                  </div>
+              {departmentStates[department]?.hasPlaceholder && departmentStates[department]?.editVisible && (
+  <div>
+    <textarea value={departmentStates[department]?.placeholderValue}
+                    onChange={(e) => handleCommentChange(department, e.target.value)}
+                    placeholder="Comments"
+                    rows={3}
+                    cols={40}
+                    style={{ border: '1px solid black' }}
+                  ></textarea>
+    <br />
+    <button className="tablebutton" onClick={() => handleSaveButtonClick(department)}>
+                    Save
+                  </button>
+                </div>
+              )}
+              {/* Render Edit button */}
+              {!departmentStates[department]?.editVisible && (
+                <button className="tablebutton" onClick={() => handleEditButtonClick(department)}>
+                  Edit
+                </button>
                 )}
-  
-                {departmentStates[department]?.editVisible && (
-                  <div>
-                    <button
-                      className="tablebutton"
-                      onClick={() => handleEditButtonClick(department)}
-                    >
-                      Edit
-                    </button>
-                  </div>
-                )}
-              </td>
+                </td>
             </tr>
           ))}
         </tbody>
@@ -231,6 +226,7 @@ function getInitialDepartmentStates() {
   departments.forEach((department) => {
     initialState[department] = {
       selectedOption: '',
+      currentOption: '',
       hasPlaceholder: false,
       placeholderValue: '',
       editVisible: false,
