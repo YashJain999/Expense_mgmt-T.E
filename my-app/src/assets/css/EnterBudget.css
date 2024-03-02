@@ -1,0 +1,74 @@
+body {
+    text-align: center;
+  }
+  
+  .year {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+  }
+  
+  .year:focus {
+    outline: none;
+  }
+  
+  table,
+  th,
+  td {
+    padding-top: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 50%; 
+    border: 2px solid black;
+    border-collapse: collapse;
+  }
+  
+  .saveenterbudget {
+    position: relative;
+    top: 20px;
+    background-color:black;
+    color: #fff;
+    border-radius:20px;
+    font-size: 30px;
+    text-align: center;
+    left: 140px;
+    width: 150px;
+  }
+
+  .saveenterbudget:hover{
+    background-color: white;
+    color: black;
+  }
+
+  .Editenterbudget {
+    position: relative;
+    top: 20px;
+    background-color:#000000;
+    color: #fff;
+    border-radius:20px;
+    font-size: 30px;
+    text-align: center;
+    left: 120px;
+    width: 150px;
+  }
+
+  .Editenterbudget:hover{
+    background-color: white;
+    color: black;
+  }
+
+  .viewbutton{
+    position: relative;
+    left: 20px;
+    background-color: #000000;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 15px;
+  }
+
+  .viewbutton:hover{
+    font-size: 16px;
+    color: black;
+    background-color: white;
+  }

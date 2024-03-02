@@ -1,0 +1,44 @@
+  .offcanvas {
+    width: 0; 
+    transition: width 0.3s ease;
+    box-sizing: content-box;
+    overflow: hidden; 
+  }
+
+.list-group-flush button:hover{
+  left: -100;
+  width:200px;
+  color: black;
+  background: white;
+}
+
+.list-group-item i{
+  position:absolute;
+  left: 5px;
+  top: 21px;
+  color: white;
+}
+
+li.list-group-item .active{
+  color: red;
+}
+
+.list-group-flush i:hover{
+  color: black;
+  background: white;
+}
+
+
+@media (max-width: 425px) {
+
+  html{
+    font-size: 60%;
+  }
+}
+
+@media (max-width: 425px) {
+
+  style{
+    width: 160px;
+  }
+  }
