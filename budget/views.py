@@ -23,7 +23,7 @@ from django.http import HttpResponse
 from reportlab.lib import colors
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
-from reportlab.lib.pagesizes import A2
+from reportlab.lib.pagesizes import A4
 # new imports
 from django.views.decorators.csrf import csrf_exempt
 from reportlab.lib.pagesizes import letter
@@ -79,6 +79,10 @@ class EmailVerificationView(APIView):
         # For simplicity, we assume verification is successful if the email exists.
         return Response({"is_verified": True}, status=200)
 
+from reportlab.platypus import Image
+import os
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
 def generate_pdf_view(request):
     selected_year = request.GET.get('selectedYear')
      
@@ -96,27 +100,34 @@ def generate_pdf_view(request):
     except financialyear.DoesNotExist:
         raise Http404("Financial Year matching query does not exist")
     
+    # Adjustments for A4 paper size
+    page_width, page_height = A4
+    page_margin = inch * 0.5  # Adjust margin as needed
+
     filename = "item_master.pdf"
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
-    doc = SimpleDocTemplate(response, pagesize=A2, title="PDF Report")
+    
+    doc = SimpleDocTemplate(response, pagesize=A4, rightMargin=page_margin, leftMargin=page_margin, topMargin=page_margin, bottomMargin=page_margin,title="PDF Report")
 
     elements = []
+    image_path = os.path.join(settings.BASE_DIR, 'budget', 'images', 'apsit_header.png')
+
+    # Add the image to the elements
+    image = Image(image_path, width=page_width - 2 * page_margin, height=100)  # Adjust width as needed
+    elements.append(image)
 
     # Add title to the PDF
     title_style = ParagraphStyle(
         name='HeadingStyle',
-        fontSize=36,
+        fontSize=18,
         fontName='Helvetica-Bold',
         alignment=1,
         spaceAfter=12,
     )
-    college_name = 'A. P. Shah Institute of Technology'
-    title = Paragraph(college_name, title_style)
-    elements.append(title)
 
     # Add blank paragraphs for spacing
-    elements.extend([Paragraph(" ", title_style) for _ in range(7)])
+    elements.extend([Paragraph(" ", title_style) for _ in range(4)])
 
     # Add heading to the PDF
     heading = f"Cumulative Budget Report of CFY {selected_year}"
@@ -124,7 +135,7 @@ def generate_pdf_view(request):
     elements.append(Heading)
 
     # Add blank paragraphs for spacing
-    elements.extend([Paragraph(" ", title_style) for _ in range(7)])
+    elements.extend([Paragraph(" ", title_style) for _ in range(4)])
 
     # Generate a list of the previous three years
     previous_years = [f_year_value - i for i in range(4)]
@@ -133,7 +144,7 @@ def generate_pdf_view(request):
     f_years = [f"{year}-{year + 1}" for year in previous_years]
 
     # Create a list to hold the data for the PDF table
-    data = [['Items'] + [f'Budget in CFY {f_year_value}', f'Actual Expenses in CFY {f_year_value}', f'Budget in CFY {f_year_value-1}', f'Actual Expenses in CFY {f_year_value-1}', f'Budget in CFY {f_year_value-2}', f'Actual Expenses in CFY {f_year_value-2}', f'Budget in CFY {f_year_value-3}', f'Actual Expenses in CFY {f_year_value-3}']]
+    data = [['Items'] + [f'Budget in {f_year_value}', f'Actual Expenses in {f_year_value}', f'Budget in {f_year_value-1}', f'Actual Expenses in {f_year_value-1}', f'Budget in {f_year_value-2}', f'Actual Expenses in {f_year_value-2}', f'Budget in {f_year_value-3}', f'Actual Expenses in {f_year_value-3}']]
 
 
     # Fetch and organize data for each row
@@ -155,17 +166,20 @@ def generate_pdf_view(request):
     data.append(total_row)
 
     # Create a table with the data
-    table = Table(data, colWidths=None)  # Set colWidths to None for automatic adjustment
+    table = Table(data, colWidths=[75] + [63] * (len(f_years) * 2))  # Adjust column widths as needed
 
-# Define the style for the table
-    style = TableStyle([
-    ('BACKGROUND', (0, 0), (-1, 0), colors.red),  # Color the headers
-    ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # Set text color for headers
-    ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Add grid lines
-    ('BOTTOMPADDING', (0, 0), (-1, -1), 20),  # Space after each row
-    ('TOPPADDING', (0, 0), (-1, -1), 20),  # Space before each row
-    ('WORDWRAP', (0, 0), (-1, -1), False),  # Disable word wrap
-])
+    # Define the style for the table
+    style = [
+        ('BACKGROUND', (0, 0), (-1, 0), colors.red),  # Color the headers
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # Set text color for headers
+       # ('ALIGN', (0, 0), (-1, -1), 'LEFT'),  # Center align text
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Add grid lines
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),  # Space after each row
+        ('TOPPADDING', (0, 0), (-1, -1), 10),  # Space before each row
+        ('WORDWRAP', (0, 0), (-1, 0), False),  # Enable word wrap for header cells
+        ('FONT', (0, 0), (-1, -1), 'Helvetica'),  # Set bold font for all cells
+        ('FONTSIZE', (0, 0), (-1, -1), 5),  # Set font size for all cells
+    ]
 
     # Apply the style to the table
     table.setStyle(style)
@@ -179,13 +193,15 @@ def generate_pdf_view(request):
     # Add footer to the PDF
     footer_style = ParagraphStyle(
         name='footerStyle',
-        fontSize=14,
+        fontSize=12,
         fontName='Helvetica-Bold',
     )
     department = Deptmaster.objects.get(dept=dept_value).desc
     footer_text = f'Department of {department}'
     footer = Paragraph(footer_text, footer_style)
     elements.append(footer)
+
+    
 
     # Build the PDF document
     doc.build(elements)
@@ -235,7 +251,7 @@ def get_budget_data(request):
     # Convert the years to the required format
     previous_years = [f"{year}-{year + 1}" for year in range(desc, desc - 4, -1)]
 
-    budget_data = list(budget.objects.filter(dept=dept, f_year__in=previous_years).values('item', 'budgeted_amt', 'actual_exp'))
+    budget_data = list(budget.objects.filter(dept=dept, f_year__in=previous_years).values('f_year','item', 'budgeted_amt', 'actual_exp'))
     print(budget_data)
     return Response(budget_data)
 
