@@ -6,8 +6,8 @@ This branch belongs to URVI JOSHI and represents the master branch of the projec
 
 - **Branch Name:** Master
 - **Maintainer:** URVI JOSHI
-- **Last Updated:** 2024-03-02
-- **Changes done in files:** views.py(only consider get_all_pdf_record api function), PrincipalDashboard.js
+- **Last Updated:** 2024-03-03
+- **Changes done in files:** views.py(only consider get_all_pdf_record api function), PrincipalDashboard.js(includes cancel button and warning functionality)
 
 ## Project Description
 

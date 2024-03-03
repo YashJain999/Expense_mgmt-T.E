@@ -13,39 +13,79 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
   const [selectedYear, setSelectedYear] = useState('');
   const [YearDetails, setYearDetails] = useState([]);
   const [pdfRecords, setPdfRecords] = useState([]);
+  const [showEditWarning, setShowEditWarning] = useState(false);
   const [departmentStates, setDepartmentStates] = useState(getInitialDepartmentStates());
 
   const handleOptionChange = async (department, option) => {
-    setDepartmentStates((prevStates) => ({
-      ...prevStates,
-      [department]: {
-        ...prevStates[department],
-        selectedOption: option,
-      },
-    }));
+    if (!departmentStates[department]?.editVisible) {
+      setShowEditWarning(true);
+      setTimeout(() => setShowEditWarning(false), 5000); // Auto hide after 5 seconds
+      return;
+    }
+    setShowEditWarning(false);
+    // Only allow option change if editVisible is true
+    if (departmentStates[department]?.editVisible) {
+      setDepartmentStates((prevStates) => ({
+        ...prevStates,
+        [department]: {
+          ...prevStates[department],
+          selectedOption: option,
+        },
+      }));
+  }
   };
 
   const handleEditButtonClick = (department) => {
+    // Store the current selected option and comment before editing
+    const originalOption = departmentStates[department]?.selectedOption || '';
+    const originalComment = departmentStates[department]?.placeholderValue || '';
+    
     setDepartmentStates((prevStates) => ({
       ...prevStates,
       [department]: {
         ...prevStates[department],
-         editVisible: !prevStates[department].editVisible,
-        // editVisible: false,
-        hasPlaceholder: true, // Toggle editVisible state
+        editVisible: !prevStates[department].editVisible,
+        originalOption: originalOption,
+        originalComment: originalComment,
+        hasPlaceholder: true,
       },
     }));
   };
-
-  const handleCommentChange = (department, value) => {
-    // Update the placeholderValue state for the comment box
+  
+  const handleCancelButtonClick = (department) => {
+    // Reset the selectedOption and comment to their original values
+    const originalOption = departmentStates[department]?.originalOption || '';
+    const originalComment = departmentStates[department]?.originalComment || '';
+  
     setDepartmentStates((prevStates) => ({
       ...prevStates,
       [department]: {
         ...prevStates[department],
-        placeholderValue: value,
+        selectedOption: originalOption,
+        placeholderValue: originalComment,
+        editVisible: !prevStates[department].editVisible,
+        hasPlaceholder: false,
       },
     }));
+  };
+  
+  const handleCommentChange = (department, value) => {
+    if (!departmentStates[department]?.editVisible) {
+      setShowEditWarning(true);
+      setTimeout(() => setShowEditWarning(false), 5000); // Auto hide after 5 seconds
+      return;
+    }
+    setShowEditWarning(false);
+    // Only allow comment change if editVisible is true
+    if (departmentStates[department]?.editVisible) {
+      setDepartmentStates((prevStates) => ({
+        ...prevStates,
+        [department]: {
+          ...prevStates[department],
+          placeholderValue: value,
+        },
+      }));
+  }
   };
   
   
@@ -124,6 +164,7 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
 
   return (
     <div className='container p-2 mw-5' style={AppStyle}>
+    <h1> Review the Budget Reports</h1>
       <label htmlFor="language">Financial Year :</label>
       <select
         className="year"
@@ -137,7 +178,11 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
         ))}
       </select>
       <button className='viewDetails' onClick={handleViewDetails}>View</button>
-  
+      {showEditWarning && (
+      <div className="alert alert-warning" role="alert">
+        Please click the "Edit" button to make changes.
+      </div>
+    )}
       <table>
         <thead>
           <tr>
@@ -177,21 +222,23 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
                   onChange={() => handleOptionChange(department, 'Reject')}
                 />
                 Reject
-              </label>
-  
-              {departmentStates[department]?.hasPlaceholder && departmentStates[department]?.editVisible && (
-  <div>
-    <textarea value={departmentStates[department]?.placeholderValue}
-                    onChange={(e) => handleCommentChange(department, e.target.value)}
-                    placeholder="Comments"
-                    rows={3}
-                    cols={40}
-                    style={{ border: '1px solid black' }}
-                  ></textarea>
+              </label>          
+                    <textarea 
+                        value={departmentStates[department]?.placeholderValue}
+                        onChange={(e) => handleCommentChange(department, e.target.value)}
+                        placeholder="Comments"
+                        rows={3}
+                        cols={40}
+                        style={{ border: '1px solid black' }}
+                      ></textarea>
     <br />
+    {departmentStates[department]?.hasPlaceholder && departmentStates[department]?.editVisible && (
+                    <div>
     <button className="tablebutton" onClick={() => handleSaveButtonClick(department)}>
                     Save
                   </button>
+                  <button className='tablebutton' onClick={()=>handleCancelButtonClick(department)}> Cancel</button>
+                 
                 </div>
               )}
               {/* Render Edit button */}
