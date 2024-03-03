@@ -4,7 +4,11 @@ import "../assets/css/Navbar.css";
 import { useParams } from "react-router-dom";
 // import { NavLink} from "react-router-dom";
 
-export default function Navbar({ toggleOffcanvas, isOffcanvasOpen , closeOffcanvas}) {
+export default function Navbar({
+  toggleOffcanvas,
+  isOffcanvasOpen,
+  closeOffcanvas,
+}) {
   const navbarStyle = {
     left: isOffcanvasOpen ? "260px" : "0%",
     right: "0px",
@@ -27,17 +31,18 @@ export default function Navbar({ toggleOffcanvas, isOffcanvasOpen , closeOffcanv
         style={navbarStyle}
       >
         <div className="container-fluid">
-        {!isOffcanvasOpen ? 
-          <button
-            className="btn"
-            type="button"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasDark"
-            aria-controls="offcanvasDark"
-            onClick={toggleOffcanvas}
-          >
-            <i className="fa-solid fa-bars"></i>
-          </button> : null}
+          {!isOffcanvasOpen ? (
+            <button
+              className="btn"
+              type="button"
+              data-bs-toggle="offcanvas"
+              data-bs-target="#offcanvasDark"
+              aria-controls="offcanvasDark"
+              onClick={toggleOffcanvas}
+            >
+              <i className="fa-solid fa-bars"></i>
+            </button>
+          ) : null}
           <button
             className="navbar-toggler"
             type="button"
@@ -58,11 +63,11 @@ export default function Navbar({ toggleOffcanvas, isOffcanvasOpen , closeOffcanv
               </li>
             </ul>
           </div>
-          <form className="d-flex">
-            <button className="btn btn-light" type="submit">
-              Username: {username}
-            </button>
-          </form>
+          <nav class="navbar navbar-light ">
+            <div class="container-fluid">
+              <span class="navbar-brand mb-0 h1">Username: {username}</span>
+            </div>
+          </nav>
         </div>
       </nav>
     </>

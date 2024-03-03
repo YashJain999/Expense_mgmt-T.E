@@ -2,7 +2,7 @@
     width: 0; 
     transition: width 0.3s ease;
     box-sizing: content-box;
-    overflow: hidden; 
+    /* overflow: hidden;  */
   }
 
 .list-group-flush button:hover{
@@ -28,6 +28,9 @@ li.list-group-item .active{
   background: white;
 }
 
+.offcanvas-body .btn{
+  width:100%;
+}
 
 @media (max-width: 425px) {
 

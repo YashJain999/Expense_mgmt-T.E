@@ -24,7 +24,7 @@ function Login() {
         if (responsedata["u_desig"] === "HOD") {
           navigate(`/home/${username}/${responsedata["u_dep"]}`,{state:{desig:responsedata["u_desig"]}});
         } else if (responsedata["u_desig"] === "Principal") {
-          navigate(`/principal/${username}`,{state:{desig:responsedata["u_desig"]}});
+          navigate(`/home/${username}`,{state:{desig:responsedata["u_desig"]}});
         }
       } else if (response.status === 401) {
         window.alert("Invalid credentials");

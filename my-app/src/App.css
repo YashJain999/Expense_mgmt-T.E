@@ -2,7 +2,7 @@ html{
     height: 100%;
     width: auto;
     background-color: white;
-    /* overflow-y: visible; */
+    overflow-y: visible;
   }
   .main-container {
     text-align: center;
@@ -28,6 +28,6 @@ html{
       font-size: 50%;
     }
     h2{
-      backgroundColor:"red"
+      background-color:"red"
     }
   }

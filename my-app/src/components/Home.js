@@ -1,5 +1,4 @@
 import React from "react";
-// import { useParams } from "react-router-dom";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useState } from "react";
 import Navbar from "./Navbar";
@@ -15,6 +14,7 @@ import UploadBudget from "./UploadBudget";
 import ViewBudget from "./ViewBudget";
 import UpdateFinancialYear from "./UpdateFinancialYear";
 import PrincipalDashboard from "./PrincipalDashboard";
+import PrincipalQuotation from './PrincipalQuotation';
 
 function Home() {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(true);
@@ -115,6 +115,11 @@ function Home() {
             exact
             path="/principal"
             element={<PrincipalDashboard isOffcanvasOpen={isOffcanvasOpen} toggleOffcanvas={toggleOffcanvas} closeOffcanvas={closeOffcanvas}/>}
+          ></Route>
+          <Route
+            exact
+            path="/principalquotation"
+            element={<PrincipalQuotation isOffcanvasOpen={isOffcanvasOpen} toggleOffcanvas={toggleOffcanvas} closeOffcanvas={closeOffcanvas}/>}
           ></Route>
         </Routes>
       </div>

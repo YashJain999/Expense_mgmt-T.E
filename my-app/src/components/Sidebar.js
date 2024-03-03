@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { NavLink, useParams, useLocation } from "react-router-dom";
 import "../assets/css/Sidebar.css";
 
-export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanvas}) {
+export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
   const NavLinkStyle = {
     // textDecoration: "none",
     width: 20,
@@ -212,7 +212,7 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
                 <NavLink
                   to={`/home/${username}/quotation`}
                   style={NavLinkStyle}
-                  state={{desig:location.state.desig}}
+                  state={{ desig: location.state.desig }}
                 >
                   <button
                     type="button"
@@ -230,7 +230,11 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
             {location.state.desig === "HOD" && isQuotationListVisible && (
               <ul className="list-group list-group-flush">
                 <li className="list-group-item">
-                  <NavLink to={`/home/${username}`} state={{desig:location.state.desig}} style={NavLinkStyle}>
+                  <NavLink
+                    to={`/home/${username}`}
+                    state={{ desig: location.state.desig }}
+                    style={NavLinkStyle}
+                  >
                     <button
                       type="button"
                       className="btn"
@@ -246,7 +250,11 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
                 <div className=" m-n1 pt-2 container ">
                   {shouldShowQuotation.map((item, text) => (
                     <li className="list-unstyled" key={item.text}>
-                      <NavLink to={item.path} state={{desig:location.state.desig}} style={NavLinkStyle}>
+                      <NavLink
+                        to={item.path}
+                        state={{ desig: location.state.desig }}
+                        style={NavLinkStyle}
+                      >
                         <button
                           type="button"
                           className="btn"
@@ -262,7 +270,11 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
             )}
             {location.state.desig === "HOD" && shouldShowList && (
               <li className="list-group-item">
-                <NavLink to={`/home/${username}/purchase`} state={{desig:location.state.desig}} style={NavLinkStyle}>
+                <NavLink
+                  to={`/home/${username}/purchase`}
+                  state={{ desig: location.state.desig }}
+                  style={NavLinkStyle}
+                >
                   <button
                     type="button"
                     className="btn"
@@ -279,7 +291,11 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
             {location.state.desig === "HOD" && isPurchaseListVisible && (
               <ul className="list-group list-group-flush">
                 <li className="list-group-item">
-                  <NavLink to={`/home/${username}`} state={{desig:location.state.desig}} style={NavLinkStyle}>
+                  <NavLink
+                    to={`/home/${username}`}
+                    state={{ desig: location.state.desig }}
+                    style={NavLinkStyle}
+                  >
                     <button
                       type="button"
                       className="btn"
@@ -295,7 +311,11 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
                 <div className=" m-n1 pt-2 container">
                   {shouldShowPurchase.map((item, text) => (
                     <li className="list-unstyled" key={text}>
-                      <NavLink to={item.path} state={{desig:location.state.desig}} style={NavLinkStyle}>
+                      <NavLink
+                        to={item.path}
+                        state={{ desig: location.state.desig }}
+                        style={NavLinkStyle}
+                      >
                         <button
                           type="button"
                           className="btn"
@@ -311,7 +331,11 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
             )}
             {location.state.desig === "HOD" && shouldShowList && (
               <li className="list-group-item">
-                <NavLink to={`/home/${username}/bills`} state={{desig:location.state.desig}} style={NavLinkStyle}>
+                <NavLink
+                  to={`/home/${username}/bills`}
+                  state={{ desig: location.state.desig }}
+                  style={NavLinkStyle}
+                >
                   <button
                     type="button"
                     className="btn"
@@ -328,7 +352,11 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
             {location.state.desig === "HOD" && isBillsListVisible && (
               <ul className="list-group list-group-flush">
                 <li className="list-group-item">
-                  <NavLink to={`/home/${username}/bills`} state={{desig:location.state.desig}} style={NavLinkStyle}>
+                  <NavLink
+                    to={`/home/${username}/bills`}
+                    state={{ desig: location.state.desig }}
+                    style={NavLinkStyle}
+                  >
                     <button
                       type="button"
                       className="btn"
@@ -344,7 +372,11 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
                 <div className=" m-n1 pt-2 container">
                   {shouldShowBills.map((item, text) => (
                     <li className="list-unstyled" key={text}>
-                      <NavLink to={item.path} state={{desig:location.state.desig}} style={NavLinkStyle}>
+                      <NavLink
+                        to={item.path}
+                        state={{ desig: location.state.desig }}
+                        style={NavLinkStyle}
+                      >
                         <button
                           type="button"
                           className="btn"
@@ -362,7 +394,7 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
               <li className="list-group-item">
                 <NavLink
                   to={`/home/${username}/centraldeadstock`}
-                  state={{desig:location.state.desig}}
+                  state={{ desig: location.state.desig }}
                   style={NavLinkStyle}
                 >
                   <button
@@ -388,7 +420,7 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
                       fontWeight: "bold",
                       color: "red",
                     }}
-                    state={{desig:location.state.desig}}
+                    state={{ desig: location.state.desig }}
                   >
                     <button
                       type="button"
@@ -405,7 +437,11 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
                 <div className=" m-n1 pt-2 container">
                   {shouldShowCDS.map((item, text) => (
                     <li className="list-unstyled" key={text}>
-                      <NavLink to={item.path} state={{desig:location.state.desig}} style={NavLinkStyle}>
+                      <NavLink
+                        to={item.path}
+                        state={{ desig: location.state.desig }}
+                        style={NavLinkStyle}
+                      >
                         <button
                           type="button"
                           className="btn"
@@ -421,7 +457,11 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
             )}
             {location.state.desig === "HOD" && shouldShowList && (
               <li className="list-group-item">
-                <NavLink to={`/home/${username}/feedback`} state={{desig:location.state.desig}} style={NavLinkStyle}>
+                <NavLink
+                  to={`/home/${username}/feedback`}
+                  state={{ desig: location.state.desig }}
+                  style={NavLinkStyle}
+                >
                   <button
                     type="button"
                     className="btn"
@@ -438,7 +478,11 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
             {location.state.desig === "HOD" && isFeedBackListVisible && (
               <ul className="list-group list-group-flush">
                 <li className="list-group-item">
-                  <NavLink to={`/home/${username}`} state={{desig:location.state.desig}} style={NavLinkStyle}>
+                  <NavLink
+                    to={`/home/${username}`}
+                    state={{ desig: location.state.desig }}
+                    style={NavLinkStyle}
+                  >
                     <button
                       type="button"
                       className="btn"
@@ -454,7 +498,11 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
                 <div className=" m-n1 pt-2 container">
                   {shouldShowFeedback.map((item, text) => (
                     <li className="list-unstyled" key={text}>
-                      <NavLink to={item.path} state={{desig:location.state.desig}} style={NavLinkStyle}>
+                      <NavLink
+                        to={item.path}
+                        state={{ desig: location.state.desig }}
+                        style={NavLinkStyle}
+                      >
                         <button
                           type="button"
                           className="btn"
@@ -472,14 +520,13 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
               <li className="list-group-item">
                 <NavLink
                   to={`/home/${username}/principal`}
-                  state={{desig:location.state.desig}}  
+                  state={{ desig: location.state.desig }}
                   style={NavLinkStyle}
                 >
                   <button
                     type="button"
                     className="btn"
                     onClick={() => {
-                      toggleFeedBackList();
                       toggleList();
                     }}
                   >
@@ -488,15 +535,18 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
                 </NavLink>
               </li>
             )}
-            {/* {state.desig === "HOD" && isFeedBackListVisible && (
+            {location.state.desig === "Principal" && !shouldShowList && (
               <ul className="list-group list-group-flush">
                 <li className="list-group-item">
-                  <NavLink to={`/home/${username}`} style={NavLinkStyle}>
+                  <NavLink
+                    to={`/home/${username}`}
+                    state={{ desig: location.state.desig }}
+                    style={NavLinkStyle}
+                  >
                     <button
                       type="button"
                       className="btn"
                       onClick={() => {
-                        toggleFeedBackList();
                         toggleList();
                       }}
                     >
@@ -504,31 +554,57 @@ export default function Sidebar({ isOffcanvasOpen, closeOffcanvas ,toggleOffcanv
                     </button>
                   </NavLink>
                 </li>
-                <div className=" m-n1 pt-2 container">
-                  {shouldShowFeedback.map((item, text) => (
-                    <li className="list-unstyled" key={text}>
-                      <NavLink to={item.path} style={NavLinkStyle}>
-                        <button
-                          type="button"
-                          className="btn"
-                          onClick={item.onClick}
-                        >
-                          {item.text}
-                        </button>
-                      </NavLink>
-                    </li>
-                  ))}
-                </div>
+              </ul>
+            )}
+            {location.state.desig === "Principal" && shouldShowList && (
+              <li className="list-group-item">
+                <NavLink
+                  // to={`/home/${username}/principalquotation`}
+                  state={{ desig: location.state.desig }}
+                  style={NavLinkStyle}
+                >
+                  <button
+                    type="button"
+                    className="btn"
+                    // onClick={() => {
+                    //   toggleList();
+                    // }}
+                  >
+                    PrincipalDashboard Quotation
+                  </button>
+                </NavLink>
+              </li>
+            )}
+            {/* {location.state.desig === "Principal" && !shouldShowList && (
+              <ul className="list-group list-group-flush">
+                <li className="list-group-item">
+                  <NavLink
+                    to={`/home/${username}`}
+                    state={{ desig: location.state.desig }}
+                    style={NavLinkStyle}
+                  >
+                    <button
+                      type="button"
+                      className="btn"
+                      onClick={() => {
+                        toggleList();
+                      }}
+                    >
+                      PrincipalDashboard Quotation
+                    </button>
+                  </NavLink>
+                </li>
               </ul>
             )} */}
-            {location.state.desig === "Principal" ||
-              ("HOD" && shouldShowList && (
+            {location.state.desig === "Principal" &&
+              "HOD" &&
+              shouldShowList && (
                 <li className="list-group-item">
                   <button type="button" className="btn" onClick={toggleList}>
                     Logout
                   </button>
                 </li>
-              ))}
+              )}
           </ul>
         </div>
       </div>

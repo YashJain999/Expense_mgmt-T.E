@@ -5,23 +5,27 @@ import "../assets/css/PrincipalDashboard.css";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 
-function PrincipalDashboard({isOffcanvasOpen,toggleOffcanvas,closeOffcanvas}) {
+function PrincipalDashboard({
+  isOffcanvasOpen,
+  toggleOffcanvas,
+  closeOffcanvas,
+}) {
   const AppStyle = {
     position: "relative",
-    top: "0px",
-    left: isOffcanvasOpen ? "130px" : "0%",
+    top: "-100px",
+    left: isOffcanvasOpen ? "0px" : "0%",
     width: isOffcanvasOpen ? "calc(100% - 260px)" : "100%",
     transition: "all 0.5s ease",
     zIndex: 1000,
   };
 
-  const navbarStyle = {
-    left: isOffcanvasOpen ? "260px" : "0%",
-    right: "0px",
-    width: isOffcanvasOpen ? "calc(100% - 260px)" : "100%",
-    transition: "all 0.3s ease  ",
-    zIndex: 1000,
-  };
+  // const navbarStyle = {
+  //   left: isOffcanvasOpen ? "260px" : "0%",
+  //   right: "0px",
+  //   width: isOffcanvasOpen ? "calc(100% - 260px)" : "100%",
+  //   transition: "all 0.3s ease  ",
+  //   zIndex: 1000,
+  // };
 
   const [selectedYear, setSelectedYear] = useState("");
   const [YearDetails, setYearDetails] = useState([]);
@@ -130,12 +134,13 @@ function PrincipalDashboard({isOffcanvasOpen,toggleOffcanvas,closeOffcanvas}) {
         title="LabTracker"
         isOffcanvasOpen={isOffcanvasOpen}
         toggleOffcanvas={toggleOffcanvas}
-        style={navbarStyle}
+        // style={navbarStyle}
       />
       <div className="app">
         <Sidebar
           isOffcanvasOpen={isOffcanvasOpen}
-          closeOffcanvas={closeOffcanvas}
+          // closeOffcanvas={closeOffcanvas}
+          toggleOffcanvas={toggleOffcanvas}
         />
       </div>
       <label htmlFor="language">Financial Year :</label>
