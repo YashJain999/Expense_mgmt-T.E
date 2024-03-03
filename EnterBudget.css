@@ -1,0 +1,78 @@
+body {
+  text-align: center;
+}
+
+.year {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.year:focus {
+  outline: none;
+}
+
+table,
+th,
+td {
+  padding-top: 15px;
+  text-align: center;
+  width: 50%; 
+  border: 2px solid black;
+  border-collapse: collapse;
+}
+
+.saveenterbudget,
+.Editenterbudget,
+.cancelenterbudget {
+  position: relative;
+  top: 20px;
+  background-color: black;
+  color: #fff;
+  border-radius: 20px;
+  font-size: 30px;
+  text-align: center;
+  width: 150px;
+  margin-right: 10px; /* Added margin to create space between buttons */
+}
+
+.saveenterbudget:hover,
+.Editenterbudget:hover,
+.cancelenterbudget:hover {
+  background-color: white;
+  color: black;
+}
+
+.viewbutton {
+  position: relative;
+  left: 20px;
+  background-color: #000000;
+  color: #fff;
+  border-radius: 5px;
+  font-size: 15px;
+}
+
+.viewbutton:hover {
+  font-size: 16px;
+  color: black;
+  background-color: white;
+}
+
+.AC {
+  width: 50px;
+}
+.Editenterbudget{
+  left: 140px;
+  width: 100px;
+  padding-left: 5px;
+}
+.saveenterbudget{
+  width: 100px;
+  left: 130px;
+}
+.cancelenterbudget{
+  width: 110px;
+  left: 136px;
+  padding-left: 10px;
+  padding-right: 40px;
+}
