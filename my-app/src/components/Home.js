@@ -1,6 +1,6 @@
 import React from "react";
 // import { useParams } from "react-router-dom";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route ,useLocation } from "react-router-dom";
 import { useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
@@ -14,6 +14,10 @@ import EnterBudget from "./EnterBudget";
 import UploadBudget from "./UploadBudget";
 import ViewBudget from "./ViewBudget";
 import UpdateFinancialYear from "./UpdateFinancialYear";
+import PrincipalDashboard from "./PrincipalDashboard";
+import PrincipalQuotation from './PrincipalQuotation'
+import LineGraphs from "./LineGraphs";
+import Graph from "./Graph";
 
 function Home() {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(true);
@@ -32,6 +36,8 @@ function Home() {
     zIndex: 1000,
   };
 
+  const location = useLocation()
+  console.log(location)
   return (
     <>
       <div className="container p-2 mw-5" style={AppStyle}>
@@ -48,7 +54,8 @@ function Home() {
               <div className="app">
                 <Sidebar
                   isOffcanvasOpen={isOffcanvasOpen}
-                  closeOffcanvas={closeOffcanvas}
+                  // closeOffcanvas={closeOffcanvas}
+                  toggleOffcanvas={toggleOffcanvas}
                 />
               </div>
             </>
@@ -81,6 +88,16 @@ function Home() {
           ></Route>
           <Route
             exact
+            path="/budget/graphs"
+            element={<Graph isOffcanvasOpen={isOffcanvasOpen} />}
+          ></Route>
+          <Route
+            exact
+            path="/budget/linegraphs"
+            element={<LineGraphs isOffcanvasOpen={isOffcanvasOpen} />}
+          ></Route>
+          <Route
+            exact
             path="/quotation"
             element={<Quotation isOffcanvasOpen={isOffcanvasOpen} />}
           ></Route>
@@ -103,6 +120,16 @@ function Home() {
             exact
             path="/feedback"
             element={<Feedback isOffcanvasOpen={isOffcanvasOpen} />}
+          ></Route>
+          <Route
+            exact
+            path="/principal"
+            element={<PrincipalDashboard isOffcanvasOpen={isOffcanvasOpen} toggleOffcanvas={toggleOffcanvas} closeOffcanvas={closeOffcanvas}/>}
+          ></Route>
+          <Route
+            exact
+            path="/principalquotation"
+            element={<PrincipalQuotation isOffcanvasOpen={isOffcanvasOpen} toggleOffcanvas={toggleOffcanvas} closeOffcanvas={closeOffcanvas}/>}
           ></Route>
         </Routes>
       </div>

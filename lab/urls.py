@@ -42,7 +42,10 @@ urlpatterns = [
     path('update_budget_details/',views.update_budget_details,name='anything'),
     path('get_all_pdf_records/', views.get_all_pdf_records, name='get_all_pdf_records'),
     path('download_pdf/<pdf_id>/', views.download_pdf, name='download_pdf'),
-    path('principal_status/', views.principal_status,name='anything')
+    path('principal_status/', views.principal_status,name='anything'),
+    path('item_dropdown/', views.item_dropdown, name="anything"),
+    path('get_item_amount/', views.get_item_amount, name='anything'),
+    path('get_list_amount/', views.get_list_amount, name='anything')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

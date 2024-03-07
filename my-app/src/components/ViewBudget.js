@@ -156,7 +156,7 @@ table.appendChild(individualSumsRow);
         {/*dropdown component */}
       <label htmlFor="language" >Financial Year :</label>
       <select
-  class="year"
+  className="year"
   value={selectedYear}
   onChange={(e) => setSelectedYear(e.target.value)}
 >
@@ -167,7 +167,7 @@ table.appendChild(individualSumsRow);
   ))}
 </select>
 
-<button class="viewbuttonviewbudget" onClick={handleYearSubmit}>View</button>
+<button className="viewbuttonviewbudget" onClick={handleYearSubmit}>View</button>
 
 
       <br></br>
@@ -266,7 +266,7 @@ table.appendChild(individualSumsRow);
           </tr>
         </tbody>
       </table>
-      <button class="Downloadviewbudget" onClick={handleDownloadClick}>Download</button>
+      <button className="Downloadviewbudget" onClick={handleDownloadClick}>Download</button>
     </div>
   );
 }

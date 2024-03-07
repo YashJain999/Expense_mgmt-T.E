@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from "react-router-dom";
 import axios from 'axios';
 import '../assets/css/PrincipalDashboard.css'; 
-function PrincipalDashboard({ isOffcanvasOpen }) {
+import Sidebar from "./Sidebar";
+import Navbar from "./Navbar";
+
+function PrincipalDashboard({isOffcanvasOpen,toggleOffcanvas,closeOffcanvas}) {
   const AppStyle = {
     position:"relative",
     top:"0px",
@@ -10,23 +14,93 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
     transition: 'all 0.5s ease',
     zIndex: 1000,
   };
+  const navbarStyle = {
+    left: isOffcanvasOpen ? "260px" : "0%",
+    right: "0px",
+    width: isOffcanvasOpen ? "calc(100% - 260px)" : "100%",
+    transition: "all 0.3s ease  ",
+    zIndex: 1000,
+  };
   const [selectedYear, setSelectedYear] = useState('');
   const [YearDetails, setYearDetails] = useState([]);
   const [pdfRecords, setPdfRecords] = useState([]);
+  const [showEditWarning, setShowEditWarning] = useState(false);
   const [departmentStates, setDepartmentStates] = useState(getInitialDepartmentStates());
+  const { state } = useLocation();
+  console.log(state);
 
   const handleOptionChange = async (department, option) => {
-    // Update the selectedOption and hasPlaceholder state locally
+    if (!departmentStates[department]?.editVisible) {
+      setShowEditWarning(true);
+      setTimeout(() => setShowEditWarning(false), 5000); // Auto hide after 5 seconds
+      return;
+    }
+    setShowEditWarning(false);
+    // Only allow option change if editVisible is true
+    if (departmentStates[department]?.editVisible) {
+      setDepartmentStates((prevStates) => ({
+        ...prevStates,
+        [department]: {
+          ...prevStates[department],
+          selectedOption: option,
+        },
+      }));
+  }
+  };
+
+  const handleEditButtonClick = (department) => {
+    // Store the current selected option and comment before editing
+    const originalOption = departmentStates[department]?.selectedOption || '';
+    const originalComment = departmentStates[department]?.placeholderValue || '';
+    
     setDepartmentStates((prevStates) => ({
       ...prevStates,
       [department]: {
         ...prevStates[department],
-        selectedOption: option,
-        hasPlaceholder: true, // Assuming the placeholder should still be shown after changing status
+        editVisible: !prevStates[department].editVisible,
+        originalOption: originalOption,
+        originalComment: originalComment,
+        hasPlaceholder: true,
       },
     }));
-    
   };
+  
+  const handleCancelButtonClick = (department) => {
+    // Reset the selectedOption and comment to their original values
+    const originalOption = departmentStates[department]?.originalOption || '';
+    const originalComment = departmentStates[department]?.originalComment || '';
+  
+    setDepartmentStates((prevStates) => ({
+      ...prevStates,
+      [department]: {
+        ...prevStates[department],
+        selectedOption: originalOption,
+        placeholderValue: originalComment,
+        editVisible: !prevStates[department].editVisible,
+        hasPlaceholder: false,
+      },
+    }));
+  };
+  
+  const handleCommentChange = (department, value) => {
+    if (!departmentStates[department]?.editVisible) {
+      setShowEditWarning(true);
+      setTimeout(() => setShowEditWarning(false), 5000); // Auto hide after 5 seconds
+      return;
+    }
+    setShowEditWarning(false);
+    // Only allow comment change if editVisible is true
+    if (departmentStates[department]?.editVisible) {
+      setDepartmentStates((prevStates) => ({
+        ...prevStates,
+        [department]: {
+          ...prevStates[department],
+          placeholderValue: value,
+        },
+      }));
+  }
+  };
+  
   
   const handleSaveButtonClick = async (department) => {
     try {
@@ -37,12 +111,11 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
         status: departmentStates[department].selectedOption,
         comment: departmentStates[department].placeholderValue, // Send the comment from the state
       });
-      // Update the editVisible and hasPlaceholder state locally
       setDepartmentStates((prevStates) => ({
         ...prevStates,
         [department]: {
           ...prevStates[department],
-          editVisible: true,
+          editVisible: false,
           hasPlaceholder: false,
         },
       }));
@@ -52,19 +125,6 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
     }
   };
   
-  
-  const handleEditButtonClick = (department) => {
-    // Update the editVisible and hasPlaceholder state locally
-    setDepartmentStates((prevStates) => ({
-      ...prevStates,
-      [department]: {
-        ...prevStates[department],
-        editVisible: false,
-        hasPlaceholder: true,
-      },
-    }));
-  };
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -81,8 +141,17 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
   const handleViewDetails = async () => {
     try {
       const response = await axios.get(`http://localhost:8000/get_all_pdf_records/?selectedYear=${selectedYear}`);
-      console.log('PDF records for the selected year:', response.data);
       setPdfRecords(response.data);
+      const updatedDepartmentStates = { ...departmentStates };
+      response.data.forEach((record) => {
+        updatedDepartmentStates[record.dept] = {
+          ...updatedDepartmentStates[record.dept],
+          selectedOption: record.status, // Set selectedOption based on backend data
+          hasPlaceholder: true,
+          placeholderValue: record.comment || '', // Set comment value if available
+        };
+      });
+      setDepartmentStates(updatedDepartmentStates);
     } catch (error) {
       console.error('Error fetching PDF records:', error);
     }
@@ -106,10 +175,22 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
       });
   };
 
-
-
   return (
     <div className='container p-2 mw-5' style={AppStyle}>
+      <Navbar
+        title="LabTracker"
+        isOffcanvasOpen={isOffcanvasOpen}
+        toggleOffcanvas={toggleOffcanvas}
+        // style={navbarStyle}
+      />
+      <div className="app">
+        <Sidebar
+          isOffcanvasOpen={isOffcanvasOpen}
+          // closeOffcanvas={closeOffcanvas}
+          toggleOffcanvas={toggleOffcanvas}
+        />
+      </div>
+    <h1> Review the Budget Reports</h1>
       <label htmlFor="language">Financial Year :</label>
       <select
         className="year"
@@ -123,7 +204,11 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
         ))}
       </select>
       <button className='viewDetails' onClick={handleViewDetails}>View</button>
-  
+      {showEditWarning && (
+      <div className="alert alert-warning" role="alert">
+        Please click the "Edit" button to make changes.
+      </div>
+    )}
       <table>
         <thead>
           <tr>
@@ -142,70 +227,53 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
                 )}
               </td>
               <td className='status'>
-                <label>
-                  <input
-                    className="Dashprincipalinp"
-                    type="radio"
-                    value="Accept"
-                    checked={departmentStates[department]?.selectedOption === 'Accept'}
-                    onChange={() => handleOptionChange(department, 'Accept')}
-                  />
-                  Accept
-                </label>
-  
-                <label>
-                  <input
-                    className="Dashprincipalinp"
-                    type="radio"
-                    value="Reject"
-                    checked={departmentStates[department]?.selectedOption === 'Reject'}
-                    onChange={() => handleOptionChange(department, 'Reject')}
-                  />
-                  Reject
-                </label>
-  
-                {departmentStates[department]?.hasPlaceholder && (
-                  <div>
-                    <textarea
-                      value={departmentStates[department]?.placeholderValue}
-                      onChange={(e) =>
-                        setDepartmentStates((prevStates) => ({
-                          ...prevStates,
-                          [department]: {
-                            ...prevStates[department],
-                            placeholderValue: e.target.value,
-                          },
-                        }))
-                      }
-                      placeholder="Comments"
-                      rows={3}
-                      cols={40}
-                      style={{ border: '1px solid black' }}
-                      disabled={departmentStates[department]?.editVisible}
-                    ></textarea>
-                    <br />
-                    <button
-                        className="tablebutton"
-                        onClick={() => handleSaveButtonClick(department)}
-                        disabled={departmentStates[department].editVisible}
-                      >
-                        Save
-                      </button>
-
-                  </div>
+              <label>
+                <input
+                  className="Dashprincipalinp"
+                  type="radio"
+                  name={department}
+                  value='Accept'
+                  checked={departmentStates[department]?.selectedOption === 'Accept'}
+                  onChange={() => handleOptionChange(department, 'Accept')}
+                />
+                Accept
+              </label>
+              <label>
+                <input
+                  className="Dashprincipalinp"
+                  type="radio"
+                  name={department}
+                  value='Reject'
+                  checked={departmentStates[department]?.selectedOption === 'Reject'}
+                  onChange={() => handleOptionChange(department, 'Reject')}
+                />
+                Reject
+              </label>          
+                    <textarea 
+                        value={departmentStates[department]?.placeholderValue}
+                        onChange={(e) => handleCommentChange(department, e.target.value)}
+                        placeholder="Comments"
+                        rows={3}
+                        cols={40}
+                        style={{ border: '1px solid black' }}
+                      ></textarea>
+    <br />
+    {departmentStates[department]?.hasPlaceholder && departmentStates[department]?.editVisible && (
+                    <div>
+    <button className="tablebutton" onClick={() => handleSaveButtonClick(department)}>
+                    Save
+                  </button>
+                  <button className='tablebutton' onClick={()=>handleCancelButtonClick(department)}> Cancel</button>
+                 
+                </div>
+              )}
+              {/* Render Edit button */}
+              {!departmentStates[department]?.editVisible && (
+                <button className="tablebutton" onClick={() => handleEditButtonClick(department)}>
+                  Edit
+                </button>
                 )}
-  
-                {departmentStates[department]?.editVisible && (
-                  <div>
-                    <button
-                      className="tablebutton"
-                      onClick={() => handleEditButtonClick(department)}
-                    >
-                      Edit
-                    </button>
-                  </div>
-                )}
-              </td>
+                </td>
             </tr>
           ))}
         </tbody>
@@ -231,6 +299,7 @@ function getInitialDepartmentStates() {
   departments.forEach((department) => {
     initialState[department] = {
       selectedOption: '',
+      currentOption: '',
       hasPlaceholder: false,
       placeholderValue: '',
       editVisible: false,

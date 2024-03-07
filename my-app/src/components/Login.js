@@ -16,25 +16,31 @@ function Login() {
           username: username,
           password: password,
         });
-        const responsedata=response.data;
-        console.log(responsedata)
-  
-        if (response.status === 200) {
+        const responsedata=response.data;  
+        if (responsedata['code'] === '10') {
           window.alert('Login successful');
           if (responsedata['u_desig'] === 'HOD'){
-            navigate(`/home/${username}/${responsedata['u_dep']}`);
+            // navigate(`/home/${username}/${responsedata['u_dep']}`);
+            navigate(`/home/${username}/${responsedata['u_dep']}`,{state:{desig:responsedata['u_desig']}});
           }
           else if (responsedata['u_desig'] === 'Principal'){
-            navigate(`/principal`);
+            // navigate(`/principal`);
+            navigate(`/home/${username}`,{state:{desig:responsedata["u_desig"]}});
           }
         } 
-        else if (response.status === 401) {
-          window.alert('Invalid credentials');
+        else if (responsedata['code'] === '20') {
+          window.alert('Incorrect Password');
         } 
+        else if (responsedata['code'] === '30'){
+          window.alert('Incorrect User Email');
+        }
+        else if (responsedata['code'] === '40'){
+          window.alert('User Not Found');
+        }
       } 
       catch (error) {
         console.error('Error:', error);
-        window.alert('Invalid credentials');
+        window.alert('Invalid User Email');
       }
     };
     return (

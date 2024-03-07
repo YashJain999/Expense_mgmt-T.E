@@ -48,6 +48,25 @@ function UpdateFinancialYear({isOffcanvasOpen}) {
             alert('Failed to send data');
         }
     };
+    // const handleYearChange = (e) => {
+    //     const newYearValue = e.target.value;
+    //     const newDescValue = `${parseInt(newYearValue) - 1}-${newYearValue}`;
+    //     setYearValue(newYearValue);
+    //     setDescValue(newDescValue);
+    //   };
+    // Function to update the value of yearValue and generate the description dynamically
+  const handleYearChange = (e) => {
+    const newYearValue = e.target.value;
+    setYearValue(newYearValue);
+    setDescValue(generateDescription(newYearValue));
+  };
+
+  // Function to generate the description dynamically based on the year value
+  const generateDescription = (yearValue) => {
+    if (yearValue.trim() === '') return '';
+    const startYear = parseInt(yearValue) - 1;
+    return `${startYear}-${yearValue}`;
+  };
 
     return (
       <div className='container p-2 mw-5' style={AppStyle}>
@@ -80,12 +99,32 @@ function UpdateFinancialYear({isOffcanvasOpen}) {
           <br></br><br></br>
           {showInputs && (
               <div className='container m-2'>
-                  Enter the Financial Year   <input
-                   type="text" pattern="[0-9-]*" style={{ border: '1px solid black' }} placeholder="E.g. 2025" value={yearValue} onChange={(e) => setYearValue(e.target.value)} /><br></br>
-                  <br />
-                  Enter its Description     <input type="text" pattern="[0-9-]*" style={{ border: '1px solid black' }} placeholder="E.g. 2024-2025" value={descValue} onChange={(e) => setDescValue(e.target.value)} /><br></br>
-                  <button className="submitupdatedfinancial" onClick={handleSaveClick} >Submit</button>
-              </div>
+              Enter the Financial Year   
+              <input
+                type="text"
+                pattern="[0-9-]*"
+                style={{ border: '1px solid black' }}
+                placeholder="E.g. 2025"
+                value={yearValue}
+                onChange={handleYearChange} 
+              /><br></br>
+              <br />
+              {/* Enter its Description     
+              <input
+                type="text"
+                pattern="[0-9-]*"
+                style={{ border: '1px solid black' }}
+                placeholder="E.g. 2024-2025"
+                value={descValue}
+                disabled  // Disabled attribute added here
+                /><br></br> */}
+                <label htmlFor="description">Description:</label>
+      <span id="description">
+        {generateDescription(yearValue)}
+      </span><br></br>
+      <input type="hidden" id="descValue" value={descValue} />
+              <button className="submitupdatedfinancial" onClick={handleSaveClick} >Submit</button>
+            </div>
           )}
       </div>
   );
