@@ -1,0 +1,33 @@
+/* BudgetComponent.css */
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .buttons-container {
+    display: flex;
+    gap: 0;
+    width: 142%;
+  }
+  
+  .button {
+    flex:auto;
+    padding: 10px ;
+    background-color: #c9f67b;
+    border: none;
+    font-size: 30px;
+    font-weight: bold;
+    transition-duration: 0.2s;
+    cursor: pointer;
+  }
+  .button.selected {
+    background-color: #f8a769; /* Darker Green */
+  }
+  .button:hover {
+    background-color: #f8a769; /* Darker Green */
+    transform: scale(1.1); /* Increase size on hover */
+  }
+  

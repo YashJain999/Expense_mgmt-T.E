@@ -252,17 +252,14 @@ def get_financialyears(request):
     
 @api_view(['POST'])
 def get_budget_data(request):
-    selected_year = request.data.get('selectedYear')
+    start_selected_year = request.data.get('selectedYearfrom')
+    end_selected_year = request.data.get('selectedYearto')
     username = request.data.get('username')
     dept=User.objects.get(u_email=username).u_dep   
-    financial_year = financialyear.objects.get(Desc=selected_year)
-    desc = financial_year.F_year
+    start_financial_year = financialyear.objects.get(Desc=start_selected_year).F_year
+    end_financial_year = financialyear.objects.get(Desc=end_selected_year).F_year
 
-    # Convert the years to the required format
-    previous_years = [f"{year}-{year + 1}" for year in range(desc, desc - 4, -1)]
-
-    budget_data = list(budget.objects.filter(dept=dept, f_year__in=previous_years).values('item', 'budgeted_amt', 'actual_exp'))
-    print(budget_data)
+    budget_data = list(budget.objects.filter(dept=dept, f_year__range=(start_financial_year, end_financial_year)).values('f_year','item', 'budgeted_amt', 'actual_exp'))
     return Response(budget_data)
 
 @api_view(['POST'])

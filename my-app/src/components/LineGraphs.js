@@ -4,7 +4,7 @@ import {useParams } from "react-router-dom";
 import Lines from './Lines';
 import '../assets/css/Line.css'; 
 
-export default function LineGraphs() {
+export default function LineGraphs({isOffcanvasOpen}) {
     const [selectedYearfrom, setSelectedYearfrom] = useState('');
     const [selectedYearto, setSelectedYearto] = useState('');
     const [budgetData, setBudgetData] = useState([]);
@@ -25,8 +25,8 @@ export default function LineGraphs() {
     const AppStyle = {
         position:"relative",
         top:"-130px",
-        // left : isOffcanvasOpen ? '0px': '0%'  ,
-        // width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
+        left : isOffcanvasOpen ? '0px': '0%'  ,
+        width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
         transition: 'all 0.5s ease',
         zIndex: 1000,
     };
