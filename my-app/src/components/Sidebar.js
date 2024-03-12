@@ -25,8 +25,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
         text: "Update Financial Year",
         path: `/home/${username}/budget/updatefinancialyear`,
       },
-      { text: "Compare by Bar Graphs", path: `/home/${username}/budget/graphs` },
-      { text: "Compare by Line Graphs", path: `/home/${username}/budget/linegraphs` },
+      { text: "Budget Analysis", path: `/home/${username}/budget/graphs` },
     ];
     setShouldShowBudget(buttonObject1);
     setIsBudgetListVisible(!isBudgetListVisible);

@@ -16,7 +16,6 @@ import ViewBudget from "./ViewBudget";
 import UpdateFinancialYear from "./UpdateFinancialYear";
 import PrincipalDashboard from "./PrincipalDashboard";
 import PrincipalQuotation from './PrincipalQuotation'
-import LineGraphs from "./LineGraphs";
 import Graph from "./Graph";
 
 function Home() {
@@ -90,11 +89,6 @@ function Home() {
             exact
             path="/budget/graphs"
             element={<Graph isOffcanvasOpen={isOffcanvasOpen} />}
-          ></Route>
-          <Route
-            exact
-            path="/budget/linegraphs"
-            element={<LineGraphs isOffcanvasOpen={isOffcanvasOpen} />}
           ></Route>
           <Route
             exact

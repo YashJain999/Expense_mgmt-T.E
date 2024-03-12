@@ -1,10 +1,11 @@
-.line-graph{
+.graph{
     width: 800px;
     position: relative;
     margin: 0 auto; /* Center horizontally */
     bottom: -50px;
+    
 }
-.l2{
+.l1{
     font-size: 16px;
     color: black;
     text-transform: uppercase;
