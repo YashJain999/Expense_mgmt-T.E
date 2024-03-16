@@ -16,49 +16,38 @@ table,
 th,
 td {
   padding-top: 15px;
-  margin-left: auto;
-  margin-right: auto;
   text-align: center;
   width: 50%; 
   border: 2px solid black;
   border-collapse: collapse;
+  text-wrap: nowrap;
+  padding-left: 25px;
+  padding-right: 25px;
+  text-align: center;
 }
 
-.saveenterbudget {
+.saveenterbudget,
+.Editenterbudget,
+.cancelenterbudget {
   position: relative;
   top: 20px;
-  background-color:black;
+  background-color: black;
   color: #fff;
-  border-radius:20px;
+  border-radius: 20px;
   font-size: 30px;
   text-align: center;
-  left: 140px;
   width: 150px;
+  margin-right: 10px; /* Added margin to create space between buttons */
 }
 
-.saveenterbudget:hover{
+.saveenterbudget:hover,
+.Editenterbudget:hover,
+.cancelenterbudget:hover {
   background-color: white;
   color: black;
 }
 
-.Editenterbudget {
-  position: relative;
-  top: 20px;
-  background-color:#000000;
-  color: #fff;
-  border-radius:20px;
-  font-size: 30px;
-  text-align: center;
-  left: 120px;
-  width: 150px;
-}
-
-.Editenterbudget:hover{
-  background-color: white;
-  color: black;
-}
-
-.viewbutton{
+.viewbutton {
   position: relative;
   left: 20px;
   background-color: #000000;
@@ -67,8 +56,45 @@ td {
   font-size: 15px;
 }
 
-.viewbutton:hover{
+.viewbutton:hover {
   font-size: 16px;
   color: black;
   background-color: white;
 }
+
+.AC {
+  width: 50px;
+}
+.Editenterbudget{
+  left: 140px;
+  width: 100px;
+  padding-left: 5px;
+}
+.saveenterbudget{
+  width: 100px;
+  left: 130px;
+}
+.cancelenterbudget{
+  width: 110px;
+  left: 136px;
+  padding-left: 10px;
+  padding-right: 40px;
+}
+
+.budget_input
+{
+  border-radius: 0%;
+  color: red;
+  border-color: aquamarine;
+  border-width: 60px;
+  text-align: center;
+}
+/* 
+.actexp{
+  color: blue;
+  padding-left: 60px;
+  padding-right: 50px;
+  text-align: center;
+  text-wrap: nowrap;
+
+} */

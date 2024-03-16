@@ -1,0 +1,12 @@
+.graph{
+    width: 800px;
+    position: relative;
+    left: 200px;
+    bottom: -100px;
+}
+.l1{
+    font-size: 16px;
+    color: black;
+    text-transform: uppercase;
+    font-weight: bold;
+}

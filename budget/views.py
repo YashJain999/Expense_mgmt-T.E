@@ -24,13 +24,17 @@ from reportlab.lib import colors
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.pagesizes import A4
-# new imports
 from django.views.decorators.csrf import csrf_exempt
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from uuid import uuid4
 import os
 from django.shortcuts import get_object_or_404
+#new imports
+from reportlab.platypus import Image
+import os
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
 
 
 class LoginView(APIView):
@@ -38,13 +42,18 @@ class LoginView(APIView):
         u_email = request.data.get('username')  # Assuming 'u_email' is the username field
         u_pass = request.data.get('password')    # Assuming 'u_pass' is the password field   
         try:
-            user = User.objects.get(u_email=u_email)
-            if user.u_pass == u_pass:  # You should hash and compare passwords securely
-                return Response({'message': 'Login successful','u_desig':user.u_desig,'u_dep':user.u_dep})
+            if User.objects.filter(u_email=u_email).exists():
+                user = User.objects.get(u_email=u_email)
+                if user.u_pass == u_pass:
+                    return Response({'message': 'Login successful','u_desig':user.u_desig,'u_dep':user.u_dep ,'code':'10'})
+                else :
+                    return Response({'message': 'Incorrect password' , 'code':'20'})
+                    print("Icoorect Password")
             else:
-                return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'message': 'Incorrect User Email','code':'30'})
+                print("Iccorect User email")
         except user.DoesNotExist:
-            return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'User not found','code':'40'})  
         
 class CreateUserView(APIView):
     def post(self, request):
@@ -79,16 +88,11 @@ class EmailVerificationView(APIView):
         # For simplicity, we assume verification is successful if the email exists.
         return Response({"is_verified": True}, status=200)
 
-from reportlab.platypus import Image
-import os
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch
 def generate_pdf_view(request):
     selected_year = request.GET.get('selectedYear')
      
     if not selected_year:
         return HttpResponse("Selected year is required", status=400)
-    print(selected_year)
     
     username = request.GET.get('username')
     dept_value=User.objects.get(u_email=username).u_dep
@@ -209,6 +213,7 @@ def generate_pdf_view(request):
     return response
 
 
+
 @api_view(['POST'])
 def update_password(request):
     u_pass = request.data.get('u_pass')
@@ -235,6 +240,11 @@ def dropdown(request):
     return Response(years)
 
 @api_view(['GET'])
+def item_dropdown(request):
+    item = itemmaster.objects.values_list('item_desc', flat=True)
+    return Response(item)
+
+@api_view(['GET'])
 def get_financialyears(request):
     years = financialyear.objects.values_list('F_year', flat=True)
     desc = financialyear.objects.values_list('Desc', flat=True)
@@ -242,41 +252,38 @@ def get_financialyears(request):
     
 @api_view(['POST'])
 def get_budget_data(request):
-    selected_year = request.data.get('selectedYear')
+    start_selected_year = request.data.get('selectedYearfrom')
+    end_selected_year = request.data.get('selectedYearto')
     username = request.data.get('username')
     dept=User.objects.get(u_email=username).u_dep   
-    financial_year = financialyear.objects.get(Desc=selected_year)
-    desc = financial_year.F_year
+    start_financial_year = financialyear.objects.get(Desc=start_selected_year).F_year
+    end_financial_year = financialyear.objects.get(Desc=end_selected_year).F_year
 
-    # Convert the years to the required format
-    previous_years = [f"{year}-{year + 1}" for year in range(desc, desc - 4, -1)]
-
-    budget_data = list(budget.objects.filter(dept=dept, f_year__in=previous_years).values('f_year','item', 'budgeted_amt', 'actual_exp'))
-    print(budget_data)
+    budget_data = list(budget.objects.filter(dept=dept, f_year__range=(start_financial_year, end_financial_year)).values('f_year','item', 'budgeted_amt', 'actual_exp'))
     return Response(budget_data)
 
-# @api_view(['POST'])
-# def show_enter_data(request):
-#     selected_year = request.data.get('selectedYear')
-#     financial_year = financialyear.objects.get(Desc=selected_year)
-#     desc = financial_year.F_year
-#     enter_data = list(budget.objects.filter(dept='IT',f_year__in=desc).values('budgeted_amt','actual_exp'))
-#     print(enter_data)
-#     return Response(enter_data)
+@api_view(['POST'])
+def show_enter_data(request):
+    selected_year = request.data.get('selectedYear')
+    financial_year = financialyear.objects.get(Desc=selected_year)
+    desc = financial_year.F_year
+    enter_data = list(budget.objects.filter(dept='IT',f_year__in=desc).values('budgeted_amt','actual_exp'))
+    print(enter_data)
+    return Response(enter_data)
 
 
-# class Ex1penseList(APIView):
-#     def get(self, request):
-#         financial_year = request.GET.get('financial_year')
-#         if financial_year:
+class ExpenseList(APIView):
+    def get(self, request):
+        financial_year = request.GET.get('financial_year')
+        if financial_year:
 
-#             expenses = budget.objects.all()  # Query your MySQL database for expenses
-#             # Assuming 'Expense' model has fields: 'item', 'budget', and 'actual_expenses'
-#             data = [{'item': budget.item, 'budget': budget.budgeted_amt, 'actual_expenses': budget.actual_exp} for budget in expenses]
+            expenses = budget.objects.all()  # Query your MySQL database for expenses
+            # Assuming 'Expense' model has fields: 'item', 'budget', and 'actual_expenses'
+            data = [{'item': budget.item, 'budget': budget.budgeted_amt, 'actual_expenses': budget.actual_exp} for budget in expenses]
 
-#             return Response(data)
-#         else:
-#             return JsonResponse({'error': 'Financial year not provided'}, status=400)
+            return Response(data)
+        else:
+            return JsonResponse({'error': 'Financial year not provided'}, status=400)
     
 @api_view(['POST'])
 def post_year_desc(request):
@@ -284,48 +291,21 @@ def post_year_desc(request):
     Desc = request.data.get('Desc')
     if F_year is not None and Desc is not None:
         financial_year = financialyear.objects.create(F_year=F_year, Desc=Desc)
+        departments = Deptmaster.objects.all()
+        items = itemmaster.objects.all()
+        for department in departments:
+            for item in items:
+                budget_instance = budget.objects.create(
+                    dept=department.dept,
+                    f_year=F_year,
+                    item=item.item,
+                    budgeted_amt=0.0,
+                    actual_exp=0.0
+                )
         # Add any additional logic or error handling here
         return Response({'message': 'Data added successfully'})
     else:
         return Response({'error': 'Invalid data provided'}, status=400)
-    
-# @api_view(['POST'])
-# def upload_budget(request):
-#     username = request.data.get('username')
-#     selectedYear = request.data.get('selectedYear')
-#     branch=User.objects.get(u_email=username).u_dep
-
-#     try:
-#         year = financialyear.objects.get(Desc=selectedYear).F_year
-#     except financialyear.DoesNotExist:
-#         raise NotFound(detail="Specified year not found")
-
-#     file = request.FILES.get('file')
-#     description = request.data.get('description')
-#     status = 'pending'
-#     comment = 'null'
-
-#     if file:
-#         content = file.read()
-#         content_file = io.BytesIO(content)
-#         content_file.seek(0)
-#         try:
-#             budget, created = Pdf.objects.update_or_create(
-#                 dept=branch,
-#                 f_year=year,
-#                 defaults={
-#                     'pdf': ContentFile(content_file.read(), name=file.name),
-#                     'description': description,
-#                     'status': status,
-#                     'comment': comment
-#                 }
-#             )
-#             return Response({"message": "PDF uploaded successfully"}, status=201)
-#         except IntegrityError as e:
-#             return Response({"message": "Failed to upload PDF: " + str(e)}, status=500)
-#     else:
-#         return Response({"message": "No file provided"}, status=400)
-    
 
     
 @api_view(['POST'])
@@ -372,7 +352,6 @@ def upload_budget(request):
         return Response({"message": "No file provided"}, status=400)
     
 
-
 @api_view(['POST'])
 def get_uploaded_docs(request):
     username = request.data.get('username')
@@ -395,91 +374,142 @@ def get_budget_details(request):
         selectedYear = request.data.get('selectedYear')
         username = request.data.get('username')
         dept=User.objects.get(u_email=username).u_dep
-        year = financialyear.objects.get(Desc=selectedYear).F_year
-        data = list(budget.objects.filter(dept = dept, f_year = year).values('item', 'budgeted_amt', 'actual_exp'))
+        selected_financial_year = financialyear.objects.get(Desc=selectedYear)
+        budget_data = budget.objects.filter(f_year=selected_financial_year.F_year,dept = dept)
+        # Fetch budget details with item descriptions
+        data = []
+        for record in budget_data:
+            item = itemmaster.objects.get(item = record.item).item_desc
+            pdf_data = {
+                'item' : item,
+                'budgeted_amt': record.budgeted_amt,
+                'actual_exp': record.actual_exp, 
+            }
+            data.append(pdf_data)
+            print(pdf_data)
         return Response(data)
     except :
         return Response({'message': 'Error in finding data'})
-   
+
+@api_view(['POST'])
+def get_item_amount(request):
+    try:
+        selectedYearfrom = request.data.get('selectedYearfrom')
+        selectedYearto = request.data.get('selectedYearto')
+        selecteditem = request.data.get('selecteditem')
+        username = request.data.get('username')
+        dept=User.objects.get(u_email=username).u_dep
+        yearfrom = financialyear.objects.get(Desc=selectedYearfrom).F_year
+        yearto = financialyear.objects.get(Desc=selectedYearto).F_year
+        itemm=itemmaster.objects.get(item_desc=selecteditem).item
+        data_budget = list(budget.objects.filter(dept = dept ,item = itemm ,f_year__range=(yearfrom, yearto)).values('budgeted_amt'))
+        data_actual = list(budget.objects.filter(dept = dept ,item = itemm ,f_year__range=(yearfrom, yearto)).values('actual_exp'))
+        data_year = list(financialyear.objects.filter(F_year__range=(yearfrom, yearto)).values('Desc'))
+        if len(data_budget)==len(data_year) and len(data_actual)==len(data_year):
+            response_data = {
+            'data_budget': data_budget,
+            'data_actual': data_actual,
+            'data_year': data_year
+            }
+            return Response(response_data)
+        else:
+            cul=[]
+            for i in range(len(data_year)):
+                desc = data_year[i]['Desc']
+                num = financialyear.objects.get(Desc=desc).F_year
+                try:
+                    budget_item = budget.objects.get(dept=dept, item=itemm, f_year=num).budgeted_amt
+                except budget.DoesNotExist:
+                    budget_item = None
+                try:
+                    actual_item = budget.objects.get(dept=dept, item=itemm, f_year=num).actual_exp
+                except budget.DoesNotExist:
+                    actual_item = None
+                if budget_item is None and actual_item is None:
+                    cul.append(desc)
+            return Response({'code':'10','years':cul})
+    except :
+        return Response({'message':'Error in finding data'})
+
+@api_view(['POST'])
+def get_list_amount(request):
+    try:
+        selectedYearfrom = request.data.get('selectedYearfrom')
+        selectedYearto = request.data.get('selectedYearto')
+        selectedPrice = request.data.get('selectedprice')
+        username = request.data.get('username')
+        dept=User.objects.get(u_email=username).u_dep
+        yearfrom = financialyear.objects.get(Desc=selectedYearfrom).F_year
+        yearto = financialyear.objects.get(Desc=selectedYearto).F_year
+        item_1 = list(budget.objects.filter(dept = dept , item = 'LAB-CONSUME' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        item_2 = list(budget.objects.filter(dept = dept , item = 'LAB-EQ' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        item_3 = list(budget.objects.filter(dept = dept , item = 'MAINT-SPARE' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        item_4 = list(budget.objects.filter(dept = dept , item = 'MISC' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        item_5 = list(budget.objects.filter(dept = dept , item = 'RND' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        item_6 = list(budget.objects.filter(dept = dept , item = 'SOFT' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        item_7 = list(budget.objects.filter(dept = dept , item = 'T&T' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        data_year = list(financialyear.objects.filter(F_year__range=(yearfrom, yearto)).values('Desc'))
+        data_response={
+            'Item_1':item_1,
+            'Item_2':item_2,
+            'Item_3':item_3,
+            'Item_4':item_4,
+            'Item_5':item_5,
+            'Item_6':item_6,
+            'Item_7':item_7,
+            'data_year':data_year,
+        }
+        return Response(data_response)
+    except :
+        return Response({'message':'Error in finding data'})
     
+from django.core.exceptions import ObjectDoesNotExist
 @csrf_exempt
 @api_view(['POST'])
 def update_budget_details(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
-            selectedYear = request.data.get('selectedYear')
+            # Parse JSON data from request body
+            data = request.data
+            
+            # Extract year and username from data
+            selectedYear = data[0].get('year')
+            username = data[0].get('username')
+            
+            # Retrieve additional required fields
             year = financialyear.objects.get(Desc=selectedYear).F_year
-            username = request.data.get('username')
-            dept=User.objects.get(u_email=username).u_dep
+            dept = User.objects.get(u_email=username).u_dep
 
-            item_mappings = {
-                'Laboratory Consumables': 'LAB-CONSUME',
-                'Laboratory Equipment': 'LAB-EQ',
-                'Maintenance and Spares': 'MAINT-SPARE',
-                'Miscellaneous expenses': 'MISC',
-                'Research and Development': 'RND',
-                'Software': 'SOFT',
-                'Training and Travel': 'T&T'
-            }
-
-            for item_data in data.get('updatedData', []):
-                item_name = item_data.get('item')
+            # Start looping from the second object
+            for item_data in data[1:]:
+                name = item_data.get('item')
+                item_name = itemmaster.objects.get(item_desc=name).item
                 budgeted_amt = float(item_data.get('budgeted_amt', 0))
                 actual_exp = float(item_data.get('actual_exp', 0))
 
-                if item_name in item_mappings:
-                    item_value = item_mappings[item_name]
-
-                    # Try to get the existing record
-                    try:
-                        budget_obj = budget.objects.get(dept=dept, f_year=year, item=item_value)
-
-                        # If it exists, delete the existing record
-                        budget_obj.delete()
-
-                    except budget.DoesNotExist:
-                        pass  # If it doesn't exist, do nothing
-
-                else:
-                    continue  # Skip items not in item_mappings
-
-            for item_data in data.get('updatedData', []):
-                item_name = item_data.get('item')
-                budgeted_amt = float(item_data.get('budgeted_amt', 0))
-                actual_exp = float(item_data.get('actual_exp', 0))
-
-                if item_name in item_mappings:
-                    item_value = item_mappings[item_name]
-                    # Create a new record
-                    budget_obj = budget.objects.create(
-                        dept=dept,
-                        f_year=year,
-                        item=item_value,
-                        budgeted_amt=budgeted_amt,
-                        actual_exp=actual_exp
-                    )
-
-                else:
-                    print("Error occur")
-
-                
+                try:
+                    # Get the instance if it exists, otherwise create a new one
+                    item_instance = budget.objects.filter(dept=dept, f_year=year, item=item_name)
+                    if item_instance:
+                        item_instance.update(budgeted_amt=budgeted_amt, actual_exp=actual_exp)
+                except ObjectDoesNotExist:
+                    raise ValueError("Item does not exist.")
 
             return Response({'message': 'Budget details updated successfully.'}, status=status.HTTP_200_OK)
-
-        except json.JSONDecodeError as e:
-            return Response({'error': 'Invalid JSON format.'}, status=status.HTTP_400_BAD_REQUEST)
 
         except financialyear.DoesNotExist:
             return Response({'error': 'Selected year not found.'}, status=status.HTTP_404_NOT_FOUND)
 
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        except ValueError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
     else:
         return Response({'error': 'Invalid request method.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-    
-
 
 @api_view(['GET'])
 def download_pdf(request, pdf_id):

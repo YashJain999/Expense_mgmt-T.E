@@ -2,7 +2,7 @@
   width: 0; 
   transition: width 0.3s ease;
   box-sizing: content-box;
-  overflow: hidden; 
+  /* overflow: hidden;  */
 }
 
 .list-group-flush button:hover{
@@ -19,14 +19,19 @@ top: 21px;
 color: white;
 }
 
+li.list-group-item .active{
+color: red;
+}
+
 .list-group-flush i:hover{
 color: black;
 background: white;
 }
 
-.active{
-color: red;
+.offcanvas-body .btn{
+width:100%;
 }
+
 @media (max-width: 425px) {
 
 html{

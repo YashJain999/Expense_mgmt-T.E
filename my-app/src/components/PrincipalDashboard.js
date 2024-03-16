@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from "react-router-dom";
 import axios from 'axios';
 import '../assets/css/PrincipalDashboard.css'; 
-function PrincipalDashboard({ isOffcanvasOpen }) {
+import Sidebar from "./Sidebar";
+import Navbar from "./Navbar";
+
+function PrincipalDashboard({isOffcanvasOpen,toggleOffcanvas,closeOffcanvas}) {
   const AppStyle = {
     position:"relative",
-    top:"0px",
-    left : isOffcanvasOpen ? '130px': '0%'  ,
+    top:"-100px",
+    left : isOffcanvasOpen ? '0px': '0%'  ,
     width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
     transition: 'all 0.5s ease',
+    zIndex: 1000,
+  };
+  const navbarStyle = {
+    left: isOffcanvasOpen ? "260px" : "0%",
+    right: "0px",
+    width: isOffcanvasOpen ? "calc(100% - 260px)" : "100%",
+    transition: "all 0.3s ease  ",
     zIndex: 1000,
   };
   const [selectedYear, setSelectedYear] = useState('');
@@ -15,6 +26,8 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
   const [pdfRecords, setPdfRecords] = useState([]);
   const [showEditWarning, setShowEditWarning] = useState(false);
   const [departmentStates, setDepartmentStates] = useState(getInitialDepartmentStates());
+  const { state } = useLocation();
+  console.log(state);
 
   const handleOptionChange = async (department, option) => {
     if (!departmentStates[department]?.editVisible) {
@@ -164,6 +177,19 @@ function PrincipalDashboard({ isOffcanvasOpen }) {
 
   return (
     <div className='container p-2 mw-5' style={AppStyle}>
+      <Navbar
+        title="LabTracker"
+        isOffcanvasOpen={isOffcanvasOpen}
+        toggleOffcanvas={toggleOffcanvas}
+        // style={navbarStyle}
+      />
+      <div className="app">
+        <Sidebar
+          isOffcanvasOpen={isOffcanvasOpen}
+          // closeOffcanvas={closeOffcanvas}
+          toggleOffcanvas={toggleOffcanvas}
+        />
+      </div>
     <h1> Review the Budget Reports</h1>
       <label htmlFor="language">Financial Year :</label>
       <select
