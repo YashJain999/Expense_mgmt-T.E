@@ -20,6 +20,10 @@ td {
   width: 50%; 
   border: 2px solid black;
   border-collapse: collapse;
+  text-wrap: nowrap;
+  padding-left: 25px;
+  padding-right: 25px;
+  text-align: center;
 }
 
 .saveenterbudget,
@@ -76,3 +80,21 @@ td {
   padding-left: 10px;
   padding-right: 40px;
 }
+
+.budget_input
+{
+  border-radius: 0%;
+  color: red;
+  border-color: aquamarine;
+  border-width: 60px;
+  text-align: center;
+}
+/* 
+.actexp{
+  color: blue;
+  padding-left: 60px;
+  padding-right: 50px;
+  text-align: center;
+  text-wrap: nowrap;
+
+} */
