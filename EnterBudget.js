@@ -192,9 +192,9 @@ function EnterBudget({ isOffcanvasOpen }) {
             <table>
                 <thead>
                     <tr>
-                        <th style={{width : "75px"}}>Items</th>
-                        <th>Budget</th>
-                        <th>Actual Expenses</th>
+                        <th className='Itemcol'>Items</th>
+                        <th className='Budgetcol'>Budget</th>
+                        <th className='Actexpcol'>Actual Expenses</th>
                     </tr>
                 </thead>
                 <tbody>
