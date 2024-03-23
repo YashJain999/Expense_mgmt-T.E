@@ -23,14 +23,18 @@ from django.http import HttpResponse
 from reportlab.lib import colors
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
-from reportlab.lib.pagesizes import A2
-# new imports
+from reportlab.lib.pagesizes import A4
 from django.views.decorators.csrf import csrf_exempt
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from uuid import uuid4
 import os
 from django.shortcuts import get_object_or_404
+#new imports
+from reportlab.platypus import Image
+import os
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
 
 
 class LoginView(APIView):
@@ -38,13 +42,18 @@ class LoginView(APIView):
         u_email = request.data.get('username')  # Assuming 'u_email' is the username field
         u_pass = request.data.get('password')    # Assuming 'u_pass' is the password field   
         try:
-            user = User.objects.get(u_email=u_email)
-            if user.u_pass == u_pass:  # You should hash and compare passwords securely
-                return Response({'message': 'Login successful','u_desig':user.u_desig,'u_dep':user.u_dep})
+            if User.objects.filter(u_email=u_email).exists():
+                user = User.objects.get(u_email=u_email)
+                if user.u_pass == u_pass:
+                    return Response({'message': 'Login successful','u_desig':user.u_desig,'u_dep':user.u_dep ,'code':'10'})
+                else :
+                    return Response({'message': 'Incorrect password' , 'code':'20'})
+                    print("Icoorect Password")
             else:
-                return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'message': 'Incorrect User Email','code':'30'})
+                print("Iccorect User email")
         except user.DoesNotExist:
-            return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'User not found','code':'40'})  
         
 class CreateUserView(APIView):
     def post(self, request):
@@ -84,7 +93,6 @@ def generate_pdf_view(request):
      
     if not selected_year:
         return HttpResponse("Selected year is required", status=400)
-    print(selected_year)
     
     username = request.GET.get('username')
     dept_value=User.objects.get(u_email=username).u_dep
@@ -96,27 +104,34 @@ def generate_pdf_view(request):
     except financialyear.DoesNotExist:
         raise Http404("Financial Year matching query does not exist")
     
+    # Adjustments for A4 paper size
+    page_width, page_height = A4
+    page_margin = inch * 0.5  # Adjust margin as needed
+
     filename = "item_master.pdf"
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
-    doc = SimpleDocTemplate(response, pagesize=A2, title="PDF Report")
+    
+    doc = SimpleDocTemplate(response, pagesize=A4, rightMargin=page_margin, leftMargin=page_margin, topMargin=page_margin, bottomMargin=page_margin,title="PDF Report")
 
     elements = []
+    image_path = os.path.join(settings.BASE_DIR, 'budget', 'images', 'apsit_header.png')
+
+    # Add the image to the elements
+    image = Image(image_path, width=page_width - 2 * page_margin, height=100)  # Adjust width as needed
+    elements.append(image)
 
     # Add title to the PDF
     title_style = ParagraphStyle(
         name='HeadingStyle',
-        fontSize=36,
+        fontSize=18,
         fontName='Helvetica-Bold',
         alignment=1,
         spaceAfter=12,
     )
-    college_name = 'A. P. Shah Institute of Technology'
-    title = Paragraph(college_name, title_style)
-    elements.append(title)
 
     # Add blank paragraphs for spacing
-    elements.extend([Paragraph(" ", title_style) for _ in range(7)])
+    elements.extend([Paragraph(" ", title_style) for _ in range(4)])
 
     # Add heading to the PDF
     heading = f"Cumulative Budget Report of CFY {selected_year}"
@@ -124,7 +139,7 @@ def generate_pdf_view(request):
     elements.append(Heading)
 
     # Add blank paragraphs for spacing
-    elements.extend([Paragraph(" ", title_style) for _ in range(7)])
+    elements.extend([Paragraph(" ", title_style) for _ in range(4)])
 
     # Generate a list of the previous three years
     previous_years = [f_year_value - i for i in range(4)]
@@ -133,7 +148,7 @@ def generate_pdf_view(request):
     f_years = [f"{year}-{year + 1}" for year in previous_years]
 
     # Create a list to hold the data for the PDF table
-    data = [['Items'] + [f'Budget in CFY {f_year_value}', f'Actual Expenses in CFY {f_year_value}', f'Budget in CFY {f_year_value-1}', f'Actual Expenses in CFY {f_year_value-1}', f'Budget in CFY {f_year_value-2}', f'Actual Expenses in CFY {f_year_value-2}', f'Budget in CFY {f_year_value-3}', f'Actual Expenses in CFY {f_year_value-3}']]
+    data = [['Items'] + [f'Budget in {f_year_value}', f'Actual Expenses in {f_year_value}', f'Budget in {f_year_value-1}', f'Actual Expenses in {f_year_value-1}', f'Budget in {f_year_value-2}', f'Actual Expenses in {f_year_value-2}', f'Budget in {f_year_value-3}', f'Actual Expenses in {f_year_value-3}']]
 
 
     # Fetch and organize data for each row
@@ -155,17 +170,20 @@ def generate_pdf_view(request):
     data.append(total_row)
 
     # Create a table with the data
-    table = Table(data, colWidths=None)  # Set colWidths to None for automatic adjustment
+    table = Table(data, colWidths=[75] + [63] * (len(f_years) * 2))  # Adjust column widths as needed
 
-# Define the style for the table
-    style = TableStyle([
-    ('BACKGROUND', (0, 0), (-1, 0), colors.red),  # Color the headers
-    ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # Set text color for headers
-    ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Add grid lines
-    ('BOTTOMPADDING', (0, 0), (-1, -1), 20),  # Space after each row
-    ('TOPPADDING', (0, 0), (-1, -1), 20),  # Space before each row
-    ('WORDWRAP', (0, 0), (-1, -1), False),  # Disable word wrap
-])
+    # Define the style for the table
+    style = [
+        ('BACKGROUND', (0, 0), (-1, 0), colors.red),  # Color the headers
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),  # Set text color for headers
+       # ('ALIGN', (0, 0), (-1, -1), 'LEFT'),  # Center align text
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Add grid lines
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),  # Space after each row
+        ('TOPPADDING', (0, 0), (-1, -1), 10),  # Space before each row
+        ('WORDWRAP', (0, 0), (-1, 0), False),  # Enable word wrap for header cells
+        ('FONT', (0, 0), (-1, -1), 'Helvetica'),  # Set bold font for all cells
+        ('FONTSIZE', (0, 0), (-1, -1), 5),  # Set font size for all cells
+    ]
 
     # Apply the style to the table
     table.setStyle(style)
@@ -179,17 +197,21 @@ def generate_pdf_view(request):
     # Add footer to the PDF
     footer_style = ParagraphStyle(
         name='footerStyle',
-        fontSize=14,
+        fontSize=12,
         fontName='Helvetica-Bold',
     )
-    footer_text = 'Department of Information Technology'
+    department = Deptmaster.objects.get(dept=dept_value).desc
+    footer_text = f'Department of {department}'
     footer = Paragraph(footer_text, footer_style)
     elements.append(footer)
+
+    
 
     # Build the PDF document
     doc.build(elements)
 
     return response
+
 
 
 @api_view(['POST'])
@@ -218,6 +240,11 @@ def dropdown(request):
     return Response(years)
 
 @api_view(['GET'])
+def item_dropdown(request):
+    item = itemmaster.objects.values_list('item_desc', flat=True)
+    return Response(item)
+
+@api_view(['GET'])
 def get_financialyears(request):
     years = financialyear.objects.values_list('F_year', flat=True)
     desc = financialyear.objects.values_list('Desc', flat=True)
@@ -225,17 +252,14 @@ def get_financialyears(request):
     
 @api_view(['POST'])
 def get_budget_data(request):
-    selected_year = request.data.get('selectedYear')
+    start_selected_year = request.data.get('selectedYearfrom')
+    end_selected_year = request.data.get('selectedYearto')
     username = request.data.get('username')
     dept=User.objects.get(u_email=username).u_dep   
-    financial_year = financialyear.objects.get(Desc=selected_year)
-    desc = financial_year.F_year
+    start_financial_year = financialyear.objects.get(Desc=start_selected_year).F_year
+    end_financial_year = financialyear.objects.get(Desc=end_selected_year).F_year
 
-    # Convert the years to the required format
-    previous_years = [f"{year}-{year + 1}" for year in range(desc, desc - 4, -1)]
-
-    budget_data = list(budget.objects.filter(dept=dept, f_year__in=previous_years).values('item', 'budgeted_amt', 'actual_exp'))
-    print(budget_data)
+    budget_data = list(budget.objects.filter(dept=dept, f_year__range=(start_financial_year, end_financial_year)).values('f_year','item', 'budgeted_amt', 'actual_exp'))
     return Response(budget_data)
 
 @api_view(['POST'])
@@ -267,6 +291,17 @@ def post_year_desc(request):
     Desc = request.data.get('Desc')
     if F_year is not None and Desc is not None:
         financial_year = financialyear.objects.create(F_year=F_year, Desc=Desc)
+        departments = Deptmaster.objects.all()
+        items = itemmaster.objects.all()
+        for department in departments:
+            for item in items:
+                budget_instance = budget.objects.create(
+                    dept=department.dept,
+                    f_year=F_year,
+                    item=item.item,
+                    budgeted_amt=0.0,
+                    actual_exp=0.0
+                )
         # Add any additional logic or error handling here
         return Response({'message': 'Data added successfully'})
     else:
@@ -383,8 +418,78 @@ def get_budget_details(request):
         return Response(data)
     except :
         return Response({'message': 'Error in finding data'})
-   
-    
+
+@api_view(['POST'])
+def get_item_amount(request):
+    try:
+        selectedYearfrom = request.data.get('selectedYearfrom')
+        selectedYearto = request.data.get('selectedYearto')
+        selecteditem = request.data.get('selecteditem')
+        username = request.data.get('username')
+        dept=User.objects.get(u_email=username).u_dep
+        yearfrom = financialyear.objects.get(Desc=selectedYearfrom).F_year
+        yearto = financialyear.objects.get(Desc=selectedYearto).F_year
+        itemm=itemmaster.objects.get(item_desc=selecteditem).item
+        data_budget = list(budget.objects.filter(dept = dept ,item = itemm ,f_year__range=(yearfrom, yearto)).values('budgeted_amt'))
+        data_actual = list(budget.objects.filter(dept = dept ,item = itemm ,f_year__range=(yearfrom, yearto)).values('actual_exp'))
+        data_year = list(financialyear.objects.filter(F_year__range=(yearfrom, yearto)).values('Desc'))
+        if len(data_budget)==len(data_year) and len(data_actual)==len(data_year):
+            response_data = {
+            'data_budget': data_budget,
+            'data_actual': data_actual,
+            'data_year': data_year
+            }
+            return Response(response_data)
+        else:
+            cul=[]
+            for i in range(len(data_year)):
+                desc = data_year[i]['Desc']
+                num = financialyear.objects.get(Desc=desc).F_year
+                try:
+                    budget_item = budget.objects.get(dept=dept, item=itemm, f_year=num).budgeted_amt
+                except budget.DoesNotExist:
+                    budget_item = None
+                try:
+                    actual_item = budget.objects.get(dept=dept, item=itemm, f_year=num).actual_exp
+                except budget.DoesNotExist:
+                    actual_item = None
+                if budget_item is None and actual_item is None:
+                    cul.append(desc)
+            return Response({'code':'10','years':cul})
+    except :
+        return Response({'message':'Error in finding data'})
+
+@api_view(['POST'])
+def get_list_amount(request):
+    try:
+        selectedYearfrom = request.data.get('selectedYearfrom')
+        selectedYearto = request.data.get('selectedYearto')
+        selectedPrice = request.data.get('selectedprice')
+        username = request.data.get('username')
+        dept=User.objects.get(u_email=username).u_dep
+        yearfrom = financialyear.objects.get(Desc=selectedYearfrom).F_year
+        yearto = financialyear.objects.get(Desc=selectedYearto).F_year
+        item_1 = list(budget.objects.filter(dept = dept , item = 'LAB-CONSUME' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        item_2 = list(budget.objects.filter(dept = dept , item = 'LAB-EQ' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        item_3 = list(budget.objects.filter(dept = dept , item = 'MAINT-SPARE' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        item_4 = list(budget.objects.filter(dept = dept , item = 'MISC' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        item_5 = list(budget.objects.filter(dept = dept , item = 'RND' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        item_6 = list(budget.objects.filter(dept = dept , item = 'SOFT' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        item_7 = list(budget.objects.filter(dept = dept , item = 'T&T' , f_year__range = (yearfrom, yearto)).values('f_year',selectedPrice))
+        data_year = list(financialyear.objects.filter(F_year__range=(yearfrom, yearto)).values('Desc'))
+        data_response={
+            'Item_1':item_1,
+            'Item_2':item_2,
+            'Item_3':item_3,
+            'Item_4':item_4,
+            'Item_5':item_5,
+            'Item_6':item_6,
+            'Item_7':item_7,
+            'data_year':data_year,
+        }
+        return Response(data_response)
+    except :
+        return Response({'message':'Error in finding data'})
 @csrf_exempt
 @api_view(['POST'])
 def update_budget_details(request):
@@ -416,10 +521,8 @@ def update_budget_details(request):
 
                     # Try to get the existing record
                     try:
-                        budget_obj = budget.objects.get(dept=dept, f_year=year, item=item_value)
-
-                        # If it exists, delete the existing record
-                        budget_obj.delete()
+                        # Filter the queryset based on the conditions and delete the matching rows
+                        budget.objects.filter(dept=dept, f_year=year, item=item_value).delete()
 
                     except budget.DoesNotExist:
                         pass  # If it doesn't exist, do nothing
@@ -500,6 +603,7 @@ def get_all_pdf_records(request):
                 'dept' : dept,
                 'pdf_id': record.pdf_id,
                 'comment': record.comment, 
+                'status' :record.status,
             }
             data.append(pdf_data)
             print(pdf_data)

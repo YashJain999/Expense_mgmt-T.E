@@ -15,7 +15,7 @@ function EnterBudget({isOffcanvasOpen}) {
       left : isOffcanvasOpen ? '0px': '0%'  ,
       width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
       transition: 'all 0.5s ease',
-      zIndex: 999,
+      zIndex: 1000,
     };
 
     useEffect(() => {
@@ -123,11 +123,10 @@ function EnterBudget({isOffcanvasOpen}) {
                 updatedData,
                 username
             });
-            console.log('Data successfully updated:', response.data);
             window.alert("Data Updated Success")
             handleYearSubmit();
         } catch (error) {
-            console.error('Error updating data:', error);
+            window.alert('Error updating data:', error);
         }
     };
     
@@ -147,7 +146,7 @@ function EnterBudget({isOffcanvasOpen}) {
                 ))}
             </select>
 
-<button class="viewbutton" onClick={handleYearSubmit}>View</button>
+<button className="viewbutton" onClick={handleYearSubmit}>View</button>
       <br></br>
       <table>
         <thead>
@@ -198,8 +197,8 @@ function EnterBudget({isOffcanvasOpen}) {
       </table>
 
       
-      <button class="Editenterbudget" onClick={handleEditClick}>Edit</button>
-      <button class="saveenterbudget" onClick={handleSaveClick} disabled={!isEditing}>Save</button> {/* Disable save button if not editing */}
+      <button className="Editenterbudget" onClick={handleEditClick}>Edit</button>
+      <button className="saveenterbudget" onClick={handleSaveClick} disabled={!isEditing}>Save</button> {/* Disable save button if not editing */}
     </div>
   );
 }

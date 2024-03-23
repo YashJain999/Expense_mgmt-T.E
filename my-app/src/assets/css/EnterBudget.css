@@ -1,4 +1,4 @@
- body {
+body {
     text-align: center;
   }
   
@@ -7,11 +7,11 @@
     padding: 10px 20px;
     border-radius: 5px;
   }
- 
+  
   .year:focus {
     outline: none;
   }
- 
+  
   table,
   th,
   td {
@@ -23,7 +23,7 @@
     border: 2px solid black;
     border-collapse: collapse;
   }
-
+  
   .saveenterbudget {
     position: relative;
     top: 20px;
@@ -71,4 +71,4 @@
     font-size: 16px;
     color: black;
     background-color: white;
-  } 
+  }

@@ -1,5 +1,6 @@
 import React from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+// import { useParams } from "react-router-dom";
+import { Routes, Route ,useLocation } from "react-router-dom";
 import { useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
@@ -14,7 +15,8 @@ import UploadBudget from "./UploadBudget";
 import ViewBudget from "./ViewBudget";
 import UpdateFinancialYear from "./UpdateFinancialYear";
 import PrincipalDashboard from "./PrincipalDashboard";
-import PrincipalQuotation from './PrincipalQuotation';
+import PrincipalQuotation from './PrincipalQuotation'
+import Graph from "./Graph";
 
 function Home() {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(true);
@@ -30,17 +32,14 @@ function Home() {
     left: isOffcanvasOpen ? "130px" : "0%",
     width: isOffcanvasOpen ? "calc(100% - 260px)" : "100%",
     transition: "all 0.5s ease",
-    zIndex: 999,
+    zIndex: 1000,
   };
 
   const location = useLocation()
   console.log(location)
-
   return (
     <>
       <div className="container p-2 mw-5" style={AppStyle}>
-        {/* <h1>Welcome to Labtracker</h1>
-        <p>Your personalised future friendly inventory manager</p> */}
         {window.location.pathname !== "/" &&
           window.location.pathname !== "/login" &&
           window.location.pathname !== "/register" &&
@@ -85,6 +84,11 @@ function Home() {
             exact
             path="/budget/updatefinancialyear"
             element={<UpdateFinancialYear isOffcanvasOpen={isOffcanvasOpen} />}
+          ></Route>
+          <Route
+            exact
+            path="/budget/graphs"
+            element={<Graph isOffcanvasOpen={isOffcanvasOpen} />}
           ></Route>
           <Route
             exact

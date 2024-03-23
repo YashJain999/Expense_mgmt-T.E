@@ -4,9 +4,10 @@ import "../assets/css/Sidebar.css";
 
 export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
   const NavLinkStyle = {
+    // textDecoration: "none",
     width: 20,
-    // color: "#",
-    // background: "#",
+    // border: "none",
+    // color: "none",
   };
 
   const { username } = useParams();
@@ -24,6 +25,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
         text: "Update Financial Year",
         path: `/home/${username}/budget/updatefinancialyear`,
       },
+      { text: "Budget Analysis", path: `/home/${username}/budget/graphs` },
     ];
     setShouldShowBudget(buttonObject1);
     setIsBudgetListVisible(!isBudgetListVisible);
@@ -137,11 +139,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                   <NavLink
                     to={`/home/${username}/budget`}
                     state={{ desig: location.state.desig }}
-                    style={({ isActive }) =>
-                      isActive
-                        ? { NavLinkStyle }
-                        : { color: "#fff", background: "  " }
-                    }
+                    style={NavLinkStyle}
                   >
                     <button
                       type="button"
@@ -162,11 +160,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                 <li className="list-group-item">
                   <NavLink
                     to={`/home/${username}`}
-                    style={({ isActive }) =>
-                      isActive
-                        ? { NavLinkStyle }
-                        : { color: "#fff", background: "#" }
-                    }
+                    style={NavLinkStyle}
                     activestyle={{
                       fontWeight: "bold",
                       color: "red",
@@ -188,15 +182,11 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                 </li>
                 <div className=" m-n1 pt-2 container">
                   {shouldShowBudget.map((item, index) => (
-                    <div className="menu-scrollable">
-                      <li className="list-unstyled" key={index}>
+                    <div className="menu-scrollable"key={index}>
+                      <li className="list-unstyled" >
                         <NavLink
                           to={item.path}
-                          style={({ isActive }) =>
-                            isActive
-                              ? { NavLinkStyle }
-                              : { color: "#fff", background: "#" }
-                          }
+                          style={NavLinkStyle}
                           activestyle={{
                             fontWeight: "bold",
                             color: "red",
@@ -222,11 +212,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
               <li className="list-group-item">
                 <NavLink
                   to={`/home/${username}/quotation`}
-                  style={({ isActive }) =>
-                    isActive
-                      ? { NavLinkStyle }
-                      : { color: "#fff", background: "#" }
-                  }
+                  style={NavLinkStyle}
                   state={{ desig: location.state.desig }}
                 >
                   <button
@@ -248,11 +234,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                   <NavLink
                     to={`/home/${username}`}
                     state={{ desig: location.state.desig }}
-                    style={({ isActive }) =>
-                      isActive
-                        ? { NavLinkStyle }
-                        : { color: "#fff", background: "#" }
-                    }
+                    style={NavLinkStyle}
                   >
                     <button
                       type="button"
@@ -272,11 +254,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                       <NavLink
                         to={item.path}
                         state={{ desig: location.state.desig }}
-                        style={({ isActive }) =>
-                          isActive
-                            ? { NavLinkStyle }
-                            : { color: "#fff", background: "#" }
-                        }
+                        style={NavLinkStyle}
                       >
                         <button
                           type="button"
@@ -296,11 +274,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                 <NavLink
                   to={`/home/${username}/purchase`}
                   state={{ desig: location.state.desig }}
-                  style={({ isActive }) =>
-                    isActive
-                      ? { NavLinkStyle }
-                      : { color: "#fff", background: "#" }
-                  }
+                  style={NavLinkStyle}
                 >
                   <button
                     type="button"
@@ -321,11 +295,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                   <NavLink
                     to={`/home/${username}`}
                     state={{ desig: location.state.desig }}
-                    style={({ isActive }) =>
-                      isActive
-                        ? { NavLinkStyle }
-                        : { color: "#fff", background: "#" }
-                    }
+                    style={NavLinkStyle}
                   >
                     <button
                       type="button"
@@ -345,11 +315,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                       <NavLink
                         to={item.path}
                         state={{ desig: location.state.desig }}
-                        style={({ isActive }) =>
-                          isActive
-                            ? { NavLinkStyle }
-                            : { color: "#fff", background: "#" }
-                        }
+                        style={NavLinkStyle}
                       >
                         <button
                           type="button"
@@ -369,11 +335,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                 <NavLink
                   to={`/home/${username}/bills`}
                   state={{ desig: location.state.desig }}
-                  style={({ isActive }) =>
-                    isActive
-                      ? { NavLinkStyle }
-                      : { color: "#fff", background: "#" }
-                  }
+                  style={NavLinkStyle}
                 >
                   <button
                     type="button"
@@ -394,11 +356,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                   <NavLink
                     to={`/home/${username}/bills`}
                     state={{ desig: location.state.desig }}
-                    style={({ isActive }) =>
-                      isActive
-                        ? { NavLinkStyle }
-                        : { color: "#fff", background: "#" }
-                    }
+                    style={NavLinkStyle}
                   >
                     <button
                       type="button"
@@ -418,11 +376,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                       <NavLink
                         to={item.path}
                         state={{ desig: location.state.desig }}
-                        style={({ isActive }) =>
-                          isActive
-                            ? { NavLinkStyle }
-                            : { color: "#fff", background: "#" }
-                        }
+                        style={NavLinkStyle}
                       >
                         <button
                           type="button"
@@ -442,11 +396,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                 <NavLink
                   to={`/home/${username}/centraldeadstock`}
                   state={{ desig: location.state.desig }}
-                  style={({ isActive }) =>
-                    isActive
-                      ? { NavLinkStyle }
-                      : { color: "#fff", background: "#" }
-                  }
+                  style={NavLinkStyle}
                 >
                   <button
                     type="button"
@@ -466,11 +416,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                 <li className="list-group-item">
                   <NavLink
                     to={`/home/${username}`}
-                    style={({ isActive }) =>
-                      isActive
-                        ? { NavLinkStyle }
-                        : { color: "#fff", background: "#" }
-                    }
+                    style={NavLinkStyle}
                     activestyle={{
                       fontWeight: "bold",
                       color: "red",
@@ -495,11 +441,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                       <NavLink
                         to={item.path}
                         state={{ desig: location.state.desig }}
-                        style={({ isActive }) =>
-                          isActive
-                            ? { NavLinkStyle }
-                            : { color: "#fff", background: "#" }
-                        }
+                        style={NavLinkStyle}
                       >
                         <button
                           type="button"
@@ -519,11 +461,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                 <NavLink
                   to={`/home/${username}/feedback`}
                   state={{ desig: location.state.desig }}
-                  style={({ isActive }) =>
-                    isActive
-                      ? { NavLinkStyle }
-                      : { color: "#fff", background: "#" }
-                  }
+                  style={NavLinkStyle}
                 >
                   <button
                     type="button"
@@ -544,11 +482,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                   <NavLink
                     to={`/home/${username}`}
                     state={{ desig: location.state.desig }}
-                    style={({ isActive }) =>
-                      isActive
-                        ? { NavLinkStyle }
-                        : { color: "#fff", background: "#" }
-                    }
+                    style={NavLinkStyle}
                   >
                     <button
                       type="button"
@@ -568,11 +502,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                       <NavLink
                         to={item.path}
                         state={{ desig: location.state.desig }}
-                        style={({ isActive }) =>
-                          isActive
-                            ? { NavLinkStyle }
-                            : { color: "#fff", background: "#" }
-                        }
+                        style={NavLinkStyle}
                       >
                         <button
                           type="button"
@@ -592,11 +522,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                 <NavLink
                   to={`/home/${username}/principal`}
                   state={{ desig: location.state.desig }}
-                  style={({ isActive }) =>
-                    isActive
-                      ? { NavLinkStyle }
-                      : { color: "#fff", background: "#" }
-                  }
+                  style={NavLinkStyle}
                 >
                   <button
                     type="button"
@@ -616,11 +542,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                   <NavLink
                     to={`/home/${username}`}
                     state={{ desig: location.state.desig }}
-                    style={({ isActive }) =>
-                      isActive
-                        ? { NavLinkStyle }
-                        : { color: "#fff", background: "#" }
-                    }
+                    style={NavLinkStyle}
                   >
                     <button
                       type="button"
@@ -640,11 +562,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                 <NavLink
                   // to={`/home/${username}/principalquotation`}
                   state={{ desig: location.state.desig }}
-                  style={({ isActive }) =>
-                    isActive
-                      ? { NavLinkStyle }
-                      : { color: "#fff", background: "#" }
-                  }
+                  style={NavLinkStyle}
                 >
                   <button
                     type="button"
@@ -664,11 +582,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                   <NavLink
                     to={`/home/${username}`}
                     state={{ desig: location.state.desig }}
-                    style={({ isActive }) =>
-    isActive
-      ? {NavLinkStyle}
-      : { color: '#fff', background: '#7600dc' }d: '#7600dc' }
-  }
+                    style={NavLinkStyle}
                   >
                     <button
                       type="button"

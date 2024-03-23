@@ -1,3 +1,8 @@
+
+body {
+  text-align: center;
+}
+
 select {
   border: none;
   padding: 10px 20px;
