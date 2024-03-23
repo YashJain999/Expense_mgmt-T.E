@@ -18,10 +18,15 @@ html{
     font-size: 20px;
   }  
 
-  .active{
-    color: blue;
+  li.list-group-item .active{
+    color: red;
     /* background-color: pink; */
+    text-decoration: black;
   }
+  /* .active{
+    color: blue;
+    background-color: pink;
+  } */
     
   @media (max-width: 425px) {
     html{

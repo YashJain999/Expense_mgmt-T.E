@@ -19,9 +19,6 @@
   color: white;
 }
 
-li.list-group-item .active{
-  color: red;
-}
 
 .list-group-flush i:hover{
   color: black;

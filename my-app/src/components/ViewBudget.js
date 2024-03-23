@@ -12,7 +12,7 @@ function ViewBudget({isOffcanvasOpen}) {
     left : isOffcanvasOpen ? '0px': '0%'  ,
     width: isOffcanvasOpen ? 'calc(100% - 360px)': '100%'  ,
     transition: 'all 0.5s ease',
-    zIndex: 1000,
+    zIndex: 999,
   };
   const [selectedYear, setSelectedYear] = useState('');
   const [budgetData, setBudgetData] = useState([]);
