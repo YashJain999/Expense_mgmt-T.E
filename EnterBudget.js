@@ -41,7 +41,7 @@ function EnterBudget({ isOffcanvasOpen }) {
         left: isOffcanvasOpen ? '0px' : '0%',
         width: isOffcanvasOpen ? 'calc(100% - 260px)' : '100%',
         transition: 'all 0.5s ease',
-        zIndex: 1000,
+        zIndex: 900,
     };
 
     useEffect(() => {
@@ -170,7 +170,7 @@ function EnterBudget({ isOffcanvasOpen }) {
     return (
         <div className='container p-2 mw-5' style={AppStyle}>
             {/* Dropdown component */}
-            <label htmlFor="language">Financial Year:</label>
+            <label htmlFor="language" className='FinanYear'>Financial Year:</label>
             <select
                 className="year"
                 value={selectedYear}
@@ -189,6 +189,12 @@ function EnterBudget({ isOffcanvasOpen }) {
         Please click the "Edit" button to make changes.
       </div>
     )}
+    <br></br>
+    <br></br>
+    
+    
+    <div className='maindiv'>
+        <br></br>
             <table>
                 <thead>
                     <tr>
@@ -201,8 +207,8 @@ function EnterBudget({ isOffcanvasOpen }) {
     {Object.keys(budgetData).map((item, index) => (
         <tr key={index}>
             <td>{item}</td>
-            <td><input type='number' className='budgetinput' value={budgetData[item].budgeted_amt} onChange={(e) => handleBudAmtChange(item,e.target.value)} placeholder=''></input></td>
-            <td><input type='number' value={budgetData[item].actual_exp} onChange={(e) => handleActExpChange(item,e.target.value)} placeholder=''></input></td>
+            <td className='tdbudgetinput'><input type='number' className='budgetinput' value={budgetData[item].budgeted_amt} onChange={(e) => handleBudAmtChange(item,e.target.value)} placeholder=''></input></td>
+            <td className='tdactexp'><input type='number' className="actexp"value={budgetData[item].actual_exp} onChange={(e) => handleActExpChange(item,e.target.value)} placeholder=''></input></td>
         </tr>
     ))}
     <tr>
@@ -212,6 +218,8 @@ function EnterBudget({ isOffcanvasOpen }) {
                 </tr>
 </tbody>
             </table>
+            <br></br>
+            </div>
             <button className="Editenterbudget" onClick={handleEditClick} style={{ display: !isEditing ? 'inline-block' : 'none' }}>Edit</button>
             <button className="saveenterbudget" onClick={handleSaveClick} style={{ display: isEditing ? 'inline-block' : 'none' }}>Save</button>
             <button className="cancelenterbudget" onClick={handleCancelClick} style={{ display: isEditing ? 'inline-block' : 'none' }}>Cancel</button>
