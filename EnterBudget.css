@@ -18,13 +18,13 @@ body {
 table {
   table {
   position: fixed;
-  top: 50%; /* Adjust this value to position the table vertically */
-  left: 50%; /* Adjust this value to position the table horizontally */
+  top: 50%; 
+  left: 50%; 
   transform: translate(-50%, -50%);
   width: 80%;
   border-collapse: collapse;
   box-shadow: 0 0 10px rgba(221, 43, 12, 0.1);
-  z-index: 1000; /* Adjust the z-index as needed */
+  z-index: 1000; 
 }
 
 }
@@ -132,16 +132,16 @@ td {
 }
 
 .maindiv {
-  background-color: #f0f0f0; /* Light gray background */
-  border-radius: 15px; /* Rounded corners */
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* Soft shadow */
-  padding: 10px; /* Padding inside */
-  margin: 0 auto; /* Center horizontally */
-  max-width: 800px; /* Limit width */
-  height: 50%; /* Adjust height */
-  width: 50%; /* Adjust width */
-  overflow: hidden; /* Hide overflowing content */
-  position: relative; /* Needed for pseudo-element */
+  background-color: #f0f0f0; 
+  border-radius: 15px; 
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); 
+  padding: 10px; 
+  margin: 0 auto; 
+  max-width: 800px; 
+  height: 50%;
+  width: 50%; 
+  overflow: hidden;
+  position: relative; 
 }
 
 .maindiv:before {
@@ -151,9 +151,9 @@ td {
   left: -10px;
   right: -10px;
   bottom: -10px;
-  background: linear-gradient(135deg, #3498db, #8e44ad); /* Gradient border */
-  z-index: -1; /* Behind the main content */
-  border-radius: 25px; /* Match the maindiv border radius */
+  background: linear-gradient(135deg, #3498db, #8e44ad); 
+  z-index: -1;
+  border-radius: 25px; 
 }
 
 .Itemcol,.Budgetcol,.Actexpcol{
@@ -161,42 +161,42 @@ td {
   color: #000000;
 }
 .FinanYear {
-  display: inline-block; /* Ensure the label and select are displayed in line */
-  margin-bottom: 20px; /* Increased space between label and select */
-  margin-right: 10px; /* Add space on the right side of the label */
-  font-size: 20px; /* Font size */
+  display: inline-block; 
+  margin-bottom: 20px; 
+  margin-right: 10px; 
+  font-size: 20px; 
   font-style: italic;
 
-  color: #333; /* Label text color */
-  border: 2px solid #555; /* Darker border color for label */
-  border-radius: 5px; /* Rounded corners */
-  padding: 8px; /* Padding inside */
-  background-color: lightgoldenrodyellow; /* Background color */
-  transition: background-color 0.3s, border-color 0.3s; /* Smooth transition */
+  color: #333; 
+  border: 2px solid #555; 
+  border-radius: 5px; 
+  padding: 8px; 
+  background-color: lightgoldenrodyellow; 
+  transition: background-color 0.3s, border-color 0.3s; 
 }
 
 .FinanYear:hover {
-  background-color: #e5e5e5; /* Hover background color */
+  background-color: #e5e5e5; 
 }
 
 .year {
-  border: 2px solid #555; /* Darker border color for select */
-  border-radius: 5px; /* Rounded corners */
-  padding: 8px; /* Padding inside */
-  font-size: 22px; /* Font size */
-  width: 200px; /* Adjust width as needed */
-  margin-bottom: 20px; /* Increased space below select */
-  background-color: lightgoldenrodyellow; /* Background color */
-  transition: border-color 0.3s; /* Smooth transition */
+  border: 2px solid #555; 
+  border-radius: 5px; 
+  padding: 8px; 
+  font-size: 22px; 
+  width: 200px; 
+  margin-bottom: 20px; 
+  background-color: lightgoldenrodyellow; 
+  transition: border-color 0.3s; 
 }
 
 .year:focus {
-  outline: none; /* Remove focus outline */
-  border-color: #222; /* Darker border color on focus */
+  outline: none; 
+  border-color: #222; 
 }
 
 .year:hover {
-  border-color: #999; /* Hover border color */
+  border-color: #999; 
 }
 .tdbudgetinput{
   width: 600px;
