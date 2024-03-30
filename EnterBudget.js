@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import '../assets/css/EnterBudget.css'; 
 import axios from 'axios';
 
+
 function EnterBudget({ isOffcanvasOpen }) {
     const [selectedYear, setSelectedYear] = useState('');
     const [budgetData, setBudgetData] = useState(getItemData);
@@ -206,7 +207,7 @@ function EnterBudget({ isOffcanvasOpen }) {
                 <tbody>
     {Object.keys(budgetData).map((item, index) => (
         <tr key={index}>
-            <td>{item}</td>
+            <td className='Itemname'>{item}</td>
             <td className='tdbudgetinput'><input type='number' className='budgetinput' value={budgetData[item].budgeted_amt} onChange={(e) => handleBudAmtChange(item,e.target.value)} placeholder=''></input></td>
             <td className='tdactexp'><input type='number' className="actexp"value={budgetData[item].actual_exp} onChange={(e) => handleActExpChange(item,e.target.value)} placeholder=''></input></td>
         </tr>
