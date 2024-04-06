@@ -10,9 +10,9 @@ export default function Navbar({
   closeOffcanvas,
 }) {
   const navbarStyle = {
-    left: isOffcanvasOpen ? "260px" : "0%",
+    left: isOffcanvasOpen ? "260px" : "70px",
     right: "0px",
-    width: isOffcanvasOpen ? "calc(100% - 260px)" : "100%",
+    width: isOffcanvasOpen ? "calc(100% - 260px)" : "96%",
     transition: "all 0.3s ease  ",
     zIndex: 1000,
   };
@@ -33,7 +33,7 @@ export default function Navbar({
         <div className="container-fluid">
           {!isOffcanvasOpen ? (
             <button
-              className="btn"
+              className="btn-menu"
               type="button"
               data-bs-toggle="offcanvas"
               data-bs-target="#offcanvasDark"
@@ -63,9 +63,9 @@ export default function Navbar({
               </li>
             </ul>
           </div>
-          <nav class="navbar navbar-light ">
-            <div class="container-fluid">
-              <span class="navbar-brand mb-0 h1">Username: {username}</span>
+          <nav className="navbar navbar-light ">
+            <div className="container-fluid">
+              <span className="navbar-brand mb-0 h1">Username: {username}</span>
             </div>
           </nav>
         </div>

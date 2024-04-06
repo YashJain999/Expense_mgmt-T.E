@@ -1,6 +1,7 @@
 import React from "react";
+// import "../../src/App.css" 
 // import { useParams } from "react-router-dom";
-import { Routes, Route ,useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
@@ -15,8 +16,9 @@ import UploadBudget from "./UploadBudget";
 import ViewBudget from "./ViewBudget";
 import UpdateFinancialYear from "./UpdateFinancialYear";
 import PrincipalDashboard from "./PrincipalDashboard";
-import PrincipalQuotation from './PrincipalQuotation'
+import PrincipalQuotation from "./PrincipalQuotation";
 import Graph from "./Graph";
+import UploadQuotation from './UploadQuotation';
 
 function Home() {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(true);
@@ -30,13 +32,13 @@ function Home() {
     position: "relative",
     top: "200px",
     left: isOffcanvasOpen ? "130px" : "0%",
-    width: isOffcanvasOpen ? "calc(100% - 260px)" : "100%",
+    width: isOffcanvasOpen ? "calc(100% - 130px)" : "100%",
     transition: "all 0.5s ease",
     zIndex: 1000,
   };
 
-  const location = useLocation()
-  console.log(location)
+  const location = useLocation();
+  console.log(location);
   return (
     <>
       <div className="container p-2 mw-5" style={AppStyle}>
@@ -53,7 +55,6 @@ function Home() {
               <div className="app">
                 <Sidebar
                   isOffcanvasOpen={isOffcanvasOpen}
-                  // closeOffcanvas={closeOffcanvas}
                   toggleOffcanvas={toggleOffcanvas}
                 />
               </div>
@@ -97,6 +98,11 @@ function Home() {
           ></Route>
           <Route
             exact
+            path="/quotation/uploadquotation"
+            element={<UploadQuotation isOffcanvasOpen={isOffcanvasOpen} />}
+          ></Route>
+          <Route
+            exact
             path="/purchase"
             element={<Purchase isOffcanvasOpen={isOffcanvasOpen} />}
           ></Route>
@@ -118,12 +124,24 @@ function Home() {
           <Route
             exact
             path="/principal"
-            element={<PrincipalDashboard isOffcanvasOpen={isOffcanvasOpen} toggleOffcanvas={toggleOffcanvas} closeOffcanvas={closeOffcanvas}/>}
+            element={
+              <PrincipalDashboard
+                isOffcanvasOpen={isOffcanvasOpen}
+                toggleOffcanvas={toggleOffcanvas}
+                closeOffcanvas={closeOffcanvas}
+              />
+            }
           ></Route>
           <Route
             exact
             path="/principalquotation"
-            element={<PrincipalQuotation isOffcanvasOpen={isOffcanvasOpen} toggleOffcanvas={toggleOffcanvas} closeOffcanvas={closeOffcanvas}/>}
+            element={
+              <PrincipalQuotation
+                isOffcanvasOpen={isOffcanvasOpen}
+                toggleOffcanvas={toggleOffcanvas}
+                closeOffcanvas={closeOffcanvas}
+              />
+            }
           ></Route>
         </Routes>
       </div>

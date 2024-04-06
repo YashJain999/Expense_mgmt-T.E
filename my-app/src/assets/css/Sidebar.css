@@ -1,44 +1,55 @@
   .offcanvas {
-    width: 0; 
+    /* width: 100%; */
+    visibility: visible;
     transition: width 0.3s ease;
     box-sizing: content-box;
-    /* overflow: hidden;  */
+    overflow-x: hidden;
   }
 
-.list-group-flush button:hover{
-  left: -100;
-  width:200px;
-  color: black;
-  background: white;
-}
-
-.list-group-item i{
-  position:absolute;
-  left: 5px;
-  top: 21px;
-  color: white;
-}
-
-
-.list-group-flush i:hover{
-  color: black;
-  background: white;
-}
-
-.offcanvas-body .btn{
-  width:100%;
-}
-
-@media (max-width: 425px) {
-
-  html{
-    font-size: 60%;
+  .btn:hover {
+    left: -100;
+    width: 30px;
+    color: black;
+    background: white;
   }
-}
 
-@media (max-width: 425px) {
-
-  style{
-    width: 160px;
+  .btn .fa-solid {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    color: white;
+    align-items: center;
+    justify-content: center;
   }
+
+  .offcanvas-body .btn {
+    min-width: 0%;
+    width: 110%;
+    left: -10px;
+    position: relative;
+    text-align: left;
+    padding-left: 45px;
+  }
+
+  .offcanvas-body {
+    overflow-x: hidden;
+  }
+
+  .btn:hover .fa-solid {
+    color: black;
+  }
+
+
+  @media (max-width: 425px) {
+
+    html {
+      font-size: 60%;
+    }
+  }
+
+  @media (max-width: 425px) {
+
+    style {
+      width: 160px;
+    }
   }
