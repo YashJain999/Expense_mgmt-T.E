@@ -59,14 +59,13 @@ function Dynamic({isOffcanvasOpen}) {
     };
 
     return (
-    <div className='container p-2 mw-5' style={AppStyle}>
-        <label htmlFor="language" >Financial Year :</label>
-        <br/>
-        <label htmlFor="language">
+    <div className='container p-2 mw-5' style={AppStyle}><br/>
+        <label htmlFor="language" className='c-FinanYear' >Financial Year :</label>
+        <label htmlFor="language" className='c-FinanYear'>
             Select from :
         </label>
         <select
-            className="ddfor-from"
+            className="c-year"
             value={selectedYearfrom}
             onChange={(e) => setSelectedYearfrom(e.target.value)}>
             <option value="" disabled >Select an option</option>
@@ -76,11 +75,11 @@ function Dynamic({isOffcanvasOpen}) {
                 </option>
             ))}
         </select>
-        <label htmlFor="language">
+        <label htmlFor="language" className='c-FinanYearto'>
             Select to  :
         </label>
         <select
-            className="ddfor-to"
+            className="c-year"
             value={selectedYearto}
             onChange={(e) => setSelectedYearto(e.target.value)}>
             <option value="" disabled >Select an option</option>
@@ -90,7 +89,7 @@ function Dynamic({isOffcanvasOpen}) {
                 </option>
             ))}
         </select>
-        <button className="" onClick={handleYearSubmit} disabled={isButtonDisabled}>View</button>
+        <button className="c-viewbutton" onClick={handleYearSubmit} disabled={isButtonDisabled}>View</button>
         <br/>
         {showInputs && (
         <Table data={data}/>

@@ -125,7 +125,6 @@ export default function LineGraphs({isOffcanvasOpen}) {
         <button className="show-line-graph" onClick={handleYearSubmit} disabled={isButtonDisabled}>
             View
         </button>
-        <br/>
         {showInputs && (
             <div className='line-graph' >
                 <Lines 
@@ -141,6 +140,7 @@ export default function LineGraphs({isOffcanvasOpen}) {
                 />
             </div>
         )}
+        <br/><br/>
     </div>
     </>
   )

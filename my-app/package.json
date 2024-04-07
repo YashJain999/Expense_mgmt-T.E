@@ -14,6 +14,7 @@
     "bootstrap": "^5.3.2",
     "chart.js": "^4.4.1",
     "multiselect-react-dropdown": "^2.0.25",
+    "powerbi-client": "^2.23.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
     "react-chartjs-2": "^5.2.0",

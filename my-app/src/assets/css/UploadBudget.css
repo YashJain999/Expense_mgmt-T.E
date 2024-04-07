@@ -1,31 +1,31 @@
 body {
-    text-align: center;
-  }
-  
-  select {
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-  }
-  
-  select:focus {
-    outline: none;
-  }
-  
-  table,
-  th,
-  td {
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-    width: 60%;
-    border: 2px solid black;
-    border-collapse: collapse;
+  text-align: center;
+}
 
-  }
+select {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
 
-      
-      .uploadbutton {
+select:focus {
+  outline: none;
+}
+
+table,
+th,
+td {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  width: 60%;
+  border: 2px solid black;
+  border-collapse: collapse;
+
+}
+
+    
+    .uploadbutton {
       position: relative;
       top: 20px;
       background-color:#000000;
@@ -33,79 +33,195 @@ body {
       border-radius:20px;
       font-size: 30px;
       text-align: center;
-      left: 30px;
-      width: 190px;
-      }
+      width: 130px;
+      padding-left: 12px;
+      padding-right: 12px;
+      background-color: #0f100e;
+      color: #f8f5f5;
+    }
 
-      .uploadbutton:hover{
-        background-color: white;
-        color: black;
-      }
+    .uploadbutton:hover{
+      background-color: white;
+      color: black;
+    }
 
-      .Edit {
-        position: relative;
-        top: 10px;
-        background-color:#000000;
-        color: #fff;
-        border:none;
-        border-radius:60px;
-        font-size: 30px;
-        text-align: center;
-        left: 180px;
-        padding: 3px 25px;
-      }
-
-      .viewbuttonupload{
+    .Edit {
       position: relative;
-      left: 20px;
+      top: 10px;
+      background-color:#000000;
+      color: #fff;
+      border:none;
+      border-radius:60px;
+      font-size: 30px;
+      text-align: center;
+      left: 180px;
+      padding: 3px 25px;
+    }
+
+    .viewbuttonupload{
+      background-color: rgb(107, 246, 232);
+      color: black;
+      border-radius: 10px;
+      font-size: 19px;
+      padding: 5px 16px;
+      margin-left: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: solid;
+    }
+
+    .viewbuttonupload:hover{
+      background-color: black;
+      color: white;
+    }
+
+    .submituploadbudget{
+      position: relative;
+      left: 10px;
       background-color: #000000;
       color: #fff;
       border-radius: 5px;
       font-size: 15px;
       }
 
-      .viewbuttonupload:hover{
+      .submituploadbudget:hover{
         font-size: 16px;
         color: black;
         background-color: white;
       }
 
-      .submituploadbudget{
-        position: relative;
-        left: 10px;
-        background-color: #000000;
-        color: #fff;
-        border-radius: 5px;
-        font-size: 15px;
-        }
-  
-        .submituploadbudget:hover{
-          font-size: 16px;
-          color: black;
-          background-color: white;
-        }
+    .table{
+      padding: 30px 40px;
+    }
+    .status{
+      padding: 1px 40px;
+    }
+    .budget{
+      padding: 10px 120px;
+    }
+    .comments{
+      padding: 10px 100px;
+    }
+    .description{
+      padding: 1px 60px;
+    }
+    fieldset {
+      position: relative;
+      align-items: center;
+      border: '1px solid black';
+      height: auto;
+      width: 50%;
+      margin: 0 auto; 
+    }
+    .FY-UpBud{
+      display: inline-block; 
+      margin-bottom: 20px; 
+      margin-right: 10px; 
+      font-size: 19px; 
+      font-style: italic;
+      color: #080808; 
+      border-radius: 5px; 
+      padding: 5px; 
+      background-color: rgb(168, 253, 149); 
+    }
+    .budget-UpBud,.description-UpBud,.status-UpBud,.comments-Upbud{
+      background-color: #d1ff7a;
+color: #000000;
+padding-left: 55px;
+      padding-right: 55px;
+      text-wrap: nowrap;
+      font-size: 21px;
+    }
+    .budget-UpBud{
+      padding-left: 25px;
+      padding-right: 25px;
+      text-wrap: nowrap;
+      font-size: 21px;
+    }
+    .gen-pdf,.des-UpBud,.enterstatus-UpBud,.entercomm-UpBud{
+      background-color: #eaffe2;
+    }
+    .gen-pdf:hover{
+      background-color: rgb(247, 255, 160);
+cursor: pointer;
+    }
+    /* File Upload Fieldset */
+fieldset {
+border: 2px solid #000000;
+border-radius: 10px;
+padding: 20px;
+margin-bottom: 30px;
+width: 350px;
+background-color: #eaffe2;
+}
 
-      .table{
-        padding: 30px 40px;
-      }
-      .status{
-        padding: 1px 40px;
-      }
-      .budget{
-        padding: 10px 120px;
-      }
-      .comments{
-        padding: 10px 100px;
-      }
-      .description{
-        padding: 1px 60px;
-      }
-      fieldset {
-        position: relative;
-        align-items: center;
-        border: '1px solid black';
-        height: auto;
-        width: 50%;
-        margin: 0 auto; /* Add this line to center the fieldset horizontally */
-      }
-      
+legend {
+font-weight: bold;
+}
+
+/* File Input */
+input[type="file"] {
+margin-bottom: 20px;
+width: 100%;
+padding: 12px;
+border: 2px solid #000000;
+border-radius: 5px;
+background-color: #fff;
+color: #555;
+transition: border-color 0.3s ease;
+}
+
+input[type="file"]:focus {
+outline: none;
+border-color: #2980b9;
+}
+
+.des-budget {
+border: 1px solid black;
+padding: 8px;
+/* border-radius: 4px; */
+outline: none;
+font-size: 20px;
+width: 100%;
+color: rgb(0, 0, 0);
+
+}
+
+.des-budget:focus {
+outline: none;
+border-color: #2980b9;
+}
+
+.submituploadbudget {
+position: relative;
+      left: 10px;
+      background-color: #000000;
+      color: #fff;
+      border-radius: 5px;
+      font-size: 15px;
+}
+
+.submituploadbudget:hover {
+background-color: white;
+border: #000000;
+}
+.file{
+font-size: 30px;
+}
+.year-upload-budget{
+  border-radius: 5px; 
+  padding: 5px; 
+  font-size: 19px; 
+  width: 170px; 
+  margin-bottom: 20px; 
+  background-color: rgb(229, 255, 220); 
+  transition: border-color 0.3s; 
+}
+.year-upload-budget:focus {
+  outline: none; 
+  border-color: #222; 
+}
+
+
+    
+    

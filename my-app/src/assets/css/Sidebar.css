@@ -1,47 +1,59 @@
 .offcanvas {
-  width: 0; 
+  visibility: visible;
   transition: width 0.3s ease;
   box-sizing: content-box;
-  /* overflow: hidden;  */
+  overflow-x: hidden;
 }
 
-.list-group-flush button:hover{
-left: -100;
-width:200px;
-color: black;
-background: white;
+.btn:hover {
+  /* left: -100;
+  width: 30px; */
+  color: black;
+  background: white;
 }
 
-.list-group-item i{
-position:absolute;
-left: 5px;
-top: 21px;
-color: white;
+.btn .fa-solid {
+  /* display: flex; 
+  align-items: center; 
+  justify-content: center;  */
+  /* position: absolute; */
+  /* left: 0px;
+  top: 0px; */
+  color: white;
+  align-items: center;
+  justify-content: center;
 }
 
-li.list-group-item .active{
-color: red;
+.offcanvas-body .btn {
+  /* display: flex; 
+  align-items: center; 
+  justify-content: center;  */
+  min-width: 0%;
+  /* width: 110%; */
+  /* left: -10px; */
+  position: relative;
+  padding-left: 45px;
 }
 
-.list-group-flush i:hover{
-color: black;
-background: white;
+.offcanvas-body {
+  overflow-x: hidden;
 }
 
-.offcanvas-body .btn{
-width:100%;
+.btn:hover .fa-solid {
+  color: black;
+}
+
+
+@media (max-width: 425px) {
+
+  html {
+    font-size: 60%;
+  }
 }
 
 @media (max-width: 425px) {
 
-html{
-  font-size: 60%;
-}
-}
-
-@media (max-width: 425px) {
-
-style{
-  width: 160px;
-}
+  style {
+    width: 160px;
+  }
 }

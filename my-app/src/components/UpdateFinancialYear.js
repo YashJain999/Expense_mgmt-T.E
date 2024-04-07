@@ -9,7 +9,7 @@ function UpdateFinancialYear({isOffcanvasOpen}) {
     left : isOffcanvasOpen ? '10px': '0%'  ,
     width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
     transition: 'all 0.5s ease',
-    zIndex: 1000,
+    zIndex: 900,
   };
 
     const [financialYears, setFinancialYears] = useState([]);
@@ -43,6 +43,9 @@ function UpdateFinancialYear({isOffcanvasOpen}) {
             const response = await axios.post('http://localhost:8000/post_year_desc/', { F_year: yearValue, Desc: descValue });
             console.log('Data sent successfully:', response.data);
             alert('Data sent successfully!');
+            setShowInputs(false);
+            setAddButtonClicked(false);
+
         } catch (error) {
             console.error('Error submitting data:', error);
             alert('Failed to send data');
@@ -69,20 +72,22 @@ function UpdateFinancialYear({isOffcanvasOpen}) {
   };
 
     return (
+     
       <div className='container p-2 mw-5' style={AppStyle}>
+        <div className='main-update-finyear'>
           <br></br>
           <table>
               <thead>
                   <tr>
-                      <th>Financial Year</th>
-                      <th>Description</th>
+                      <th className='FY-Update'>Financial Year</th>
+                      <th className='DY-Update'>Description</th>
                   </tr>
               </thead>
               <tbody>
                   {financialYears.map((data, index) => (
                       <tr key={index}>
-                          <td>{data.year}</td>
-                          <td>{data.desc}</td>
+                          <td className='Year-Update'>{data.year}</td>
+                          <td className='Desc-Update'>{data.desc}</td>
                       </tr>
                   ))}
               </tbody>
@@ -95,10 +100,11 @@ function UpdateFinancialYear({isOffcanvasOpen}) {
           <button className="addfinancialyear" onClick={handleDownloadClick} disabled={addButtonClicked}>
               Add
           </button>
+          </div>
 
           <br></br><br></br>
           {showInputs && (
-              <div className='container m-2'>
+              <div className='Label-FY'>
               Enter the Financial Year   
               <input
                 type="text"
@@ -109,15 +115,6 @@ function UpdateFinancialYear({isOffcanvasOpen}) {
                 onChange={handleYearChange} 
               /><br></br>
               <br />
-              {/* Enter its Description     
-              <input
-                type="text"
-                pattern="[0-9-]*"
-                style={{ border: '1px solid black' }}
-                placeholder="E.g. 2024-2025"
-                value={descValue}
-                disabled  // Disabled attribute added here
-                /><br></br> */}
                 <label htmlFor="description">Description:</label>
       <span id="description">
         {generateDescription(yearValue)}

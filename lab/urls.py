@@ -45,7 +45,9 @@ urlpatterns = [
     path('principal_status/', views.principal_status,name='anything'),
     path('item_dropdown/', views.item_dropdown, name="anything"),
     path('get_item_amount/', views.get_item_amount, name='anything'),
-    path('get_list_amount/', views.get_list_amount, name='anything')
+    path('get_list_amount/', views.get_list_amount, name='anything'),
+    path('get_pie/', views.get_pie, name='anything'),
+    path('predict/', views.predict, name='predict')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

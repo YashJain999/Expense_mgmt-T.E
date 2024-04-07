@@ -10,6 +10,7 @@ select {
 
 select:focus {
     outline: none;
+
 }
   
 table,
@@ -70,3 +71,211 @@ input[type=text] {
     background-color: white;
       color: black;
 }
+.FY-Update,
+.DY-Update{
+    background-color: #d1ff7a;
+  color: #000000;
+  padding-left: 55px;
+        padding-right: 55px;
+        text-wrap: nowrap;
+        font-size: 21px;
+}
+.Year-Update,.Desc-Update{
+    background-color: #eaffe2;
+}
+.Year-Update:hover{
+    background-color: rgb(247, 255, 160);
+  cursor: pointer;
+}
+.Desc-Update:hover{
+    background-color: rgb(247, 255, 160);
+  cursor: pointer;
+}
+/* .Label-FY {
+    font-family: Arial, sans-serif;
+    width: 350px;
+    margin: auto;
+    padding: 20px;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    background-color: #eaffe2;
+    box-sizing: border-box;
+    margin-bottom: 30px;
+  }
+  
+  .Label-FY input[type="text"] {
+    width: calc(100% - 2px);
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  
+  .Label-FY label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  
+  .Label-FY span {
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+  
+  .Label-FY button.submitupdatedfinancial {
+    position: relative;
+        left: 10px;
+        background-color: #000000;
+        color: #fff;
+        border-radius: 5px;
+        font-size: 15px;
+  }
+  
+  .Label-FY button.submitupdatedfinancial:hover {
+    background-color: white;
+  border: #000000;
+  color: #000000;
+  
+  } */
+  
+  /* Additional Styles */
+  /* .Label-FY input[type="file"] {
+    margin-bottom: 20px;
+    width: calc(100% - 2px);
+    padding: 12px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #555;
+    transition: border-color 0.3s ease;
+  }
+  
+  .Label-FY input[type="file"]:focus {
+    outline: none;
+    border-color: #2980b9;
+  }
+  
+  .Label-FY .des-budget {
+    width: calc(100% - 4px);
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #555;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .Label-FY .des-budget:focus {
+    outline: none;
+    border-color: #2980b9;
+  }
+  
+  .Label-FY button.submituploadbudget {
+    background-color: #000000;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 15px;
+    position: relative;
+    left: 10px;
+  }
+  
+  .Label-FY button.submituploadbudget:hover {
+    background-color: white;
+    color: #000000;
+    border: 1px solid #000000;
+  } */
+  .Label-FY {
+    font-family: Arial, sans-serif;
+    width: 350px;
+    margin: auto;
+    padding: 20px;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    background-color: #eaffe2;
+    box-sizing: border-box;
+    margin-bottom: 30px;
+  }
+  
+  .Label-FY input[type="text"] {
+    width: calc(100% - 2px);
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  
+  .Label-FY label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  
+  .Label-FY span {
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+  
+  .Label-FY button.submitupdatedfinancial {
+    position: relative;
+        left: 10px;
+        background-color: #000000;
+        color: #fff;
+        border-radius: 5px;
+        font-size: 15px;
+  }
+  
+  .Label-FY button.submitupdatedfinancial:hover {
+    background-color: white;
+  border: #000000;
+  color: black;
+  }
+  
+  .Label-FY input[type="file"] {
+    margin-bottom: 20px;
+    width: calc(100% - 2px);
+    padding: 12px;
+    border: 2px solid #000000;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #555;
+    transition: border-color 0.3s ease;
+  }
+  
+  .Label-FY input[type="file"]:focus {
+    outline: none;
+    border-color: #2980b9;
+  }
+  
+  .Label-FY button.submituploadbudget {
+    background-color: #000000;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 15px;
+    position: relative;
+    left: 10px;
+  }
+  
+  .Label-FY button.submituploadbudget:hover {
+    background-color: white;
+    color: #000000;
+    border: 1px solid #000000;
+  }
+  .main-update-finyear{
+    background-color: #fbfdff; 
+  border-radius: 55px; 
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); 
+  padding: 10px; 
+  margin: 0 auto; 
+  max-width: 800px; 
+  height: 50%;
+  width: 60%; 
+  overflow: hidden;
+  position: relative; 
+  }
+  

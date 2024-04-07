@@ -75,9 +75,9 @@ function Cumulative({isOffcanvasOpen}) {
 
     return (
     <div className='container p-2 mw-5' style={AppStyle}>
-        <label htmlFor="language" >Financial Year :</label>
+        <label htmlFor="language" className='c-FinanYear'>Financial Year :</label>
         <select
-            class="year"
+            class="c-year"
             value={selectedYear}
             onChange={(e) => setSelectedYear(e.target.value)}>
             <option value="" disabled >Select an option</option>
@@ -87,12 +87,14 @@ function Cumulative({isOffcanvasOpen}) {
             </option>
             ))}
         </select>
-        <button class="" onClick={handleYearSubmit} disabled={isButtonDisabled}>View</button>
+        <button class="c-viewbutton" onClick={handleYearSubmit} disabled={isButtonDisabled}>View</button>
         <br></br>
         {showInputs && (
         <>
+        <div className='c-maindiv'>
         <Table data={data}/>
         <button class="Downloadviewbudget" onClick={handleDownloadClick}>Download</button>
+        </div>
         </>
         )}   
     </div>

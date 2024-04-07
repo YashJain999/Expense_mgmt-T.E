@@ -14,15 +14,14 @@ function ViewBudget({ isOffcanvasOpen }) {
     zIndex: 1000,
   };
 
-  // Function to handle user selection
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
   };
 
   return (
     <div className='container p-2 mw-5' style={AppStyle}>
-      <div className="header">
-        <div className="buttons-container">
+      <div className="budget-header">
+        <div className="b-buttons-container">
         <button 
             className={`button ${selectedOption === 'cumulative' ? 'selected' : ''}`} 
             onClick={() => handleOptionSelect('cumulative')}

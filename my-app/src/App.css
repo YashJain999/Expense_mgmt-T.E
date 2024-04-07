@@ -1,33 +1,39 @@
 html{
-    height: 100%;
-    width: auto;
-    background-color: white;
+  height: 100%;
+  width: auto;
+  background-color: white;
+  overflow-y: visible;
+}
+.main-container {
+  text-align: center;
+  background-color: white;
+}
+.btn i{
+  font-size: 20px;
+  color:white;
+  position: relative;
+  top: 10%;
+}  
+.nav-link{
+  font-size: 20px;
+}  
+
+li.list-group-item .active{
+  border: none;
+  /* color: red; */
+  /* background-color: pink; */
+  /* text-decoration: black; */
+}
+li.list-group-item .active{
+  color: blue;
+  /* background-color: pink; */
+}
+  
+@media (max-width: 425px) {
+  html{
+    font-size: 50%;
   }
-  .main-container {
-    text-align: center;
-    background-color: white;
+  h2{
+    background-color:"red"
   }
-  .btn i{
-    font-size: 20px;
-    color:white;
-    position: relative;
-    top: 10%;
-  }  
-  .nav-link{
-    font-size: 20px;
-  }  
-  .main-content.offcanvas-open .app {
-    /* margin-left: 30px;  */
-    /* Adjust this value to match the width of your offcanvas menu */
-    /* Add other styles to adjust the main content when offcanvas is open */
-  }
-    
-    
-  @media (max-width: 425px) {
-    html{
-      font-size: 50%;
-    }
-    h2{
-      backgroundColor:"red"
-    }
-  }
+}
