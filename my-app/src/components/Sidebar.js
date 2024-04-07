@@ -8,7 +8,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
   const location = useLocation();
 
   const NavLinkStyle = {
-    width: 20,
+    textDecoration: 'none'
   };
 
   //showing budget list
@@ -67,7 +67,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
   };
 
   //showing centraldeadstock list
-  const [shouldShowCDS, setShouldShowCDS] = useState(true);
+  const [shouldShowCDS, setShouldShowCDS] = useState([]);
   const [isCDSListVisible, setIsCDSListVisible] = useState(false);
   const toggleCDSList = () => {
     const buttonObject5 = [
@@ -85,7 +85,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
   };
 
   //showing feedback list
-  const [shouldShowFeedback, setShouldShowFeedBack] = useState(true);
+  const [shouldShowFeedback, setShouldShowFeedBack] = useState([] );
   const [isFeedBackListVisible, setIsFeedBackListVisible] = useState(false);
   const toggleFeedBackList = () => {
     const buttonObject6 = [
@@ -109,30 +109,35 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
       path: `/home/${username}/budget`,
       text: "Budget",
       icon: "fa-indian-rupee-sign",
+      left:"10px",
       onClick: toggleBudgetList,
     },
     {
       path: `/home/${username}/quotation`,
       text: "Quotation",
       icon: "fa-money-check-dollar",
+      left:"-10px",
       onClick: toggleQuotationList,
     },
     {
       path: `/home/${username}/purchase`,
       text: "Purchase",
       icon: "fa-shopping-cart",
+      left:"5px",
       onClick: togglePurchaseList,
     },
     {
       path: `/home/${username}/bills`,
       text: "Bills",
       icon: "fa-file-invoice-dollar",
+      left:"0px",
       onClick: toggleBillsList,
     },
     {
       path: `/home/${username}/centraldeadstock`,
       text: "Central Dead Stock",
       icon: "fa-box-open",
+      left:"5px",
       onClick: toggleCDSList,
     },
     {
@@ -142,6 +147,53 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
       onClick: toggleFeedBackList,
     },
   ];
+
+  const innerButtonsDetails = [
+    {
+      onCondition:(location.state.desig === "HOD" && isBudgetListVisible),
+      subButtons:shouldShowBudget,
+      text: "Budget",
+      icon: "fa-indian-rupee-sign",
+      onClick:()=>{toggleBudgetList();toggleList()},
+    },
+    {
+      onCondition:(location.state.desig === "HOD" && isQuotationListVisible),
+      subButtons:shouldShowQuotation,
+      text: "Quotation",
+      icon: "fa-money-check-dollar",
+      onClick:()=>{toggleQuotationList();toggleList()},
+    },
+    {
+      onCondition:(location.state.desig === "HOD" && isPurchaseListVisible),
+      subButtons:shouldShowPurchase,
+      text: "Purchase",
+      icon: "fa-shopping-cart",
+      onClick:()=>{togglePurchaseList();toggleList()},
+    },
+    {
+      onCondition:(location.state.desig === "HOD" && isBillsListVisible),
+      subButtons:shouldShowBills,
+      text: "Bills",
+      icon: "fa-file-invoice-dollar",
+      onClick:()=>{toggleBillsList();toggleList()},
+    },
+    {
+      onCondition:(location.state.desig === "HOD" && isCDSListVisible),
+      subButtons:shouldShowCDS,
+      text: "Central Dead Stock",
+      icon: "fa-box-open",
+      onClick:()=>{toggleCDSList();toggleList()},
+    },
+    {
+      onCondition:(location.state.desig === "HOD" && isFeedBackListVisible),
+      subButtons:shouldShowFeedback,
+      text: "Feedback",
+      icon: "fa-message",
+      onClick:()=>{toggleFeedBackList();toggleList()}, 
+    },
+  ];
+
+
   return (
     <>
       <div
@@ -158,11 +210,11 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
           transform: "translateX(0%)",
         }}
       >
-        <div className="offcanvas-header overflow-hidden">
+        <div className="w-100 offcanvas-header overflow-hidden">
           {isOffcanvasOpen ? (
             <>
               <h5 className="offcanvas-title" id="offcanvasDarkLabel">
-                <i className="fa-solid fa-cart-flatbed"></i>Labtracker
+                <i className="pt-1 fa-solid fa-cart-flatbed p-2 h4"></i>Labtracker
               </h5>
               <button
                 type="button"
@@ -176,24 +228,23 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
             </>
           ) : (
             <div
-              className="offcanvas-title overflow-hidden"
+              className="w-100 offcanvas-title overflow-hidden"
               id="offcanvasDarkLabel"
             >
-              <i className="fa-solid fa-cart-flatbed"></i>
+              <i className="pt-1 fa-solid fa-cart-flatbed h3"></i>
             </div>
           )}
         </div>
-        <div className="offcanvas-body">
-          <ul className="list-group list-group-flush">
+        <div className="w-100 offcanvas-body">
+          <div className="w-100 h-100">
             {shouldRenderButtons && (
-              <div>
+              <ul className="w-100 h-100 list-group list-group-flush">
                 {buttons.map((button) => (
-                  <ul className="list-group list-group-flush ">
-                    <li className="bg-transparent justify-content-center list-group-item list-unstyled " key={button.text}>
-                      <div className="submenu-item">
+                    <li className={`w-100 justify-content-center list-group-item list-unstyled  ${!isOffcanvasOpen && 'px-0'}`} key={button.text} style={{border: 'none'}}>
+                      <div className={`w-100 h-100 submenu-item ${!isOffcanvasOpen && 'px-0'}`}>
                         <NavLink
                           to={button.path}
-                          className="isActive"
+                          className="isActive w-100 h-100"
                           style={
                             "isActive"
                               ? {
@@ -206,12 +257,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                         >
                           <button
                             type="button"
-                            className={`btn ${
-                              isOffcanvasOpen ? "w-100" : "p-3"
-                            }`}
-                            style={{
-                              height: isOffcanvasOpen ? "auto" : "40px",
-                            }}
+                            className={`w-100 h-100 btn ${isOffcanvasOpen ? 'p-2 text-left' : 'py-2 px-0 text-center'}`}
                             onClick={() => {
                               if (button.onClick) {
                                 button.onClick();
@@ -222,375 +268,97 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                               }
                             }}
                           >
-                            <i
-                              className={`fa-solid justify-content-center ${button.icon}`}
-                            ></i>
-                            <div
-                              className={`overflow-hidden transition-all ${
-                                isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                              }`}
-                            >
-                              {button.text}
+                            <div className={`w-100 h-100 d-flex flex-row align-items-center`}>
+                              <i
+                              className={` ${isOffcanvasOpen ? 'py-1 pe-2' : 'w-100'} h-100 fa-solid ${button.icon}`}
+                              style={{width: '20%'}}
+                              ></i>
+                              <div
+                                className={`w-80 overflow-hidden transition-all ${
+                                  isOffcanvasOpen ? "ml-3" : "d-none"
+                                }`}
+                              >
+                                {button.text}
+                              </div>
                             </div>
+                            
                           </button>
                         </NavLink>
                       </div>
                     </li>
-                  </ul>
                 ))}
-              </div>
+              </ul>
             )}
-
-            {location.state.desig === "HOD" && isBudgetListVisible && (
-              <ul className="list-group list-group-flush">
-                <li className="list-group-item">
-                  <NavLink
-                    to={`/home/${username}`}
-                    style={NavLinkStyle}
-                    state={{ desig: location.state.desig }}
-                  >
-                    <button
-                      type="button"
-                      className={`btn ${
-                        isOffcanvasOpen ? "w-100" : "p-3"
-                      }`}
-                      style={{
-                        height: isOffcanvasOpen ? "auto" : "40px",
-                      }}
-                      onClick={() => {
-                        toggleBudgetList();
-                        toggleList();
-                      }}
+            {innerButtonsDetails.map((innBtnDtl) =>
+             (
+              <>
+              {innBtnDtl['onCondition'] && (
+                <ul className="w-100 h-100 list-group list-group-flush" key={innBtnDtl.text}>
+                  <li className={`w-100 list-group-item list-unstyled" ${!isOffcanvasOpen && 'px-0'}`} style={{border: 'none'}} >
+                    <NavLink
+                      to={`/home/${username}`}
+                      className={`w-100 h-100`}
+                      style={NavLinkStyle}
+                      state={{ desig: location.state.desig }}
+                      
                     >
-                      <i className="fa-solid fa-indian-rupee-sign"></i>
-                      <div
-                              className={`overflow-hidden transition-all ${
-                                isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                              }`}>
-                      Budget
-                      </div>
-                    </button>
-                  </NavLink>
-                </li>
-                <div className=" m-n1 pt-2 container">
-                    {shouldShowBudget.map((item) => (
-                      <div className="menu-scrollable" >
-                        <li className="list-unstyled" key={item.text}>
-                          <NavLink
-                            to={item.path}
-                            state={{ desig: location.state.desig }}
+                      <button
+                            type="button"
+                            className={`w-100 h-100 btn ${isOffcanvasOpen ? 'p-2 text-left' : 'py-2 px-0 text-center'}`}
+                            onClick={innBtnDtl.onClick}
+                            style={{
+                              height: isOffcanvasOpen ? "auto" : "40px",
+                            }}
                           >
-                            <button
-                              type="button"
-                              className="btn"
-                              style={{
-                                backgroundColor: location.pathname === item.path ? 'blue' : '', 
-                                color: location.pathname === item.path ? 'white' : '',
-                              }}
-                              onClick={item.onClick}
+                        <div className={`w-100 h-100 d-flex flex-row align-items-center`}>
+                                <i
+                                className={` ${isOffcanvasOpen ? 'py-1 pe-2' : 'w-100'} h-100 fa-solid ${innBtnDtl.icon}`}
+                                style={{width: '20%'}}
+                                ></i>
+                                <div
+                                  className={`w-80 overflow-hidden transition-all ${
+                                    isOffcanvasOpen ? "ml-3" : "d-none"
+                                  }`}
+                                >
+                                  {innBtnDtl.text}
+                                </div>
+                              </div>
+                        
+                      </button>
+                    </NavLink>
+                  </li>
+                  <div className={`w-100 h-100 m-n1 pt-2 container ${isOffcanvasOpen ? "" : "d-none"}`}>
+                      {innBtnDtl.subButtons.map((item) => (
+                        <div className="w-100 menu-scrollable pb-3" >
+                          <li className="w-100 h-100 list-unstyled" key={item.text}>
+                            <NavLink
+                              to={item.path}
+                              state={{ desig: location.state.desig }}
+                              className={`w-100 h-100`}
                             >
-                              <div
-                              className={`overflow-hidden transition-all ${
-                                isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                              }`}>
-                              {item.text}
-                              </div>
-                            </button>
-                          </NavLink>
-                        </li>
-                      </div>
-                    ))}
-                </div>
-              </ul>
-            )}
-            {location.state.desig === "HOD" && isQuotationListVisible && (
-              <ul className="list-group list-group-flush">
-                <li className="list-group-item">
-                  <NavLink
-                    to={`/home/${username}`}
-                    state={{ desig: location.state.desig }}
-                    style={NavLinkStyle}
-                  >
-                    <button
-                      type="button"
-                      className={`btn ${
-                        isOffcanvasOpen ? "w-100" : "p-3"
-                      }`}
-                      style={{
-                        height: isOffcanvasOpen ? "auto" : "40px",
-                      }}
-                      onClick={() => {
-                        toggleQuotationList();
-                        toggleList();
-                      }}
-                    >
-                      <i className="fa-solid fa-money-check-dollar"></i>
-                      <div
-                              className={`overflow-hidden transition-all ${
-                                isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                              }`}>
-                      Quotation
-                      </div>
-                    </button>
-                  </NavLink>
-                </li>
-                <div className=" m-n1 pt-2 container ">
-                  {shouldShowQuotation.map((item) => (
-                    <li className="list-unstyled" key={item.text}>
-                      <NavLink
-                        to={item.path}
-                        state={{ desig: location.state.desig }}
-                        style={NavLinkStyle}
-                      >
-                        <button
-                          type="button"
-                          className="btn"
-                          onClick={item.onClick}
-                        >
-                          <div
-                              className={`overflow-hidden transition-all ${
-                                isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                              }`}>
-                              {item.text}
-                              </div>
-                        </button>
-                      </NavLink>
-                    </li>
-                  ))}
-                </div>
-              </ul>
-            )}
-            {location.state.desig === "HOD" && isPurchaseListVisible && (
-              <ul className="list-group list-group-flush">
-                <li className="list-group-item">
-                  <NavLink
-                    to={`/home/${username}`}
-                    state={{ desig: location.state.desig }}
-                    style={NavLinkStyle}
-                  >
-                    <button
-                      type="button"
-                      className={`btn ${
-                        isOffcanvasOpen ? "w-100" : "p-3"
-                      }`}
-                      style={{
-                        height: isOffcanvasOpen ? "auto" : "40px",
-                      }}
-                      onClick={() => {
-                        togglePurchaseList();
-                        toggleList();
-                      }}
-                    >
-                      <i className="fa-solid fa-cart-shopping"></i>
-                      <div
-                              className={`overflow-hidden transition-all ${
-                                isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                              }`}>
-                      Purchase
-                      </div>
-                    </button>
-                  </NavLink>
-                </li>
-                <div className=" m-n1 pt-2 container">
-                  {shouldShowPurchase.map((item) => (
-                    <li className="list-unstyled" key={item.text}>
-                      <NavLink
-                        to={item.path}
-                        state={{ desig: location.state.desig }}
-                        style={NavLinkStyle}
-                      >
-                        <button
-                          type="button"
-                          className="btn"
-                          onClick={item.onClick}
-                        >
-                          <div
-                              className={`overflow-hidden transition-all ${
-                                isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                              }`}>
-                              {item.text}
-                              </div>
-                        </button>
-                      </NavLink>
-                    </li>
-                  ))}
-                </div>
-              </ul>
-            )}
-            {location.state.desig === "HOD" && isBillsListVisible && (
-              <ul className="list-group list-group-flush">
-                <li className="list-group-item">
-                  <NavLink
-                    to={`/home/${username}/bills`}
-                    state={{ desig: location.state.desig }}
-                    style={NavLinkStyle}
-                  >
-                    <button
-                      type="button"
-                      className={`btn ${
-                        isOffcanvasOpen ? "w-100" : "p-3"
-                      }`}
-                      style={{
-                        height: isOffcanvasOpen ? "auto" : "40px",
-                      }}
-                      onClick={() => {
-                        toggleBillsList();
-                        toggleList();
-                      }}
-                    >
-                      <i className="fa-solid fa-file-invoice-dollar"></i>
-                      <div
-                              className={`overflow-hidden transition-all ${
-                                isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                              }`}>
-                      Bills
-                      </div>
-                    </button>
-                  </NavLink>
-                </li>
-                <div className=" m-n1 pt-2 container">
-                  {shouldShowBills.map((item) => (
-                    <li className="list-unstyled" key={item.text}>
-                      <NavLink
-                        to={item.path}
-                        state={{ desig: location.state.desig }}
-                        style={NavLinkStyle}
-                      >
-                        <button
-                          type="button"
-                          className="btn"
-                          onClick={item.onClick}
-                        >
-                          <div
-                              className={`overflow-hidden transition-all ${
-                                isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                              }`}>
-                              {item.text}
-                              </div>
-                        </button>
-                      </NavLink>
-                    </li>
-                  ))}
-                </div>
-              </ul>
-            )}
-            {location.state.desig === "HOD" && isCDSListVisible && (
-              <ul className="list-group list-group-flush">
-                <li className="list-group-item">
-                  <NavLink
-                    to={`/home/${username}`}
-                    state={{ desig: location.state.desig }}
-                    style={NavLinkStyle}
-                  >
-                    <button
-                      type="button"
-                      className={`btn ${
-                        isOffcanvasOpen ? "w-100" : "p-3"
-                      }`}
-                      style={{
-                        height: isOffcanvasOpen ? "auto" : "40px",
-                      }}
-                      onClick={() => {
-                        toggleCDSList();
-                        toggleList();
-                      }}
-                    >
-                      <i className="fa-solid fa-box-open"></i>
-                      <div
-                              className={`overflow-hidden transition-all ${
-                                isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                              }`}>
-                      Central Dead Stock
-                    </div>
-                    </button>
-                  </NavLink>
-                </li>
-                <div className=" m-n1 pt-2 container">
-                  {shouldShowCDS.map((item) => (
-                    <li className="list-unstyled" key={item.text}>
-                      <NavLink
-                        to={item.path}
-                        state={{ desig: location.state.desig }}
-                        style={NavLinkStyle}
-                      >
-                        <button
-                          type="button"
-                          className={`btn ${
-                            isOffcanvasOpen ? "w-100" : "p-3"
-                          }`}
-                          onClick={item.onClick}
-                        >
-                          <div
-                              className={`overflow-hidden transition-all ${
-                                isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                              }`}>
-                              {item.text}
-                              </div>
-                        </button>
-                      </NavLink>
-                    </li>
-                  ))}
-                </div>
-              </ul>
-            )}
-            {location.state.desig === "HOD" && isFeedBackListVisible && (
-              <ul className="list-group list-group-flush">
-                <li className="list-group-item">
-                  <NavLink
-                    to={`/home/${username}`}
-                    state={{ desig: location.state.desig }}
-                    style={NavLinkStyle}
-                  >
-                    <button
-                      type="button"
-                      className={`btn ${
-                        isOffcanvasOpen ? "w-100" : "p-3"
-                      }`}
-                      style={{
-                        height: isOffcanvasOpen ? "auto" : "40px",
-                      }}
-                      onClick={() => {
-                        toggleFeedBackList();
-                        toggleList();
-                      }}
-                    >
-                      <i className="fa-solid fa-message"></i>
-                      <div
-                              className={`overflow-hidden transition-all ${
-                                isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                              }`}>
-                      Feedback
-                      </div>
-                    </button>
-                  </NavLink>
-                </li>
-                <div className=" m-n1 pt-2 container">
-                  {shouldShowFeedback.map((item) => (
-                    <li className="list-unstyled" key={item.text}>
-                      <NavLink
-                        to={item.path}
-                        state={{ desig: location.state.desig }}
-                        style={NavLinkStyle}
-                      >
-                        <button
-                          type="button"
-                          className={`btn ${
-                            isOffcanvasOpen ? "w-100" : "p-3"
-                          }`}
-                          onClick={item.onClick}
-                        >
-                          <div
-                              className={`overflow-hidden transition-all ${
-                                isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                              }`}>
-                              {item.text}
-                              </div>
-                        </button>
-                      </NavLink>
-                    </li>
-                  ))}
-                </div>
-              </ul>
+                              <button
+                                type="button"
+                                className="w-100 h-100 btn p-2 ps- text-start"
+                                style={{
+                                  backgroundColor: location.pathname === item.path ? 'blue' : '', 
+                                  color: location.pathname === item.path ? 'white' : '',
+                                }}
+                                onClick={item.onClick}
+                              >
+                                <div
+                                className={`w-100 h-100 overflow-hidden transition-all ${!isOffcanvasOpen && 'text-nowrap'}`}>
+                                {item.text}
+                                </div>
+                              </button>
+                            </NavLink>
+                          </li>
+                        </div>
+                      ))}
+                  </div>
+                </ul>
+              )}
+              </>
+             )
             )}
             {location.state.desig === "Principal" && !shouldShowList && (
               <ul className="list-group list-group-flush">
@@ -674,7 +442,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                   </button>
                 </li>
               )}
-          </ul>
+          </div>
         </div>
       </div>
     </>

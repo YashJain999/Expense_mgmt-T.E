@@ -1,5 +1,4 @@
   .offcanvas {
-    /* width: 100%; */
     visibility: visible;
     transition: width 0.3s ease;
     box-sizing: content-box;
@@ -7,27 +6,32 @@
   }
 
   .btn:hover {
-    left: -100;
-    width: 30px;
+    /* left: -100;
+    width: 30px; */
     color: black;
     background: white;
   }
 
   .btn .fa-solid {
-    position: absolute;
-    left: 10px;
-    top: 10px;
+    /* display: flex; 
+    align-items: center; 
+    justify-content: center;  */
+    /* position: absolute; */
+    /* left: 0px;
+    top: 0px; */
     color: white;
     align-items: center;
     justify-content: center;
   }
 
   .offcanvas-body .btn {
+    /* display: flex; 
+    align-items: center; 
+    justify-content: center;  */
     min-width: 0%;
-    width: 110%;
-    left: -10px;
+    /* width: 110%; */
+    /* left: -10px; */
     position: relative;
-    text-align: left;
     padding-left: 45px;
   }
 
