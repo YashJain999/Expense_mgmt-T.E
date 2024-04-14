@@ -16,7 +16,7 @@ select {
   outline: none;
 } */
 
-table,
+/* table,
 th,
 td {
   margin-left: auto;
@@ -25,7 +25,7 @@ td {
   width: 50%; 
   border: 2px solid black;
   border-collapse: collapse;
-}
+} */
 
     input[type=text] {
     width: 20%;

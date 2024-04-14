@@ -22,31 +22,8 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<RegistrationForm />} />
           <Route path="/password-reset" element={<PasswordReset />} />
-          <Route
-            exact
-            path="/home/:username/*"
-            element={
-              <Home
-                isOffcanvasOpen={isOffcanvasOpen}
-                // closeOffcanvas={closeOffcanvas}
-                toggleOffcanvas={toggleOffcanvas}
-              />
-            }
-          />
-          {/* <Route
-            path="/principal/:username"
-            element={<PrincipalDashboard isOffcanvasOpen={isOffcanvasOpen} closeOffcanvas={closeOffcanvas} toggleOffcanvas={toggleOffcanvas}/>}
-          /> */}
-          {/* <Route exact path="/budget" element={<Budget isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
-               <Route exact path="/budget/enterbudget" element={<EnterBudget  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
-                <Route exact path="/budget/viewbudget" element={<ViewBudget  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
-                <Route exact path="/budget/uploadbudget" element={<UploadBudget  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
-                <Route exact path="/budget/updatefinancialyear" element={<UpdateFinancialYear  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
-                <Route exact path="/quotation" element={<Quotation  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
-                <Route exact path="/purchase" element={<Purchase  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
-                <Route exact path="/bills" element={<Bills  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
-                <Route exact path="/centraldeadstock" element={<CentralDeadStock  isOffcanvasOpen={isOffcanvasOpen}/>}></Route>
-                <Route exact path="/feedback" element={<Feedback  isOffcanvasOpen={isOffcanvasOpen}/>}></Route> */}
+          <Route exact path="/home/:username/*" element={<Home isOffcanvasOpen={isOffcanvasOpen}// closeOffcanvas={closeOffcanvas} 
+          toggleOffcanvas={toggleOffcanvas}/>}/>
         </Routes>
       </div>
     </>

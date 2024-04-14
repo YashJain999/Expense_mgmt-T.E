@@ -1,21 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import '../assets/css/EnterBudget.css'; 
+import { useParams } from 'react-router-dom';
+import '../assets/css/EnterBudget.css';
 import axios from 'axios';
-import {useParams } from "react-router-dom";
+import TableComponent from './TableComponent';
 
-function EnterBudget({isOffcanvasOpen}) {
+
+function EnterBudget({ isOffcanvasOpen }) {
     const [selectedYear, setSelectedYear] = useState('');
-    const [budgetData, setBudgetData] = useState([]);
+    const [budgetData, setBudgetData] = useState(getItemData); //
+    /**
+     *  budgetData={
+     *      "Laboratory Consumables":{
+                    budgeted_amt: '',
+                    actual_exp: '',
+                    editVisible: false,
+                    placeholderValue: '',
+                },...
+            }
+     * */
     const [fetchedData, setFetchedData] = useState([]);
     const { username } = useParams();
-    const [isEditing, setIsEditing] = useState(false); // State to track editing status
+    const [originalBudgetData, setOriginalBudgetData] = useState({});
+    // const [itemData, setItemData] = useState(getItemData());
+    const [isEditing, setIsEditing] = useState(false);
+    const [showEditWarning, setShowEditWarning] = useState(false);
+    //list items
+    function getItemData() {
+        const items = [
+            "Laboratory Consumables",
+            "Laboratory Equipment",
+            "Maintenance and Spares",
+            "Miscellaneous expenses",
+            "Research and Development",
+            "Software",
+            "Training and Travel"
+        ];
+
+        const initialState = {};
+        items.forEach((item) => {
+            initialState[item] = {
+                budgeted_amt: '',
+                actual_exp: '',
+                editVisible: false,
+                placeholderValue: '',
+            };
+        });
+        return initialState;
+    }
     const AppStyle = {
-      position:"relative",
-      top:"-100px",
-      left : isOffcanvasOpen ? '0px': '0%'  ,
-      width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
-      transition: 'all 0.5s ease',
-      zIndex: 1000,
+        position: "relative",
+        top: "-100px",
+        left: isOffcanvasOpen ? '0px' : '0%',
+        width: isOffcanvasOpen ? 'calc(100% - 260px)' : '100%',
+        transition: 'all 0.5s ease',
+        zIndex: 900,
     };
 
     useEffect(() => {
@@ -25,183 +63,225 @@ function EnterBudget({isOffcanvasOpen}) {
     const fetchData = async () => {
         try {
             const response = await axios.get('http://localhost:8000/dropdown/');
-            setBudgetData(response.data);
+            setFetchedData(response.data);
+
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
 
+    const handleEditClick = () => {
+        setIsEditing(true); // Set isEditing to true to activate editing mode
+        // Update each item in budgetData to set editVisible to true
+        const updatedBudgetData = Object.keys(budgetData).reduce((acc, item) => {
+            acc[item] = { ...budgetData[item], editVisible: true };
+            return acc;
+        }, {});
+        setBudgetData(updatedBudgetData);
+        setOriginalBudgetData({ ...budgetData }); // Store original data
+    };
+
+
+    const handleSaveClick = async () => {
+        try {
+            // Create an array to store all the data to be sent
+            const requestData = [{
+                username: username, // Assuming department is defined somewhere in your component
+                year: selectedYear,
+            }];
+
+            // Loop through each item in budgetData
+            Object.keys(budgetData).forEach(item => {
+                // Push the data of each item into the requestData array
+                requestData.push({
+                    item: item,
+                    budgeted_amt: budgetData[item].budgeted_amt,
+                    actual_exp: budgetData[item].actual_exp
+                });
+            });
+            // Send a POST request to your backend with the requestData array
+            await axios.post("http://localhost:8000/update_budget_details/", requestData);
+            console.log(requestData)
+            // Set isEditing to false to exit editing mode
+            setIsEditing(false);
+            // Display a pop-up message
+            alert("Save button clicked! Data saved successfully!");
+        } catch (error) {
+            console.error("Error saving status:", error);
+            // Handle the error here, such as displaying an error message
+        }
+    };
+
+
+    const handleCancelClick = () => {
+        // Revert changes by replacing current budget data with original copy
+        setBudgetData(originalBudgetData); // Revert changes
+        setIsEditing(false); // Exit editing mode
+    };
+
     const handleYearSubmit = async () => {
         try {
-            const response = await axios.post('http://localhost:8000/submit_year/', { selectedYear });
-            console.log('Year selection successful:', response.data);
-            try {
-                const response1 = await axios.post('http://localhost:8000/get_budget_details/', { selectedYear ,username });
-                console.log(response1.data);
-                const tableRows = document.querySelectorAll('table tbody tr');
-                const table = document.querySelector('table');
-                let column2 = 0;
-                let column1 = 0;
-                let item_test = [];
-                if (response1.data.length > 0) {
-                    response1.data.forEach((data, index) => {
-                        item_test.push(data.item);
-                        tableRows[index].cells[1].textContent = data.budgeted_amt;
-                        column1 += Number(data.budgeted_amt);
-                        tableRows[index].cells[2].textContent = data.actual_exp;
-                        column2 += Number(data.actual_exp);
-                    });
-                } else {
-                    alert('no data available');
-                    handleEditClick();
-                }
-                const existingTotalRows = document.querySelectorAll('tr.total-row');
-                existingTotalRows.forEach(row => row.remove());
-    
-                // Create a new row element for the individual column sums
-                const individualSumsRow = document.createElement('tr');
-                individualSumsRow.classList.add('total-row');
-                const individualSumsCell = document.createElement('td');
-                individualSumsCell.textContent = 'Total';
-                individualSumsRow.appendChild(individualSumsCell);
-    
-                const sumCell1 = document.createElement('td');
-                sumCell1.textContent = String(column1);
-                individualSumsRow.appendChild(sumCell1);
-    
-                const sumCell2 = document.createElement('td');
-                sumCell2.textContent = String(column2);
-                individualSumsRow.appendChild(sumCell2);
-    
-                // Append the new row to the table body
-                table.querySelector('tbody').appendChild(individualSumsRow);
-            } catch (error) {
-                console.error("Error in getting response:", error); // Log the specific error message
-            }
-            // Handle successful submission
-        } catch (error) {
-            console.error('Error submitting selected year:', error);
-            // Handle error
-        }
-    };
-    const handleEditClick = () => {
-        const tableRows = document.querySelectorAll('table tbody tr');
-        // Exclude the last row from editing
-        for (let i = 0; i < tableRows.length - 1; i++) {
-            const cells = tableRows[i].cells;
-            for (let j = 1; j < cells.length; j++) {
-                const inputField = document.createElement('input');
-                inputField.value = cells[j].textContent;
-                cells[j].textContent = '';
-                cells[j].appendChild(inputField);
-            }
-        }
-        setIsEditing(true); // Set editing status to true
-    };
-    const handleSaveClick = async () => {
-        const tableRows = document.querySelectorAll('table tbody tr');
-        const updatedData = [];
-    
-        tableRows.forEach((row, index) => {
-            const cells = row.cells;
-            const itemName = row.cells[0].textContent;
-            if (itemName.toLowerCase() !== 'total') {
-                const budgetedInput = cells[1].querySelector('input');
-                const actualInput = cells[2].querySelector('input');
-                const rowData = {
-                    item: itemName,
-                    budgeted_amt: budgetedInput !== null ? budgetedInput.value : '',
-                    actual_exp: actualInput !== null ? actualInput.value : ''
+            const response = await axios.post('http://localhost:8000/get_budget_details/', { selectedYear, username });
+            const formattedData = {};
+            console.log(response.data);
+            response.data.forEach(item => {
+                formattedData[item.item] = {
+                    budgeted_amt: item.budgeted_amt,
+                    actual_exp: item.actual_exp
                 };
-                updatedData.push(rowData);
-            }
-        });
-    
-        try {
-            const response = await axios.post('http://localhost:8000/update_budget_details/', {
-                selectedYear,
-                updatedData,
-                username
             });
-            window.alert("Data Updated Success")
-            handleYearSubmit();
+            setBudgetData(formattedData);
         } catch (error) {
-            window.alert('Error updating data:', error);
+            console.error('Error fetching budget details:', error);
         }
     };
-    
+
+    const handleBudAmtChange = (item, newValue) => {
+        if (!budgetData[item]?.editVisible) {
+            setShowEditWarning(true);
+            setTimeout(() => setShowEditWarning(false), 5000); // Auto hide after 5 seconds
+            return;
+        }
+        setShowEditWarning(false);
+        setBudgetData(prevData => ({
+            ...prevData,
+            [item]: {
+                ...prevData[item],
+                budgeted_amt: newValue,
+            }
+        }));
+    };
+
+    const handleActExpChange = (item, newValue) => {
+        if (!budgetData[item]?.editVisible) {
+            setShowEditWarning(true);
+            setTimeout(() => setShowEditWarning(false), 5000); // Auto hide after 5 seconds
+            return;
+        }
+        setShowEditWarning(false);
+        setBudgetData(prevData => ({
+            ...prevData,
+            [item]: {
+                ...prevData[item],
+                actual_exp: newValue
+            }
+        }));
+    };
+    const calculateTotal = () => {
+        let totalBudgetedAmt = 0;
+        let totalActualExpenses = 0;
+
+        Object.keys(budgetData).forEach(item => {
+            totalBudgetedAmt += parseFloat(budgetData[item].budgeted_amt || 0);
+            totalActualExpenses += parseFloat(budgetData[item].actual_exp || 0);
+        });
+
+        return { totalBudgetedAmt, totalActualExpenses };
+    };
+
+    const getTableBodyItemsFromBudgetData = () => {
+        /*             
+ *  budgetData={
+          "Laboratory Consumables":{
+                budgeted_amt: '',
+                actual_exp: '',
+                editVisible: false,
+                placeholderValue: '',
+            },...
+        }
+  */
+
+        /*
+         * response=[
+                        [
+                            { item: "Lab", styles: { textAlign: 'left', width: "40%" }, className: "Itemname text-left bg-secondary text-white" },
+                            { item: <input type='number' className='text-center border-success w-100 h-100' value={budgetData[item].budgeted_amt} onChange={(e) => handleBudAmtChange(item, e.target.value)} placeholder=''></input>, styles: { width: "30%" }, className: "tdbudgetinput text-center p-0" },
+                        ],
+                    ]
+         */
+
+        let budgeteTableBodyRows = []
+        Object.keys(budgetData).forEach(bItem => {
+            let budgeteTableBodyRow = []
+            console.log(bItem);
+            let rowCell1 = {};
+            rowCell1["item"] = bItem;
+            rowCell1["styles"] = { textAlign: 'left', width: "40%" };
+            rowCell1["className"] = "Itemname text-left bg-secondary text-white";
+            budgeteTableBodyRow.push(rowCell1)
+
+            let rowCell2 = {};
+            rowCell2["item"] = <input type='number' className='text-center border-success w-100 h-100' value={budgetData[bItem].budgeted_amt} onChange={(e) => handleBudAmtChange(bItem, e.target.value)} placeholder=''></input>;
+            rowCell2["styles"] = { width: "30%" };
+            rowCell2["className"] = "tdbudgetinput text-center p-0";
+            budgeteTableBodyRow.push(rowCell2)
+
+            let rowCell3 = {};
+            rowCell3["item"] = <input type='number' className="text-center border-danger h-100 w-100 m-0" value={budgetData[bItem].actual_exp} onChange={(e) => handleActExpChange(bItem, e.target.value)} placeholder=''></input>;
+            rowCell3["styles"] = {};
+            rowCell3["className"] = "tdactexp text-center p-0 h-100";
+            budgeteTableBodyRow.push(rowCell3)
+
+            budgeteTableBodyRows.push(budgeteTableBodyRow);
+        })
+        console.log(budgeteTableBodyRows)
+        return budgeteTableBodyRows;
+    }
+
     return (
         <div className='container p-2 mw-5' style={AppStyle}>
-            {/*dropdown component */}
-            <label htmlFor="language">Financial Year :</label>
+            {/* Dropdown component */}
+            <label htmlFor="language" className='FinanYear'>Financial Year:</label>
             <select
                 className="year"
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
             >
-                {budgetData.map((item, index) => (
+                {fetchedData.map((item, index) => (
                     <option key={index} value={item}>
                         {item}
                     </option>
                 ))}
             </select>
 
-<button className="viewbutton" onClick={handleYearSubmit}>View</button>
-      <br></br>
-      <table>
-        <thead>
-          <tr>
-            <th>Items</th>
-            <th>Budget</th>
-            <th>Actual Expenses</th>
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>Laboratory Consumables</td>
-            <td></td>
-            <td></td>
-    </tr>
-  
-          <tr>
-            <td>Laboratory Equipment</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>Maintenance and Spares</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>Miscellaneous expenses</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>Research and Development</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>Software</td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>Training and Travel</td>
-            <td></td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
+            <button className="viewbutton" onClick={handleYearSubmit}>View</button>
+            {showEditWarning && (
+                <div className="alert alert-warning" role="alert">
+                    Please click the "Edit" button to make changes.
+                </div>
+            )}
+            <br></br>
+            <br></br>
 
-      
-      <button className="Editenterbudget" onClick={handleEditClick}>Edit</button>
-      <button className="saveenterbudget" onClick={handleSaveClick} disabled={!isEditing}>Save</button> {/* Disable save button if not editing */}
-    </div>
-  );
+            <TableComponent
+                thData={[{ text: "Items", className: "Itemcol" }, { text: "Budget", className: "Budgetcol" }, { text: "Actual Expenses", className: "Actexpcol" }]}
+                tbData={getTableBodyItemsFromBudgetData()}
+                tfData={[{ text: "Total", styles: { textAlign: 'center' } }, { text: calculateTotal().totalBudgetedAmt, className: "text-center" }, { text: calculateTotal().totalActualExpenses, className: "text-center" }]}
+            />
+            {/* <div className="table-responsive shadow w-100 h-100 rounded">
+                <table className="table table-bordered table-hover w-100 h-100 m-0">
+                    <tbody className='w-100 h-100'>
+                        {Object.keys(budgetData).map((item, index) => (
+                            <tr key={index} className='tableinput w-100 h-100'>
+                                <td className='Itemname text-left bg-secondary text-white h-100' style={{ textAlign: 'left', width: "40%" }}>{item}</td>
+                                <td className='tdbudgetinput text-center p-0 h-100 ' style={{ width: "30%" }}><input type='number' className='text-center border-success w-100 h-100' value={budgetData[item].budgeted_amt} onChange={(e) => handleBudAmtChange(item, e.target.value)} placeholder=''></input></td>
+                                <td className='tdactexp text-center p-0 h-100' ><input type='number' className="text-center border-danger h-100 w-100 m-0" value={budgetData[item].actual_exp} onChange={(e) => handleActExpChange(item, e.target.value)} placeholder=''></input></td>
+                            </tr>
+                        ))}
+                        <tr className='table-light'>
+                            <td className='fw-bold text-uppercase' style={{ textAlign: 'center' }}>Total</td>
+                            <td className='text-center'>{calculateTotal().totalBudgetedAmt}</td>
+                            <td className='text-center'>{calculateTotal().totalActualExpenses}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> */}
+            <button className="Editenterbudget" onClick={handleEditClick} style={{ display: !isEditing ? 'inline-block' : 'none' }}>Edit</button>
+            <button className="saveenterbudget" onClick={handleSaveClick} style={{ display: isEditing ? 'inline-block' : 'none' }}>Save</button>
+            <button className="cancelenterbudget" onClick={handleCancelClick} style={{ display: isEditing ? 'inline-block' : 'none' }}>Cancel</button>
+
+        </div>
+    );
 }
-
 
 export default EnterBudget;

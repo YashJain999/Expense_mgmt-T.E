@@ -25,12 +25,7 @@
   }
 
   .offcanvas-body .btn {
-    /* display: flex; 
-    align-items: center; 
-    justify-content: center;  */
     min-width: 0%;
-    /* width: 110%; */
-    /* left: -10px; */
     position: relative;
     padding-left: 45px;
   }

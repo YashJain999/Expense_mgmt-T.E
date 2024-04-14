@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../assets/css/UploadBudget.css';
 import axios from 'axios';
 import {useParams } from "react-router-dom";
+import TableComponent from './TableComponent';
 
 
 function UploadBudget({isOffcanvasOpen}) {
@@ -63,6 +64,7 @@ function UploadBudget({isOffcanvasOpen}) {
               status: item.status,
               comment: item.comment
             }));
+            console.log(data)
             setFetchedData(data);
             console.log('Data sent:', response2.data);
             // alert('Data Sent Successfully');
@@ -136,6 +138,35 @@ function UploadBudget({isOffcanvasOpen}) {
       });
   };
 
+  const getTableBodyItemsFromUploadBudgetData = () => {
+    /*             
+*   fetchedData=[{'pdf': 'Data Science_1523a5a01ab74c8381f2202ad735d6e7.pdf', 'description': 'yashvi', 'status': '', 'comment': ''}]
+*/
+
+    /*
+     * response=[
+                    [
+                        { item: "Data Science_1523a5a01ab74c8381f2202ad735d6e7.pdf"},
+                        { item: "yashvi"},
+                        { item: ""},
+                        { item: ""}
+                    ],
+                ]
+     */
+
+    let uploadBudgeteTableBodyRows = []
+    Object.keys(fetchedData).forEach(index => {
+        let uploadBudgeteTableBodyRow = []
+        Object.keys(fetchedData[index]).forEach(key =>{
+        let rowCelli = {};
+        rowCelli["item"] = fetchedData[index][key];
+        uploadBudgeteTableBodyRow.push(rowCelli)
+        })
+
+        uploadBudgeteTableBodyRows.push(uploadBudgeteTableBodyRow);
+    })
+    return uploadBudgeteTableBodyRows;
+}
 
   return (
     <div className='container p-2 mw-5' style={AppStyle}>
@@ -152,7 +183,12 @@ function UploadBudget({isOffcanvasOpen}) {
         View
       </button>
       <br></br>
-      <table>
+      <TableComponent 
+        thData={[{text:"Name of Uploaded Budget",className:"budget"},{text:"Description",className:"description"},{text:"Status",className:"status"},{text:"Comments",className:"comments"}]}
+        tbData={getTableBodyItemsFromUploadBudgetData()}
+
+      />
+      {/* <table>
         <thead>
           <tr>
             <th className="budget">Name of Uploaded Budget</th>
@@ -171,7 +207,7 @@ function UploadBudget({isOffcanvasOpen}) {
     </tr>
   ))}
 </tbody>
-      </table>
+      </table> */}
 
       <button className="uploadbutton" onClick={handleUploadClick}>
         Upload
