@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import '../assets/css/EnterBudget.css';
 import axios from 'axios';
 import TableComponent from './TableComponent';
+import ButtonComponent from './ButtonComponent';
 
 
 function EnterBudget({ isOffcanvasOpen }) {
@@ -48,12 +49,12 @@ function EnterBudget({ isOffcanvasOpen }) {
         return initialState;
     }
     const AppStyle = {
-        position: "relative",
-        top: "-100px",
-        left: isOffcanvasOpen ? '0px' : '0%',
-        width: isOffcanvasOpen ? 'calc(100% - 260px)' : '100%',
-        transition: 'all 0.5s ease',
-        zIndex: 900,
+        // position: "relative",
+        // top: "-100px",
+        // left: isOffcanvasOpen ? '0px' : '0%',
+        // width: isOffcanvasOpen ? 'calc(100% - 260px)' : '100%',
+        // transition: 'all 0.5s ease',
+        // zIndex: 900,
     };
 
     useEffect(() => {
@@ -207,7 +208,7 @@ function EnterBudget({ isOffcanvasOpen }) {
             let rowCell1 = {};
             rowCell1["item"] = bItem;
             rowCell1["styles"] = { textAlign: 'left', width: "40%" };
-            rowCell1["className"] = "Itemname text-left bg-secondary text-white";
+            rowCell1["className"] = "Itemname text-left bg-primary bg-gradient text-white";
             budgeteTableBodyRow.push(rowCell1)
 
             let rowCell2 = {};
@@ -217,9 +218,9 @@ function EnterBudget({ isOffcanvasOpen }) {
             budgeteTableBodyRow.push(rowCell2)
 
             let rowCell3 = {};
-            rowCell3["item"] = <input type='number' className="text-center border-danger h-100 w-100 m-0" value={budgetData[bItem].actual_exp} onChange={(e) => handleActExpChange(bItem, e.target.value)} placeholder=''></input>;
+            rowCell3["item"] = <input type='number' className="text-center border-danger w-100 h-100" value={budgetData[bItem].actual_exp} onChange={(e) => handleActExpChange(bItem, e.target.value)} placeholder=''></input>;
             rowCell3["styles"] = {};
-            rowCell3["className"] = "tdactexp text-center p-0 h-100";
+            rowCell3["className"] = "tdactexp text-center p-0 m-0";
             budgeteTableBodyRow.push(rowCell3)
 
             budgeteTableBodyRows.push(budgeteTableBodyRow);
@@ -229,9 +230,9 @@ function EnterBudget({ isOffcanvasOpen }) {
     }
 
     return (
-        <div className='container p-2 mw-5' style={AppStyle}>
+        <div className='container p-2 w-100 h-100' style={AppStyle}>
             {/* Dropdown component */}
-            <label htmlFor="language" className='FinanYear'>Financial Year:</label>
+            {/* <label htmlFor="language" className='FinanYear'>Financial Year:</label>
             <select
                 className="year"
                 value={selectedYear}
@@ -244,7 +245,7 @@ function EnterBudget({ isOffcanvasOpen }) {
                 ))}
             </select>
 
-            <button className="viewbutton" onClick={handleYearSubmit}>View</button>
+            <button className="viewbutton" onClick={handleYearSubmit}>View</button> */}
             {showEditWarning && (
                 <div className="alert alert-warning" role="alert">
                     Please click the "Edit" button to make changes.
@@ -257,29 +258,30 @@ function EnterBudget({ isOffcanvasOpen }) {
                 thData={[{ text: "Items", className: "Itemcol" }, { text: "Budget", className: "Budgetcol" }, { text: "Actual Expenses", className: "Actexpcol" }]}
                 tbData={getTableBodyItemsFromBudgetData()}
                 tfData={[{ text: "Total", styles: { textAlign: 'center' } }, { text: calculateTotal().totalBudgetedAmt, className: "text-center" }, { text: calculateTotal().totalActualExpenses, className: "text-center" }]}
+                caption={
+                    <div className='d-flex flex-row justify-content-between px-3 mt-2'>
+                        <span className='h2'>Enter Budget</span>
+                        <select
+                            className="w-25 bg-primary text-white h5 border px-2" aria-labelledby="dropdownMenuButton2"
+                            value={selectedYear}
+                            onChange={(e) => { setSelectedYear(e.target.value); handleYearSubmit() }}>
+                            <option className="" value="" disabled >Financial Year</option>
+                            {fetchedData.map((item, index) => (
+                                <option className='' key={index} value={item}>
+                                    {item}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                }
             />
-            {/* <div className="table-responsive shadow w-100 h-100 rounded">
-                <table className="table table-bordered table-hover w-100 h-100 m-0">
-                    <tbody className='w-100 h-100'>
-                        {Object.keys(budgetData).map((item, index) => (
-                            <tr key={index} className='tableinput w-100 h-100'>
-                                <td className='Itemname text-left bg-secondary text-white h-100' style={{ textAlign: 'left', width: "40%" }}>{item}</td>
-                                <td className='tdbudgetinput text-center p-0 h-100 ' style={{ width: "30%" }}><input type='number' className='text-center border-success w-100 h-100' value={budgetData[item].budgeted_amt} onChange={(e) => handleBudAmtChange(item, e.target.value)} placeholder=''></input></td>
-                                <td className='tdactexp text-center p-0 h-100' ><input type='number' className="text-center border-danger h-100 w-100 m-0" value={budgetData[item].actual_exp} onChange={(e) => handleActExpChange(item, e.target.value)} placeholder=''></input></td>
-                            </tr>
-                        ))}
-                        <tr className='table-light'>
-                            <td className='fw-bold text-uppercase' style={{ textAlign: 'center' }}>Total</td>
-                            <td className='text-center'>{calculateTotal().totalBudgetedAmt}</td>
-                            <td className='text-center'>{calculateTotal().totalActualExpenses}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div> */}
-            <button className="Editenterbudget" onClick={handleEditClick} style={{ display: !isEditing ? 'inline-block' : 'none' }}>Edit</button>
-            <button className="saveenterbudget" onClick={handleSaveClick} style={{ display: isEditing ? 'inline-block' : 'none' }}>Save</button>
-            <button className="cancelenterbudget" onClick={handleCancelClick} style={{ display: isEditing ? 'inline-block' : 'none' }}>Cancel</button>
-
+            {!isEditing ?
+                <ButtonComponent onClick={handleEditClick} text="Edit" /> :
+                <div className='d-flex flex-row gap-4 justify-content-center'>
+                    <ButtonComponent onClick={handleSaveClick} text="Save" className='btn-success' />
+                    <ButtonComponent onClick={handleCancelClick} text="Cancel" className='btn-danger' />
+                </div>
+            }
         </div>
     );
 }

@@ -17,27 +17,30 @@ import PropTypes from "prop-types";
  *  tfData=[{text: item1 , styles: itemstyles, className: className1 },{text: item1 , styles: itemstyles, className: className2 },...]
  */
 
-const TableComponent = ({ thData, tbData, tfData }) => {
+const TableComponent = ({ caption: tCaption, thData, tbData, tfData }) => {
     return (
-        <div className="table-responsive shadow w-100 h-100 rounded">
-            <table className="table table-bordered table-hover w-100 h-100 m-0">
-                <thead className='table-dark w-100 h-100'>
-                    <tr className='text-center'>
+        <div className="table-responsive shadow w-100 h-100 rounded-4" style={{ opacity: 0.9 }}>
+            <table className="table table-hover w-100 h-100 m-0 caption-top">
+                {tCaption &&
+                    <caption className='ps-2 text-center h2 bg-primary bg-gradient text-white m-0'>{tCaption}</caption>
+                }
+                <thead className='table-primary w-100'>
+                    <tr className='text-center w-100'>
                         {thData.map((item, index) => (
                             <th className={`${item.className}`} key={index}>{item.text}</th>
                         ))}
                     </tr>
                 </thead>
-                <tbody className='w-100 h-100'>
+                <tbody className='w-100'>
                     {tbData.map((row, index) => (
-                        <tr key={index} className='w-100 h-100'>
+                        <tr key={index} className='w-100'>
                             {row.map((item, index) => (
-                                <td className={`h-100 ${item.className}`} key={index} style={item.styles ? item.styles : {}}>{item.item}</td>
+                                <td className={`${item.className}`} key={index} style={item.styles ? item.styles : {}}>{item.item}</td>
                             ))}
                         </tr>
                     ))}
                     {tfData && (
-                        <tr className='table-light'>
+                        <tr className='table-info w-100'>
                             {tfData.map((item, index) => (
                                 <td className={`fw-bold text-uppercase ${item.className}`} style={item.styles ? item.styles : {}} key={index}>{item.text}</td>
                             ))}

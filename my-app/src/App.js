@@ -16,17 +16,15 @@ function App() {
   };
 
   return (
-    <>
-      <div className="main-container">
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<RegistrationForm />} />
-          <Route path="/password-reset" element={<PasswordReset />} />
-          <Route exact path="/home/:username/*" element={<Home isOffcanvasOpen={isOffcanvasOpen}// closeOffcanvas={closeOffcanvas} 
-          toggleOffcanvas={toggleOffcanvas}/>}/>
-        </Routes>
-      </div>
-    </>
+    <div className="main-container w-100 mh-100 bg-light overflow-y-scroll" style={{ height: "100vh" }}>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<RegistrationForm />} />
+        <Route path="/password-reset" element={<PasswordReset />} />
+        <Route exact path="/home/:username/*" element={<Home isOffcanvasOpen={isOffcanvasOpen}// closeOffcanvas={closeOffcanvas} 
+          toggleOffcanvas={toggleOffcanvas} />} />
+      </Routes>
+    </div>
   );
 }
 

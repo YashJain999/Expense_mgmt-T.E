@@ -19,6 +19,8 @@ import PrincipalDashboard from "./PrincipalDashboard";
 import PrincipalQuotation from "./PrincipalQuotation";
 import Graph from "./Graph";
 import UploadQuotation from './UploadQuotation';
+import BgImage from '../assets/images/temp.png'
+
 
 function Home() {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(true);
@@ -30,18 +32,23 @@ function Home() {
   };
   const AppStyle = {
     position: "relative",
-    top: "200px",
+    // top: "200px",
     left: isOffcanvasOpen ? "130px" : "0%",
     width: isOffcanvasOpen ? "calc(100% - 130px)" : "100%",
     transition: "all 0.5s ease",
-    zIndex: 1000,
+    // zIndex: 1000,
+    // backgroundImage: `url(${BgImage})`,
+    // backgroundRepeat: "no-repeat",
+    // // backgroundAttachment: "fixed", 
+    // backgroundSize: "100% 100vh"
+    // background: "black"
   };
 
   const location = useLocation();
   console.log(location);
   return (
-    <>
-      <div className="container p-2 mw-5" style={AppStyle}>
+    <div>
+      <div className="container p-2 w-100 h-100" style={AppStyle}>
         {window.location.pathname !== "/" &&
           window.location.pathname !== "/login" &&
           window.location.pathname !== "/register" &&
@@ -60,92 +67,94 @@ function Home() {
               </div>
             </>
           )}
-        <Routes>
-          <Route
-            exact
-            path="/budget"
-            element={<Budget isOffcanvasOpen={isOffcanvasOpen} />}
-          ></Route>
-          <Route
-            exact
-            path="/budget/enterbudget"
-            element={<EnterBudget isOffcanvasOpen={isOffcanvasOpen} />}
-          ></Route>
-          <Route
-            exact
-            path="/budget/viewbudget"
-            element={<ViewBudget isOffcanvasOpen={isOffcanvasOpen} />}
-          ></Route>
-          <Route
-            exact
-            path="/budget/uploadbudget"
-            element={<UploadBudget isOffcanvasOpen={isOffcanvasOpen} />}
-          ></Route>
-          <Route
-            exact
-            path="/budget/updatefinancialyear"
-            element={<UpdateFinancialYear isOffcanvasOpen={isOffcanvasOpen} />}
-          ></Route>
-          <Route
-            exact
-            path="/budget/graphs"
-            element={<Graph isOffcanvasOpen={isOffcanvasOpen} />}
-          ></Route>
-          <Route
-            exact
-            path="/quotation"
-            element={<Quotation isOffcanvasOpen={isOffcanvasOpen} />}
-          ></Route>
-          <Route
-            exact
-            path="/quotation/uploadquotation"
-            element={<UploadQuotation isOffcanvasOpen={isOffcanvasOpen} />}
-          ></Route>
-          <Route
-            exact
-            path="/purchase"
-            element={<Purchase isOffcanvasOpen={isOffcanvasOpen} />}
-          ></Route>
-          <Route
-            exact
-            path="/bills"
-            element={<Bills isOffcanvasOpen={isOffcanvasOpen} />}
-          ></Route>
-          <Route
-            exact
-            path="/centraldeadstock"
-            element={<CentralDeadStock isOffcanvasOpen={isOffcanvasOpen} />}
-          ></Route>
-          <Route
-            exact
-            path="/feedback"
-            element={<Feedback isOffcanvasOpen={isOffcanvasOpen} />}
-          ></Route>
-          <Route
-            exact
-            path="/principal"
-            element={
-              <PrincipalDashboard
-                isOffcanvasOpen={isOffcanvasOpen}
-                toggleOffcanvas={toggleOffcanvas}
-                closeOffcanvas={closeOffcanvas}
-              />
-            }
-          ></Route>
-          <Route
-            exact
-            path="/principalquotation"
-            element={
-              <PrincipalQuotation
-                isOffcanvasOpen={isOffcanvasOpen}
-                toggleOffcanvas={toggleOffcanvas}
-                closeOffcanvas={closeOffcanvas}
-              />
-            }
-          ></Route>
-        </Routes>
+        <div className="w-100 h-100" style={{ marginTop: "100px" }}>
+          <Routes>
+            <Route
+              exact
+              path="/budget"
+              element={<Budget isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+            <Route
+              exact
+              path="/budget/enterbudget"
+              element={<EnterBudget isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+            <Route
+              exact
+              path="/budget/viewbudget"
+              element={<ViewBudget isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+            <Route
+              exact
+              path="/budget/uploadbudget"
+              element={<UploadBudget isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+            <Route
+              exact
+              path="/budget/updatefinancialyear"
+              element={<UpdateFinancialYear isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+            <Route
+              exact
+              path="/budget/graphs"
+              element={<Graph isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+            <Route
+              exact
+              path="/quotation"
+              element={<Quotation isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+            <Route
+              exact
+              path="/quotation/uploadquotation"
+              element={<UploadQuotation isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+            <Route
+              exact
+              path="/purchase"
+              element={<Purchase isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+            <Route
+              exact
+              path="/bills"
+              element={<Bills isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+            <Route
+              exact
+              path="/centraldeadstock"
+              element={<CentralDeadStock isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+            <Route
+              exact
+              path="/feedback"
+              element={<Feedback isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+            <Route
+              exact
+              path="/principal"
+              element={
+                <PrincipalDashboard
+                  isOffcanvasOpen={isOffcanvasOpen}
+                  toggleOffcanvas={toggleOffcanvas}
+                  closeOffcanvas={closeOffcanvas}
+                />
+              }
+            ></Route>
+            <Route
+              exact
+              path="/principalquotation"
+              element={
+                <PrincipalQuotation
+                  isOffcanvasOpen={isOffcanvasOpen}
+                  toggleOffcanvas={toggleOffcanvas}
+                  closeOffcanvas={closeOffcanvas}
+                />
+              }
+            ></Route>
+          </Routes>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import '../assets/css/ViewBudget.css';
 import axios from 'axios';
-import {useParams } from "react-router-dom";
-import Table from './Table';
+import { useParams } from "react-router-dom";
+import Table from './CumulativeTable';
 
-function Dynamic({isOffcanvasOpen}) {
+function Dynamic({ isOffcanvasOpen }) {
     const [selectedYearfrom, setSelectedYearfrom] = useState('');
     const [selectedYearto, setSelectedYearto] = useState('');
     const [budgetData, setBudgetData] = useState([]);
@@ -13,89 +13,84 @@ function Dynamic({isOffcanvasOpen}) {
     const [showInputs, setShowInputs] = useState(false);
     const isButtonDisabled = !selectedYearfrom || !selectedYearto;
     const AppStyle = {
-    position:"relative",
-    top:"-100px",
-    left : isOffcanvasOpen ? '0px': '0%'  ,
-    width: isOffcanvasOpen ? 'calc(100% - 360px)': '100%'  ,
-    transition: 'all 0.5s ease',
-    zIndex: 1000,
-    };  
+        // position: "relative",
+        // top: "-100px",
+        // left: isOffcanvasOpen ? '0px' : '0%',
+        // width: isOffcanvasOpen ? 'calc(100% - 360px)' : '100%',
+        // transition: 'all 0.5s ease',
+        // zIndex: 1000,
+    };
 
     useEffect(() => {
-    fetchData();
+        fetchData();
     }, []);
     const extractYear = (yearString) => {
-    // Split the string by '-'
-    const parts = yearString.split('-');
-    // Parse the first part as an integer
-    return parseInt(parts[0], 10);
+        // Split the string by '-'
+        const parts = yearString.split('-');
+        // Parse the first part as an integer
+        return parseInt(parts[0], 10);
     };
     const numYearFrom = extractYear(selectedYearfrom);
     const numYearTo = extractYear(selectedYearto);
 
     const fetchData = async () => {
-    try {
-        const response = await axios.get('http://localhost:8000/dropdown/');
-        setBudgetData(response.data);
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
+        try {
+            const response = await axios.get('http://localhost:8000/dropdown/');
+            setBudgetData(response.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
     };
 
     const handleYearSubmit = async () => {
-    if (numYearFrom <= numYearTo) {
-        try {
-        const response = await axios.post('http://localhost:8000/get_budget_data/', { selectedYearfrom, selectedYearto ,username });
-        setData(response.data);
-        setShowInputs(true);
+        if (numYearFrom <= numYearTo) {
+            try {
+                const response = await axios.post('http://localhost:8000/get_budget_data/', { selectedYearfrom, selectedYearto, username });
+                setData(response.data);
+                setShowInputs(true);
+            }
+            catch (error) {
+                console.error('Error fetching budget data:', error);
+            }
         }
-        catch (error) {
-        console.error('Error fetching budget data:', error);
+        else {
+            window.alert("Put financial Year From Correctly")
         }
-    }
-    else {
-        window.alert("Put financial Year From Correctly")
-    }
     };
 
     return (
-    <div className='container p-2 mw-5' style={AppStyle}>
-        <label htmlFor="language" >Financial Year :</label>
-        <br/>
-        <label htmlFor="language">
-            Select from :
-        </label>
-        <select
-            className="ddfor-from"
-            value={selectedYearfrom}
-            onChange={(e) => setSelectedYearfrom(e.target.value)}>
-            <option value="" disabled >Select an option</option>
-            {budgetData.map((item, index) => (
-                <option key={index} value={item}>
-                    {item}
-                </option>
-            ))}
-        </select>
-        <label htmlFor="language">
-            Select to  :
-        </label>
-        <select
-            className="ddfor-to"
-            value={selectedYearto}
-            onChange={(e) => setSelectedYearto(e.target.value)}>
-            <option value="" disabled >Select an option</option>
-            {budgetData.map((item, index) => (
-                <option key={index} value={item}>
-                    {item}
-                </option>
-            ))}
-        </select>
-        <button className="" onClick={handleYearSubmit} disabled={isButtonDisabled}>View</button>
-        <br/>
-        {showInputs && (
-        <Table data={data}/>
-        )}
-    </div>
+        <div className='w-100 h-100' style={AppStyle}>
+            {true && (
+                <Table data={data} caption={
+                    <div className='d-flex flex-row gap-5 px-3 mt-2 '>
+                        <span className='h2'>Dynamic Budget</span>
+                        <select
+                            className="bg-primary text-white h5 border px-0" aria-labelledby="dropdownMenuButton1"
+                            value={selectedYearfrom}
+                            onChange={(e) => { setSelectedYearfrom(e.target.value); handleYearSubmit() }}>
+                            <option className="" value="" disabled >From</option>
+                            {budgetData.map((item, index) => (
+                                <option className='' key={index} value={item}>
+                                    {item}
+                                </option>
+                            ))}
+                        </select>
+                        <span>-</span>
+                        <select
+                            className="bg-primary text-white h5 border px-0" aria-labelledby="dropdownMenuButton2"
+                            value={selectedYearto}
+                            onChange={(e) => { setSelectedYearto(e.target.value); handleYearSubmit() }}>
+                            <option value="" disabled >To</option>
+                            {budgetData.map((item, index) => (
+                                <option key={index} value={item}>
+                                    {item}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                } />
+            )}
+        </div>
     );
 }
 

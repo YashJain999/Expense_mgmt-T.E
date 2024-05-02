@@ -23,12 +23,12 @@ td {
     border-collapse: collapse;
 } */
 
-input[type=text] {
-    width: 50%;
+/* input[type=text] { */
+    /* width: 50%; */
     /* box-sizing: content-box; */
-    text-align: left;
+    /* text-align: left;
     border-radius:60px ;
-}
+} */
 
 .disabled {
     pointer-events: none;

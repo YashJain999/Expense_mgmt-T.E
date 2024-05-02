@@ -26,7 +26,7 @@ export default function Navbar({
   return (
     <>
       <nav
-        className="navbar navbar-dark fixed-top fade show navbar-expand-lg bg-dark border-bottom py-0cd"
+        className="navbar navbar-dark fixed-top fade show navbar-expand-lg bg-dark border-bottom "
         data-bs-theme="dark"
         style={navbarStyle}
       >
