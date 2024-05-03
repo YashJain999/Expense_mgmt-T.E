@@ -38,56 +38,61 @@ function UploadBudget({ isOffcanvasOpen }) {
     }
   };
 
+  useEffect(() => {
+      handleYearSubmit();
+  }, [selectedYear])
   const handleYearSubmit = async () => {
-    try {
-      const response = await axios.post('http://localhost:8000/submit_year/', { selectedYear });
-      console.log('Year selection successful:', response.data);
-      // Handle successful submission
+    if (selectedYear !== '') {
       try {
-        const Data = new FormData();
-        Data.append('username', username);
-        Data.append('selectedYear', selectedYear);
-        const response2 = await axios.post('http://localhost:8000/get_uploaded_docs/', Data, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        if (response2.status === 200) {
-          if (response2.data.length === 0) {
-            alert('no data available')
-            handleUploadClick()
-          }
-          else {
-            if (response2.data && Array.isArray(response2.data)) {
-              const data = response2.data.map((item) => ({
-                pdf: item.pdf_name,
-                description: item.description,
-                status: item.status,
-                comment: item.comment
-              }));
-              console.log(data)
-              setFetchedData(data);
-              console.log('Data sent:', response2.data);
-              // alert('Data Sent Successfully');
-              // Handle successful submission
-            } else {
-              console.error('Invalid data format:', response2.data);
-              alert('Invalid data format');
-              // Handle unexpected data format
+        const response = await axios.post('http://localhost:8000/submit_year/', { selectedYear });
+        console.log('Year selection successful:', response.data);
+        // Handle successful submission
+        try {
+          const Data = new FormData();
+          Data.append('username', username);
+          Data.append('selectedYear', selectedYear);
+          const response2 = await axios.post('http://localhost:8000/get_uploaded_docs/', Data, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
             }
+          });
+          if (response2.status === 200) {
+            if (response2.data.length === 0) {
+              alert('no data available')
+              handleUploadClick()
+            }
+            else {
+              if (response2.data && Array.isArray(response2.data)) {
+                const data = response2.data.map((item) => ({
+                  pdf: item.pdf_name,
+                  description: item.description,
+                  status: item.status,
+                  comment: item.comment
+                }));
+                console.log(data)
+                setFetchedData(data);
+                console.log('Data sent:', response2.data);
+                // alert('Data Sent Successfully');
+                // Handle successful submission
+              } else {
+                console.error('Invalid data format:', response2.data);
+                alert('Invalid data format');
+                // Handle unexpected data format
+              }
+            }
+          } else {
+            console.error('Error submitting data:', response2.data);
+            alert('Error in submitting');
+            // Handle other status codes or errors
           }
-        } else {
-          console.error('Error submitting data:', response2.data);
-          alert('Error in submitting');
-          // Handle other status codes or errors
+        } catch (error) {
+          console.error('Error sending data:', error);
+          // Handle error
         }
       } catch (error) {
-        console.error('Error sending data:', error);
+        console.error('Error submitting selected year:', error);
         // Handle error
       }
-    } catch (error) {
-      console.error('Error submitting selected year:', error);
-      // Handle error
     }
 
 
@@ -180,7 +185,7 @@ function UploadBudget({ isOffcanvasOpen }) {
             <select
               className="w-25 bg-primary text-white h5 border px-2" aria-labelledby="dropdownMenuButton2"
               value={selectedYear}
-              onChange={(e) => { setSelectedYear(e.target.value); handleYearSubmit() }}>
+              onChange={(e) => { setSelectedYear(e.target.value);}}>
               <option className="" value="" disabled >Financial Year</option>
               {budgetData.map((item, index) => (
                 <option className='' key={index} value={item}>

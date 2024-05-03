@@ -100,9 +100,9 @@ function EnterBudget({ isOffcanvasOpen }) {
                     actual_exp: budgetData[item].actual_exp
                 });
             });
+            console.log(requestData)
             // Send a POST request to your backend with the requestData array
             await axios.post("http://localhost:8000/update_budget_details/", requestData);
-            console.log(requestData)
             // Set isEditing to false to exit editing mode
             setIsEditing(false);
             // Display a pop-up message
@@ -120,20 +120,25 @@ function EnterBudget({ isOffcanvasOpen }) {
         setIsEditing(false); // Exit editing mode
     };
 
+    useEffect(() => {
+        handleYearSubmit();
+    }, [selectedYear])
     const handleYearSubmit = async () => {
-        try {
-            const response = await axios.post('http://localhost:8000/get_budget_details/', { selectedYear, username });
-            const formattedData = {};
-            console.log(response.data);
-            response.data.forEach(item => {
-                formattedData[item.item] = {
-                    budgeted_amt: item.budgeted_amt,
-                    actual_exp: item.actual_exp
-                };
-            });
-            setBudgetData(formattedData);
-        } catch (error) {
-            console.error('Error fetching budget details:', error);
+        if (selectedYear != '') {
+            try {
+                const response = await axios.post('http://localhost:8000/get_budget_details/', { selectedYear, username });
+                const formattedData = {};
+                console.log(response.data);
+                response.data.forEach(item => {
+                    formattedData[item.item] = {
+                        budgeted_amt: item.budgeted_amt,
+                        actual_exp: item.actual_exp
+                    };
+                });
+                setBudgetData(formattedData);
+            } catch (error) {
+                console.error('Error fetching budget details:', error);
+            }
         }
     };
 
@@ -264,7 +269,7 @@ function EnterBudget({ isOffcanvasOpen }) {
                         <select
                             className="w-25 bg-primary text-white h5 border px-2" aria-labelledby="dropdownMenuButton2"
                             value={selectedYear}
-                            onChange={(e) => { setSelectedYear(e.target.value); handleYearSubmit() }}>
+                            onChange={(e) => { setSelectedYear(e.target.value); }}>
                             <option className="" value="" disabled >Financial Year</option>
                             {fetchedData.map((item, index) => (
                                 <option className='' key={index} value={item}>
