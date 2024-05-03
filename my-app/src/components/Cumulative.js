@@ -32,6 +32,9 @@ function Cumulative({ isOffcanvasOpen }) {
     useEffect(() => {
         setSelectedYearfrom(calculateSelectedYearto(selectedYear));
     }, [selectedYear]);
+    useEffect(() => {
+        handleYearSubmit();
+    }, [selectedYearfrom]);
     const handleDownloadClick = async () => {
         try {
             const response = await fetch(`http://localhost:8000/generate_pdf/?selectedYear=${selectedYear}&username=${username}`, {
@@ -64,10 +67,12 @@ function Cumulative({ isOffcanvasOpen }) {
 
     const handleYearSubmit = async () => {
         try {
-            const selectedYearto = selectedYear;
-            const response = await axios.post('http://localhost:8000/get_budget_data/', { selectedYearfrom, selectedYearto, username });
-            setData(response.data);
-            setShowInputs(true);
+            if (selectedYear != '' && selectedYearfrom != '') {
+                const selectedYearto = selectedYear;
+                const response = await axios.post('http://localhost:8000/get_budget_data/', { selectedYearfrom, selectedYearto, username });
+                setData(response.data);
+                setShowInputs(true);                
+            }
         }
         catch (error) {
             window.alert('Error fetching budget data:', error);
@@ -83,7 +88,7 @@ function Cumulative({ isOffcanvasOpen }) {
                             <select
                                 className="w-25 bg-primary text-white h5 border px-2" aria-labelledby="dropdownMenuButton2"
                                 value={selectedYear}
-                                onChange={(e) => { setSelectedYear(e.target.value); handleYearSubmit() }}>
+                                onChange={(e) => { setSelectedYear(e.target.value); }}>
                                 <option className="" value="" disabled >Financial Year</option>
                                 {budgetData.map((item, index) => (
                                     <option className='' key={index} value={item}>

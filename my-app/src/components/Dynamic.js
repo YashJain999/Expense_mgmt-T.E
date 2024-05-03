@@ -42,19 +42,24 @@ function Dynamic({ isOffcanvasOpen }) {
         }
     };
 
+    useEffect(() => {
+        handleYearSubmit();
+    }, [selectedYearfrom, selectedYearto]);
     const handleYearSubmit = async () => {
-        if (numYearFrom <= numYearTo) {
-            try {
-                const response = await axios.post('http://localhost:8000/get_budget_data/', { selectedYearfrom, selectedYearto, username });
-                setData(response.data);
-                setShowInputs(true);
+        if (selectedYearfrom != '' && selectedYearto != '') {
+            if (numYearFrom <= numYearTo) {
+                try {
+                    const response = await axios.post('http://localhost:8000/get_budget_data/', { selectedYearfrom, selectedYearto, username });
+                    setData(response.data);
+                    setShowInputs(true);
+                }
+                catch (error) {
+                    console.error('Error fetching budget data:', error);
+                }
             }
-            catch (error) {
-                console.error('Error fetching budget data:', error);
+            else {
+                window.alert("Put financial Year From Correctly")
             }
-        }
-        else {
-            window.alert("Put financial Year From Correctly")
         }
     };
 
@@ -67,7 +72,7 @@ function Dynamic({ isOffcanvasOpen }) {
                         <select
                             className="bg-primary text-white h5 border px-0" aria-labelledby="dropdownMenuButton1"
                             value={selectedYearfrom}
-                            onChange={(e) => { setSelectedYearfrom(e.target.value); handleYearSubmit() }}>
+                            onChange={(e) => { setSelectedYearfrom(e.target.value); }}>
                             <option className="" value="" disabled >From</option>
                             {budgetData.map((item, index) => (
                                 <option className='' key={index} value={item}>
@@ -79,7 +84,7 @@ function Dynamic({ isOffcanvasOpen }) {
                         <select
                             className="bg-primary text-white h5 border px-0" aria-labelledby="dropdownMenuButton2"
                             value={selectedYearto}
-                            onChange={(e) => { setSelectedYearto(e.target.value); handleYearSubmit() }}>
+                            onChange={(e) => { setSelectedYearto(e.target.value); }}>
                             <option value="" disabled >To</option>
                             {budgetData.map((item, index) => (
                                 <option key={index} value={item}>
