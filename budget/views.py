@@ -501,14 +501,23 @@ def update_budget_details(request):
             username = request.data.get('username')
             dept=User.objects.get(u_email=username).u_dep
 
+            # item_mappings = {
+            #     'Laboratory Consumables': 'LAB-CONSUME',
+            #     'Laboratory Equipment': 'LAB-EQ',
+            #     'Maintenance and Spares': 'MAINT-SPARE',
+            #     'Miscellaneous expenses': 'MISC',
+            #     'Research and Development': 'RND',
+            #     'Software': 'SOFT',
+            #     'Training and Travel': 'T&T'
+            # }
             item_mappings = {
-                'Laboratory Consumables': 'LAB-CONSUME',
-                'Laboratory Equipment': 'LAB-EQ',
-                'Maintenance and Spares': 'MAINT-SPARE',
-                'Miscellaneous expenses': 'MISC',
-                'Research and Development': 'RND',
-                'Software': 'SOFT',
-                'Training and Travel': 'T&T'
+                'LAB-CONSUME': 'LAB-CONSUME',
+                'LAB-EQ': 'LAB-EQ',
+                'MAINT-SPARE': 'MAINT-SPARE',
+                'MISC': 'MISC',
+                'RND': 'RND',
+                'SOFT': 'SOFT',
+                 'T&T': 'T&T'
             }
 
             for item_data in data.get('updatedData', []):

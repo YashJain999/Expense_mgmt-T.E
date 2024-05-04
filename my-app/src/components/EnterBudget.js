@@ -86,23 +86,20 @@ function EnterBudget({ isOffcanvasOpen }) {
     const handleSaveClick = async () => {
         try {
             // Create an array to store all the data to be sent
-            const requestData = [{
-                username: username, // Assuming department is defined somewhere in your component
-                year: selectedYear,
-            }];
+            const updatedData = [];
 
             // Loop through each item in budgetData
             Object.keys(budgetData).forEach(item => {
-                // Push the data of each item into the requestData array
-                requestData.push({
+                // Push the data of each item into the updatedData array
+                updatedData.push({
                     item: item,
                     budgeted_amt: budgetData[item].budgeted_amt,
                     actual_exp: budgetData[item].actual_exp
                 });
             });
-            console.log(requestData)
-            // Send a POST request to your backend with the requestData array
-            await axios.post("http://localhost:8000/update_budget_details/", requestData);
+            console.log("updatedData", updatedData)
+            // Send a POST request to your backend with the updatedData array
+            await axios.post("http://localhost:8000/update_budget_details/", { selectedYear, updatedData, username });
             // Set isEditing to false to exit editing mode
             setIsEditing(false);
             // Display a pop-up message
