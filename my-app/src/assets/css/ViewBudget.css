@@ -12,7 +12,11 @@ select {
   left: 390px;
 }
 
-table,
+/* select:focus {
+  outline: none;
+} */
+
+/* table,
 th,
 td {
   margin-left: auto;
@@ -21,7 +25,7 @@ td {
   width: 50%; 
   border: 2px solid black;
   border-collapse: collapse;
-}
+} */
 
     input[type=text] {
     width: 20%;
@@ -64,82 +68,4 @@ td {
       font-size: 16px;
       color: black;
       background-color: white;
-    }
-    .c-FinanYear {
-      display: inline-block; 
-      margin-bottom: 20px; 
-      margin-right: 10px; 
-      font-size: 17px; 
-      font-style: italic;
-      color: #080808; 
-      border-radius: 5px; 
-      padding: 5px; 
-      background-color: rgb(168, 253, 149); 
-    }
-    .c-FinanYearto{
-      display: inline-block; 
-      margin-bottom: 20px; 
-      margin-left: 10px;
-      margin-right: 10px; 
-      font-size: 17px; 
-      font-style: italic;
-      color: #080808; 
-      border-radius: 5px; 
-      padding: 5px; 
-      background-color: rgb(168, 253, 149); 
-    }
-    .c-year {
-      /* border: 2px solid #555;  */
-      border-radius: 5px; 
-      padding: 5px; 
-      font-size: 17px; 
-      width: 150px; 
-      margin-bottom: 20px; 
-      background-color: rgb(229, 255, 220); 
-      transition: border-color 0.3s; 
-    }
-    
-    .c-year:focus {
-      outline: none; 
-      border-color: #222; 
-    }
-    .c-viewbutton {
-      background-color: rgb(107, 246, 232);
-      color: black;
-      border-radius: 10px;
-      font-size: 17px;
-      padding: 5px 16px;
-      margin-left: 20px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      text-decoration: solid;
-    }
-    
-    .c-viewbutton:hover {
-      background-color: black;
-      color: white;
-    }
-    .c-maindiv {
-      background-color: #fbfdff; 
-      border-radius: 55px; 
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); 
-      padding: 10px; 
-      margin: 0 auto; 
-      max-width: 800px; 
-      height: 70%;
-      width: 100%; 
-      overflow: hidden;
-      position: relative; 
-    }
-    
-    .c-maindiv:before {
-      content: '';
-      position: absolute;
-      top: -10px;
-      left: -10px;
-      right: -10px;
-      bottom: -10px;
-      background: linear-gradient(135deg, #3498db, #8e44ad); 
-      z-index: -1;
-      border-radius: 25px; 
     }

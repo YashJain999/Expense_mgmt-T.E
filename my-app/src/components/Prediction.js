@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {useParams } from "react-router-dom";
-import '../assets/css/Prediction.css'; 
+import TableComponent from './TableComponent';
 
 const Prediction = () => {
   const [predictions, setPredictions] = useState([]);
@@ -18,26 +18,31 @@ const Prediction = () => {
     fetchData();
   }, [username]);
 
+  const getTableBodyItemsFromPrediction = () => {
+    let updatePredictionBodyRows = []
+    Object.keys(predictions).forEach(index => {
+      let updatePredictionBodyRow = []
+      Object.keys(predictions[index]).forEach(key => {
+        let rowcell = {};
+        rowcell['item'] = predictions[index][key];
+        updatePredictionBodyRow.push(rowcell)
+      })
+      updatePredictionBodyRows.push(updatePredictionBodyRow);
+    })
+    return updatePredictionBodyRows;
+  }
   return (
     <div className='tablep'>
       <br/>
-      <label className='t1'>Predictions for Next Year</label>
-      <table>
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Predicted Budgeted Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {predictions.map((item, index) => (
-            <tr key={index}>
-              <td>{item.item}</td>
-              <td>{item.predicted_budgeted_amt}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <TableComponent 
+          thData={[{text:"Item"},{text:"Predicted Budgeted Amount"}]}
+          tbData={getTableBodyItemsFromPrediction()}
+          caption={
+            <div className='d-flex flex-row justify-content-between px-3 mt-2'>
+              <span className='h2'>Predictions for Next Year</span>
+            </div>
+          }
+      />
       <br/>
     </div>
   );

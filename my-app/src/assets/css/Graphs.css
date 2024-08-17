@@ -10,7 +10,17 @@ display: flex;
 gap: 0;
 width: 155%;
 }
+@media only screen and (max-width: 768px) {
+    .buttons-container-g {
+        width: 100%; /* Set the width to 100% for smaller screens */
+    }
+}
 
+@media only screen and (max-width: 480px) {
+    .graph-header-g {
+        font-size: 14px; /* Decrease font size for smaller screens */
+    }
+}
 .button {
 flex:auto;
 padding: 10px ;

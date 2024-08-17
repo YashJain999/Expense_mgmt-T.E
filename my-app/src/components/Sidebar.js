@@ -36,7 +36,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
   const [isQuotationListVisible, setIsQuotationListVisible] = useState(false);
   const toggleQuotationList = () => {
     const buttonObject2 = [
-      { text: "Q.B1", path: `/home/${username}/quotation/uploadquotation` },
+      { text: "Upload Quotation", path: `/home/${username}/quotation/uploadquotation` },
       { text: "Q.B2", path: `/home/${username}/quotation/reviewquotation` },
     ];
     setShouldShowQuotation(buttonObject2);
@@ -362,18 +362,17 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
              )
             )}
             {location.state.desig === "Principal" && !shouldShowList && (
-              <ul className="list-group list-group-flush">
-                <li className="list-group-item">
+             <ul className="w-100 h-100 list-group list-group-flush">
+                <li className={`w-100 justify-content-center list-group-item list-unstyled  ${!isOffcanvasOpen && 'px-0'}`} style={{border: 'none'}}>
                   <NavLink
                     to={`/home/${username}`}
+                    className="isActive w-100 h-100"
                     state={{ desig: location.state.desig }}
                     style={NavLinkStyle}
                   >
                     <button
                       type="button"
-                      className={`btn ${
-                        isOffcanvasOpen ? "w-100" : "p-3"
-                      }`}
+                      className={`w-100 h-100 btn ${isOffcanvasOpen ? 'p-2 text-left' : 'py-2 px-0 text-center'}`}
                       style={{
                         height: isOffcanvasOpen ? "auto" : "40px",
                       }}
@@ -381,11 +380,17 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
                         toggleList();
                       }}
                     >
+                      <div className={`w-100 h-100 d-flex flex-row align-items-center`}>
+                      <i
+                    className={` ${isOffcanvasOpen ? 'py-1 pe-2' : 'w-100'} h-100 fa-solid fa-indian-rupee-sign`}
+                    style={{width: '20%'}}
+                    ></i>
                       <div
-                      className={`overflow-hidden transition-all ${
-                        isOffcanvasOpen ? "w-100 ml-3" : "w-0"
-                      }`}>
+                                className={`w-80 overflow-hidden transition-all ${
+                                  isOffcanvasOpen ? "ml-3" : "d-none"
+                                }`}>
                       PrincipalDashboard
+                    </div>
                     </div>
                     </button>
                   </NavLink>

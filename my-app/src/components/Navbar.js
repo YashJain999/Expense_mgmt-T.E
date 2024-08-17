@@ -22,11 +22,12 @@ export default function Navbar({
   // };
 
   const { username } = useParams();
-
+  const {u_dept} = useParams();
+  console.log(u_dept)
   return (
     <>
       <nav
-        className="navbar navbar-dark fixed-top fade show navbar-expand-lg bg-dark border-bottom py-0cd"
+        className="navbar navbar-dark fixed-top fade show navbar-expand-lg bg-dark border-bottom "
         data-bs-theme="dark"
         style={navbarStyle}
       >
@@ -66,6 +67,7 @@ export default function Navbar({
           <nav className="navbar navbar-light ">
             <div className="container-fluid">
               <span className="navbar-brand mb-0 h1">Username: {username}</span>
+              <span className="navbar-brand mb-0 h1">Department: Data Science</span>
             </div>
           </nav>
         </div>

@@ -15,12 +15,15 @@
     "chart.js": "^4.4.1",
     "multiselect-react-dropdown": "^2.0.25",
     "powerbi-client": "^2.23.0",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
+    "react-icons-kit": "^2.0.0",
     "react-router-dom": "^6.18.0",
     "react-scripts": "^5.0.1",
+    "reactjs-popup": "^2.0.6",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

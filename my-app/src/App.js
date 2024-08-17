@@ -5,7 +5,6 @@ import Login from "./components/Login";
 import RegistrationForm from "./components/RegistrationForm";
 import PasswordReset from "./components/PasswordReset";
 import Home from "./components/Home";
-import PrincipalDashboard from "./components/PrincipalDashboard";
 
 function App() {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(true);
@@ -17,33 +16,15 @@ function App() {
   };
 
   return (
-    <>
-      <div className="main-container">
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/register" element={<RegistrationForm />} />
-          <Route path="/password-reset" element={<PasswordReset />} />
-          {/* <Route exact path="/home/:username/*" element={<Home isOffcanvasOpen={isOffcanvasOpen} />} />
-          <Route path="/principal" element={<PrincipalDashboard/>} /> */}
-          <Route
-            exact path="/home/:username/*"
-            element={
-              <Home
-                isOffcanvasOpen={isOffcanvasOpen}
-                // closeOffcanvas={closeOffcanvas}
-                toggleOffcanvas={toggleOffcanvas}
-              />
-            }
-          />
-          {/* <Route exact path="/home/:username/*"
-            element={<Home isOffcanvasOpen={isOffcanvasOpen} closeOffcanvas={closeOffcanvas} toggleOffcanvas={toggleOffcanvas}/>}
-          />
-          <Route  path="/principal/:username"
-            element={<PrincipalDashboard isOffcanvasOpen={isOffcanvasOpen} closeOffcanvas={closeOffcanvas} toggleOffcanvas={toggleOffcanvas}/>}
-          /> */}
-        </Routes>
-      </div>
-    </>
+    <div className="main-container w-100 mh-100 bg-light overflow-y-scroll" style={{ height: "100vh" }}>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<RegistrationForm />} />
+        <Route path="/password-reset" element={<PasswordReset />} />
+        <Route exact path="/home/:username/*" element={<Home isOffcanvasOpen={isOffcanvasOpen}// closeOffcanvas={closeOffcanvas} 
+          toggleOffcanvas={toggleOffcanvas} />} />
+      </Routes>
+    </div>
   );
 }
 

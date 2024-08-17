@@ -1,38 +1,30 @@
-/* .Enterbudget{
-  text-align: center;
-  background-color: white;
+body {
+  background-color: #f0f0f0;
   font-family: Arial, sans-serif;
-  overflow:scroll;
-} */
-
-.e-year {
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 16px;
 }
 
-.e-year:focus {
+.year:focus {
   outline: none;
-}
-
-th,
-td {
-  text-align: center;
-  border: 2px solid black;
-}
-
-th {
-  /* background-color: #b6f540;
-  color: #000000; */
 }
 
 .Itemname {
   background-color: #eaffe2;
 }
-.Itemname:hover{
-  background-color: rgb(247, 255, 160);
+
+.Itemname:hover {
   cursor: pointer;
+}
+
+.Itemname,
+.tdbudgetinput input,
+.tdactexp input {
+  border: none;
+}
+
+.Itemname,
+.tdbudgetinput:hover input,
+.tdactexp:hover input {
+  border: 1px solid;
 }
 
 .saveenterbudget,
@@ -40,9 +32,8 @@ th {
 .cancelenterbudget {
   position: relative;
   top: 20px;
-  background-color:#000000;
+  background-color: #000000;
   color: #fff;
-  border-radius:20px;
   font-size: 30px;
   text-align: center;
   width: 110px;
@@ -59,42 +50,27 @@ th {
 }
 
 
-.e-viewbutton {
-  background-color: rgb(107, 246, 232);
-    color: black;
-    border-radius: 10px;
-    font-size: 19px;
-    padding: 5px 16px;
-    margin-left: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: solid;
-}
-
-.e-viewbutton:hover {
+.viewbutton {
   background-color: black;
-  color: white;
+  color: #f8f5f5;
+  font-size: 20px;
+  padding: 8px 16px;
+  margin-left: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-decoration: solid;
 }
 
-.budgetinput {
-  width: 100%;
-  height: 100%;
-  background-color: transparent;
-  /* outline: none; */
-  width: 150px;
-  text-align: center;
+.viewbutton:hover {
+  background-color: white;
+  color: black;
 }
-.actexp{
-  width: 100%;
-  height: 100%;
+
+.actexp {
   background-color: transparent;
   outline: none;
-  width: 150px;
   text-align: center;
 }
-
-
-/* Additional Styles */
 
 .container {
   max-width: 1200px;
@@ -102,97 +78,37 @@ th {
   padding: 20px;
 }
 
-.header {
-  background-color: #333;
-  color: #fff;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.footer {
-  background-color: #333;
-  color: #fff;
-  padding: 10px;
-  margin-top: 20px;
-  border-radius: 10px;
-}
-.navbar {
-  z-index: 1100; 
-}
-
-.maindiv {
-  background-color: #fbfdff; 
-  border-radius: 55px; 
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); 
-  padding: 10px; 
-  margin: 0 auto; 
-  max-width: 800px; 
-  height: 50%;
-  width: 60%; 
-  overflow: hidden;
-  position: relative; 
-}
-
-.maindiv:before {
-  content: '';
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  background: linear-gradient(135deg, #3498db, #8e44ad); 
-  z-index: -1;
-  border-radius: 25px; 
-}
-
-.Itemcol,.Budgetcol,.Actexpcol{
+.Itemcol,
+.Budgetcol,
+.Actexpcol {
   background-color: #d1ff7a;
   color: #000000;
 }
+
 .FinanYear {
-  display: inline-block; 
-  margin-bottom: 20px; 
-  margin-right: 10px; 
-  font-size: 19px; 
+  display: inline-block;
+  margin-bottom: 20px;
+  margin-right: 10px;
+  font-size: 20px;
   font-style: italic;
-  color: #080808; 
-  border-radius: 5px; 
-  padding: 5px; 
-  background-color: rgb(168, 253, 149); 
+  color: #333;
+  padding: 8px;
+  background-color: rgb(168, 253, 149);
 }
 
-
-.e-year {
-  border-radius: 5px; 
-  padding: 5px; 
-  font-size: 19px; 
-  width: 170px; 
-  margin-bottom: 20px; 
-  background-color: rgb(229, 255, 220); 
-  transition: border-color 0.3s; 
+.FinanYear:hover {
+  background-color: #4ecc05;
 }
 
-.e-year:focus {
-  outline: none; 
-  border-color: #222; 
+.year {
+  padding: 8px;
+  font-size: 22px;
+  width: 200px;
+  margin-bottom: 20px;
+  background-color: rgb(229, 255, 220);
+  transition: border-color 0.3s;
 }
 
-.year:hover {
-  border-color: #999; 
+.year:focus {
+  outline: none;
 }
-.tdbudgetinput{
-  width: 600px;
-  height: 55px;
-  background-color: white;
-  border-radius: 24px;
-}
-.tdactexp{
-  width: 600px;
-  height: 55px;
-  background-color: white;
-  border-radius: 24px;
-}
-
-

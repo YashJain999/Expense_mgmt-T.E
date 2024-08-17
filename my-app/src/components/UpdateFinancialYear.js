@@ -1,63 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import '../assets/css/UpdateFinancialYear.css';   // name changed og name was UpdationTable.css
-import axios from 'axios'; 
+import axios from 'axios';
+import TableComponent from './TableComponent';
+import ButtonComponent from './ButtonComponent';
 
-function UpdateFinancialYear({isOffcanvasOpen}) {
+function UpdateFinancialYear({ isOffcanvasOpen }) {
   const AppStyle = {
-    position:"relative",
-    top:"-100px",
-    left : isOffcanvasOpen ? '10px': '0%'  ,
-    width: isOffcanvasOpen ? 'calc(100% - 260px)': '100%'  ,
-    transition: 'all 0.5s ease',
-    zIndex: 900,
+    // position: "relative",
+    // top: "-100px",
+    // left: isOffcanvasOpen ? '10px' : '0%',
+    // width: isOffcanvasOpen ? 'calc(100% - 260px)' : '100%',
+    // transition: 'all 0.5s ease',
+    // zIndex: 999,
   };
 
-    const [financialYears, setFinancialYears] = useState([]);
-    const [showInputs, setShowInputs] = useState(false);
-    const [addButtonClicked, setAddButtonClicked] = useState(false);
-    const [yearValue, setYearValue] = useState('');
-    const [descValue, setDescValue] = useState('');
+  const [financialYears, setFinancialYears] = useState([]);
+  const [showInputs, setShowInputs] = useState(false);
+  const [addButtonClicked, setAddButtonClicked] = useState(false);
+  const [yearValue, setYearValue] = useState('');
+  const [descValue, setDescValue] = useState('');
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/get_financialyears/');
-                const { years, desc } = response.data;
-                const data = years.map((year, index) => ({ year, desc: desc[index] }));
-                setFinancialYears(data);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/get_financialyears/');
+      const { years, desc } = response.data;
+      const data = years.map((year, index) => ({ year, desc: desc[index] }));
+      setFinancialYears(data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
-        fetchData();
-    }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-    const handleDownloadClick = () => {
-        setShowInputs(true);
-        setAddButtonClicked(true);
-    };
+  const handleDownloadClick = () => {
+    setShowInputs(true);
+    setAddButtonClicked(true);
+  };
 
-    const handleSaveClick = async () => {
-        try {
-            const response = await axios.post('http://localhost:8000/post_year_desc/', { F_year: yearValue, Desc: descValue });
-            console.log('Data sent successfully:', response.data);
-            alert('Data sent successfully!');
-            setShowInputs(false);
-            setAddButtonClicked(false);
-
-        } catch (error) {
-            console.error('Error submitting data:', error);
-            alert('Failed to send data');
-        }
-    };
-    // const handleYearChange = (e) => {
-    //     const newYearValue = e.target.value;
-    //     const newDescValue = `${parseInt(newYearValue) - 1}-${newYearValue}`;
-    //     setYearValue(newYearValue);
-    //     setDescValue(newDescValue);
-    //   };
-    // Function to update the value of yearValue and generate the description dynamically
+  const handleSaveClick = async () => {
+    try {
+      const response = await axios.post('http://localhost:8000/post_year_desc/', { F_year: yearValue, Desc: descValue });
+      console.log('Data sent successfully:', response.data);
+      alert('Data sent successfully!');
+      fetchData();
+      setShowInputs(false)
+      setAddButtonClicked(false)
+    } catch (error) {
+      console.error('Error submitting data:', error);
+      alert('Failed to send data');
+    }
+  };
+  // const handleYearChange = (e) => {
+  //     const newYearValue = e.target.value;
+  //     const newDescValue = `${parseInt(newYearValue) - 1}-${newYearValue}`;
+  //     setYearValue(newYearValue);
+  //     setDescValue(newDescValue);
+  //   };
+  // Function to update the value of yearValue and generate the description dynamically
   const handleYearChange = (e) => {
     const newYearValue = e.target.value;
     setYearValue(newYearValue);
@@ -71,59 +73,72 @@ function UpdateFinancialYear({isOffcanvasOpen}) {
     return `${startYear}-${yearValue}`;
   };
 
-    return (
-     
-      <div className='container p-2 mw-5' style={AppStyle}>
-        <div className='main-update-finyear'>
-          <br></br>
-          <table>
-              <thead>
-                  <tr>
-                      <th className='FY-Update'>Financial Year</th>
-                      <th className='DY-Update'>Description</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  {financialYears.map((data, index) => (
-                      <tr key={index}>
-                          <td className='Year-Update'>{data.year}</td>
-                          <td className='Desc-Update'>{data.desc}</td>
-                      </tr>
-                  ))}
-              </tbody>
-          </table>
+  const getTableBodyItemsFromUpdateFinancialYears = () => {
+    /**
+     * financialyears=[{year: 2015, desc: '2014-2015'},{year: 2016, desc: '2015-2016'},...]
+     * 
+     * 
+     * response=[
+     *            [
+     *                {item:2015},
+     *                {item:2014-2015}
+     *              ]               
+     *            ]
+     */
 
-          <br></br>
-          <br></br>
+    let updateFinancialYearBodyRows = []
+    Object.keys(financialYears).forEach(index => {
+      let updateFinancialYearBodyRow = []
+      Object.keys(financialYears[index]).forEach(key => {
+        let rowcell = {};
+        rowcell['item'] = financialYears[index][key];
+        updateFinancialYearBodyRow.push(rowcell)
+      })
 
+      updateFinancialYearBodyRows.push(updateFinancialYearBodyRow);
+    })
 
-          <button className="addfinancialyear" onClick={handleDownloadClick} disabled={addButtonClicked}>
-              Add
-          </button>
+    return updateFinancialYearBodyRows;
+
+  }
+
+  return (
+    <div className='w-100 h-100' style={AppStyle}>
+      <br></br>
+      <TableComponent
+        thData={[{ text: "Financial Year", className: "" }, { text: "Description", className: "" }]}
+        tbData={getTableBodyItemsFromUpdateFinancialYears()}
+        caption={
+          <div className='d-flex flex-row justify-content-between px-3 mt-2'>
+            <span className='h2'>Update Financial Year</span>
           </div>
-
-          <br></br><br></br>
-          {showInputs && (
-              <div className='Label-FY'>
-              Enter the Financial Year   
-              <input
-                type="text"
-                pattern="[0-9-]*"
-                style={{ border: '1px solid black' }}
-                placeholder="E.g. 2025"
-                value={yearValue}
-                onChange={handleYearChange} 
-              /><br></br>
-              <br />
-                <label htmlFor="description">Description:</label>
-      <span id="description">
-        {generateDescription(yearValue)}
-      </span><br></br>
-      <input type="hidden" id="descValue" value={descValue} />
-              <button className="submitupdatedfinancial" onClick={handleSaveClick} >Submit</button>
-            </div>
-          )}
-      </div>
+        }
+      />
+      {!addButtonClicked &&
+        <ButtonComponent onClick={handleDownloadClick} text={"Add Icon"} />}
+      <br></br><br></br>
+      {showInputs && (
+        <div className='container m-2'>
+          Enter the Financial Year
+          <input
+            type="text"
+            pattern="[0-9-]*"
+            style={{}}
+            placeholder="E.g. 2025"
+            value={yearValue}
+            onChange={handleYearChange}
+            className='border-bottom border-info focus-ring'
+          /><br></br>
+          <br />
+          <label htmlFor="description">Description:</label>
+          <span id="description">
+            {generateDescription(yearValue)}
+          </span><br></br>
+          <input type="hidden" id="descValue" value={descValue} />
+          <ButtonComponent onClick={handleSaveClick} text={"Submit"} />
+        </div>
+      )}
+    </div>
   );
 }
 

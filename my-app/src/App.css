@@ -1,39 +1,57 @@
-html{
-  height: 100%;
-  width: auto;
-  background-color: white;
-  overflow-y: visible;
+html,
+body {
+  /* height: 100%; */
+  /* width: auto; */
+  /* background-color: white; */
+  /* overflow-y: visible; */
+  overflow: auto;
 }
+
 .main-container {
   text-align: center;
-  background-color: white;
 }
-.btn i{
+
+.btn i {
   font-size: 20px;
-  color:white;
+  color: white;
   position: relative;
   top: 10%;
-}  
-.nav-link{
-  font-size: 20px;
-}  
+}
 
-li.list-group-item .active{
+.nav-link {
+  font-size: 20px;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+li.list-group-item .active {
   border: none;
   /* color: red; */
   /* background-color: pink; */
   /* text-decoration: black; */
 }
-li.list-group-item .active{
+
+li.list-group-item .active {
   color: blue;
   /* background-color: pink; */
 }
-  
+
 @media (max-width: 425px) {
-  html{
+  html {
     font-size: 50%;
   }
-  h2{
-    background-color:"red"
+
+  h2 {
+    background-color: "red"
   }
 }

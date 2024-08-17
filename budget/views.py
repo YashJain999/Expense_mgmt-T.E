@@ -47,7 +47,6 @@ def predict(request):
     # Pass the retrieved data to the predictor function
     predictions_df = predict_budgeted_amount(budget_data,dept)
     predictions = predictions_df.to_dict(orient='records')
-    print(predictions)
     return Response(predictions)
 
 
@@ -503,38 +502,57 @@ def get_pie(request):
     except:
         return Response({'message':'Error in finding data'})
       
+
 @csrf_exempt
 @api_view(['POST'])
 def update_budget_details(request):
     if request.method == 'POST':
         try:
-            # Parse JSON data from request body
             data = request.data
-            
-            # Extract year and username from data
-            selectedYear = data[0].get('year')
-            username = data[0].get('username')
-            
-            # Retrieve additional required fields
+            selectedYear = data.get('selectedYear')
             year = financialyear.objects.get(Desc=selectedYear).F_year
+            username = data.get('username')
             dept = User.objects.get(u_email=username).u_dep
 
-            # Start looping from the second object
-            for item_data in data[1:]:
-                name = item_data.get('item')
-                item_name = itemmaster.objects.get(item_desc=name).item
+            item_mappings = {
+                'Laboratory Consumables': 'LAB-CONSUME',
+                'Laboratory Equipment': 'LAB-EQ',
+                'Maintenance and Spares': 'MAINT-SPARE',
+                'Miscellaneous expenses': 'MISC',
+                'Research and Development': 'RND',
+                'Software': 'SOFT',
+                'Training and Travel': 'T&T'
+            }
+
+            # Delete existing records first
+            for item_data in data.get('updatedData', []):
+                item_name = item_data.get('item')
+                if item_name in item_mappings:
+                    item_value = item_mappings[item_name]
+                    budget.objects.filter(dept=dept, f_year=year, item=item_value).delete()
+
+            # Insert new records
+            for item_data in data.get('updatedData', []):
+                item_name = item_data.get('item')
                 budgeted_amt = float(item_data.get('budgeted_amt', 0))
                 actual_exp = float(item_data.get('actual_exp', 0))
 
-                try:
-                    # Get the instance if it exists, otherwise create a new one
-                    item_instance = budget.objects.filter(dept=dept, f_year=year, item=item_name)
-                    if item_instance:
-                        item_instance.update(budgeted_amt=budgeted_amt, actual_exp=actual_exp)
-                except ObjectDoesNotExist:
-                    raise ValueError("Item does not exist.")
+                if item_name in item_mappings:
+                    item_value = item_mappings[item_name]
+                    budget_obj = budget.objects.create(
+                        dept=dept,
+                        f_year=year,
+                        item=item_value,
+                        budgeted_amt=budgeted_amt,
+                        actual_exp=actual_exp
+                    )
+                else:
+                    print(f"Item '{item_name}' not found in item_mappings.")
 
             return Response({'message': 'Budget details updated successfully.'}, status=status.HTTP_200_OK)
+
+        except json.JSONDecodeError:
+            return Response({'error': 'Invalid JSON format.'}, status=status.HTTP_400_BAD_REQUEST)
 
         except financialyear.DoesNotExist:
             return Response({'error': 'Selected year not found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -542,13 +560,12 @@ def update_budget_details(request):
         except User.DoesNotExist:
             return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        except ValueError as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     else:
         return Response({'error': 'Invalid request method.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 @api_view(['GET'])
 def download_pdf(request, pdf_id):
