@@ -32,12 +32,9 @@ export default function LineGraphs({isOffcanvasOpen}) {
     };
     useEffect(() => {
         fetchData();
-        // fetchitem();
     }, []);
     const extractYear = (yearString) => {
-        // Split the string by '-'
         const parts = yearString.split('-');
-        // Parse the first part as an integer
         return parseInt(parts[0], 10);
     };
     const numYearFrom = extractYear(selectedYearfrom);
@@ -75,11 +72,11 @@ export default function LineGraphs({isOffcanvasOpen}) {
   return (
     <>
     <div className='container p-2 mw-5' style={AppStyle}>
-        <label htmlFor='language'className='l2'>
+        <label className='l2'>
             Financial Year
         </label>
         <br/>
-        <label htmlFor="language">
+        <label className='l2'>
            Select from :
         </label>
         <select
@@ -93,7 +90,7 @@ export default function LineGraphs({isOffcanvasOpen}) {
                 </option>
             ))}
         </select>
-        <label htmlFor="language">
+        <label className='l2'>
            Select to  :
         </label>
         <select
@@ -108,7 +105,7 @@ export default function LineGraphs({isOffcanvasOpen}) {
             ))}
         </select>
         <br/>
-        <label htmlFor="language">
+        <label className='l2'>
             Select one:
         </label>
         <select
@@ -125,7 +122,6 @@ export default function LineGraphs({isOffcanvasOpen}) {
         <button className="show-line-graph" onClick={handleYearSubmit} disabled={isButtonDisabled}>
             View
         </button>
-        <br/>
         {showInputs && (
             <div className='line-graph' >
                 <Lines 
@@ -141,6 +137,7 @@ export default function LineGraphs({isOffcanvasOpen}) {
                 />
             </div>
         )}
+        <br/><br/>
     </div>
     </>
   )

@@ -140,9 +140,15 @@ function PrincipalDashboard({isOffcanvasOpen,toggleOffcanvas,closeOffcanvas}) {
 
   const handleViewDetails = async () => {
     try {
+      // Reset pdfRecords and departmentStates before fetching new data
+      setPdfRecords([]);
+      setDepartmentStates(getInitialDepartmentStates());
+  
+      // Fetch new data for the selected year
       const response = await axios.get(`http://localhost:8000/get_all_pdf_records/?selectedYear=${selectedYear}`);
       setPdfRecords(response.data);
-      const updatedDepartmentStates = { ...departmentStates };
+  
+      const updatedDepartmentStates = getInitialDepartmentStates(); // Reset department states
       response.data.forEach((record) => {
         updatedDepartmentStates[record.dept] = {
           ...updatedDepartmentStates[record.dept],
@@ -151,6 +157,7 @@ function PrincipalDashboard({isOffcanvasOpen,toggleOffcanvas,closeOffcanvas}) {
           placeholderValue: record.comment || '', // Set comment value if available
         };
       });
+  
       setDepartmentStates(updatedDepartmentStates);
     } catch (error) {
       console.error('Error fetching PDF records:', error);

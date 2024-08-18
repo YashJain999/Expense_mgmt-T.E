@@ -4,16 +4,22 @@
   box-sizing: content-box;
 } 
 
-/* .navbar.navbar-open {
-left: 255px;
-width: calc(100% - 255px); /* Adjust the width to match the offcanvas width */
-/* transition: all 0.5s ease; */
-/* Add transition for smooth resizing */
+.btn-menu{
+  border-style: none;
+  background-color: transparent;
+}
+.butn-menu .fa-bars{
+  position:absolute;
+  left: 20px;
+  top: 21px;
+  color: white;
+  font-size: 40px;
+  transition-duration: 0.2s;
+}
 
-/* 
-.navbar.navbar-closed {
-width: 100%;
-} */
+.btn-menu:hover .fa-bars{
+  transform: scale(1.4);
+}
 
 @media (max-width: 425px) {
 

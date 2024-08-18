@@ -35,6 +35,7 @@ from reportlab.platypus import Image
 import os
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
+from .prediction import predict_budgeted_amount
 
 
 class LoginView(APIView):
@@ -205,13 +206,10 @@ def generate_pdf_view(request):
     footer = Paragraph(footer_text, footer_style)
     elements.append(footer)
 
-    
-
     # Build the PDF document
     doc.build(elements)
 
     return response
-
 
 
 @api_view(['POST'])
@@ -270,7 +268,6 @@ def show_enter_data(request):
     enter_data = list(budget.objects.filter(dept='IT',f_year__in=desc).values('budgeted_amt','actual_exp'))
     print(enter_data)
     return Response(enter_data)
-
 
 class ExpenseList(APIView):
     def get(self, request):
@@ -469,33 +466,51 @@ from django.core.exceptions import ObjectDoesNotExist
 def update_budget_details(request):
     if request.method == 'POST':
         try:
-            # Parse JSON data from request body
             data = request.data
-            
-            # Extract year and username from data
-            selectedYear = data[0].get('year')
-            username = data[0].get('username')
-            
-            # Retrieve additional required fields
+            selectedYear = data.get('selectedYear')
             year = financialyear.objects.get(Desc=selectedYear).F_year
+            username = data.get('username')
             dept = User.objects.get(u_email=username).u_dep
 
-            # Start looping from the second object
-            for item_data in data[1:]:
-                name = item_data.get('item')
-                item_name = itemmaster.objects.get(item_desc=name).item
+            item_mappings = {
+                'Laboratory Consumables': 'LAB-CONSUME',
+                'Laboratory Equipment': 'LAB-EQ',
+                'Maintenance and Spares': 'MAINT-SPARE',
+                'Miscellaneous expenses': 'MISC',
+                'Research and Development': 'RND',
+                'Software': 'SOFT',
+                'Training and Travel': 'T&T'
+            }
+
+            # Delete existing records first
+            for item_data in data.get('updatedData', []):
+                item_name = item_data.get('item')
+                if item_name in item_mappings:
+                    item_value = item_mappings[item_name]
+                    budget.objects.filter(dept=dept, f_year=year, item=item_value).delete()
+
+            # Insert new records
+            for item_data in data.get('updatedData', []):
+                item_name = item_data.get('item')
                 budgeted_amt = float(item_data.get('budgeted_amt', 0))
                 actual_exp = float(item_data.get('actual_exp', 0))
 
-                try:
-                    # Get the instance if it exists, otherwise create a new one
-                    item_instance = budget.objects.filter(dept=dept, f_year=year, item=item_name)
-                    if item_instance:
-                        item_instance.update(budgeted_amt=budgeted_amt, actual_exp=actual_exp)
-                except ObjectDoesNotExist:
-                    raise ValueError("Item does not exist.")
+                if item_name in item_mappings:
+                    item_value = item_mappings[item_name]
+                    budget_obj = budget.objects.create(
+                        dept=dept,
+                        f_year=year,
+                        item=item_value,
+                        budgeted_amt=budgeted_amt,
+                        actual_exp=actual_exp
+                    )
+                else:
+                    print(f"Item '{item_name}' not found in item_mappings.")
 
             return Response({'message': 'Budget details updated successfully.'}, status=status.HTTP_200_OK)
+
+        except json.JSONDecodeError:
+            return Response({'error': 'Invalid JSON format.'}, status=status.HTTP_400_BAD_REQUEST)
 
         except financialyear.DoesNotExist:
             return Response({'error': 'Selected year not found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -503,11 +518,9 @@ def update_budget_details(request):
         except User.DoesNotExist:
             return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-        except ValueError as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     else:
         return Response({'error': 'Invalid request method.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -588,3 +601,43 @@ def principal_status(request):
             return Response({'error': 'PDF instance not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+def has_non_zero_values(data):
+    for item in data['data_budget']:
+        if item.get('budgeted_amt', 0) != 0:
+            return True
+    for item in data['data_actual']:
+        if item.get('actual_exp', 0) != 0:
+            return True
+    return False
+
+@api_view(['POST'])
+def get_pie(request):
+    try:
+        selectedYear = request.data.get('selectedYear')
+        username = request.data.get('username')
+        dept=User.objects.get(u_email=username).u_dep
+        year = financialyear.objects.get(Desc=selectedYear).F_year
+        data_budget = list(budget.objects.filter(dept = dept  ,f_year = year).values('item','budgeted_amt'))
+        data_actual = list(budget.objects.filter(dept = dept  ,f_year = year).values('item','actual_exp'))
+        response_data = {
+            'data_budget': data_budget,
+            'data_actual': data_actual,
+            }
+        if has_non_zero_values(response_data):
+            return Response(response_data)
+        else :
+            return Response({'code':'10','year':selectedYear})
+    except:
+        return Response({'message':'Error in finding data'})
+    
+@api_view(['POST'])
+def predict(request):
+    username = request.data.get('username')  # Assuming 'u_email' is the username field
+    dept=User.objects.get(u_email=username).u_dep   
+    # Retrieve data from the Budget table
+    budget_data = budget.objects.all()
+    # Pass the retrieved data to the predictor function
+    predictions_df = predict_budgeted_amount(budget_data,dept)
+    predictions = predictions_df.to_dict(orient='records')
+    return Response(predictions)

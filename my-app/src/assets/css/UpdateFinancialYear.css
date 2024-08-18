@@ -1,41 +1,41 @@
 body {
     text-align: center;
-}
+  }
   
-select {
+  select {
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
-}
-
-select:focus {
-    outline: none;
-}
+  }
   
-table,
-th,
-td {
+  select:focus {
+    outline: none;
+  }
+  
+  /* table,
+  th,
+  td {
     margin-left: auto;
     margin-right: auto;
     text-align: center;
     width: 50%;
     border: 2px solid black;
     border-collapse: collapse;
-}
-
-input[type=text] {
-    width: 50%;
+  } */
+  
+  /* input[type=text] { */
+    /* width: 50%; */
     /* box-sizing: content-box; */
-    text-align: left;
+    /* text-align: left;
     border-radius:60px ;
-}
-
-.disabled {
+  } */
+  
+  .disabled {
     pointer-events: none;
     opacity: 0.3;
-}
+  }
       
-.addfinancialyear {
+  .addfinancialyear {
     position: relative;
     top : -20px;
       background-color:#000000;
@@ -46,14 +46,14 @@ input[type=text] {
       left: 30px;
       width: 110px;
       height: 40px;
-}
-
-.addfinancialyear:hover{
+  }
+  
+  .addfinancialyear:hover{
     background-color: white;
       color: black;
-}
+  }
       
-.submitupdatedfinancial {
+  .submitupdatedfinancial {
     position: relative;
       top: 10px;
       background-color:#000000;
@@ -64,9 +64,9 @@ input[type=text] {
       left: 30px;
       width: 110px;
       height: 40px;
-}
-
-.submitupdatedfinancial:hover{
+  }
+  
+  .submitupdatedfinancial:hover{
     background-color: white;
       color: black;
-}
+  }

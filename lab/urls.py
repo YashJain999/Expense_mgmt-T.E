@@ -19,6 +19,8 @@ from django.contrib import admin
 from django.urls import path, include
 from budget.views import *
 from budget.models import *
+from quotation.models import *
+from quotation.views import *
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -45,7 +47,11 @@ urlpatterns = [
     path('principal_status/', views.principal_status,name='anything'),
     path('item_dropdown/', views.item_dropdown, name="anything"),
     path('get_item_amount/', views.get_item_amount, name='anything'),
-    path('get_list_amount/', views.get_list_amount, name='anything')
+    path('get_list_amount/', views.get_list_amount, name='anything'),
+    path('get_pie/', views.get_pie, name='anything'),
+    path('predict/', views.predict, name='predict'),
+    path('get_req/',get_req, name='anything'),
+    path('add_req/',add_req,name='anything')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

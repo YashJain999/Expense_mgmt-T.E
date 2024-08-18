@@ -1,12 +1,41 @@
-.graph{
-    width: 800px;
-    position: relative;
-    left: 200px;
-    bottom: -100px;
-}
-.l1{
-    font-size: 16px;
-    color: black;
-    text-transform: uppercase;
+.graph-header-g {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    }
+    
+    .buttons-container-g {
+    display: flex;
+    gap: 0;
+    width: 155%;
+    }
+    @media only screen and (max-width: 768px) {
+        .buttons-container-g {
+            width: 100%; /* Set the width to 100% for smaller screens */
+        }
+    }
+    
+    @media only screen and (max-width: 480px) {
+        .graph-header-g {
+            font-size: 14px; /* Decrease font size for smaller screens */
+        }
+    }
+    .button {
+    flex:auto;
+    padding: 10px ;
+    background-color: #c9f67b;
+    border: none;
+    font-size: 30px;
     font-weight: bold;
-}
+    transition-duration: 0.2s;
+    cursor: pointer;
+    }
+    .button.selected {
+    background-color: #f8a769; /* Darker Green */
+    }
+    .button:hover {
+    background-color: #f8a769; /* Darker Green */
+    transform: scale(1.1); /* Increase size on hover */
+    }
+      

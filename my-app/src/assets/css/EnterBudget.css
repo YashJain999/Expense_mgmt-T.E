@@ -1,29 +1,30 @@
 body {
-  text-align: center;
-}
-
-.year {
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  background-color: #f0f0f0;
+  font-family: Arial, sans-serif;
 }
 
 .year:focus {
   outline: none;
 }
 
-table,
-th,
-td {
-  padding-top: 15px;
-  text-align: center;
-  width: 50%; 
-  border: 2px solid black;
-  border-collapse: collapse;
-  text-wrap: nowrap;
-  padding-left: 25px;
-  padding-right: 25px;
-  text-align: center;
+.Itemname {
+  background-color: #eaffe2;
+}
+
+.Itemname:hover {
+  cursor: pointer;
+}
+
+.Itemname,
+.tdbudgetinput input,
+.tdactexp input {
+  border: none;
+}
+
+.Itemname,
+.tdbudgetinput:hover input,
+.tdactexp:hover input {
+  border: 1px solid;
 }
 
 .saveenterbudget,
@@ -31,13 +32,14 @@ td {
 .cancelenterbudget {
   position: relative;
   top: 20px;
-  background-color: black;
+  background-color: #000000;
   color: #fff;
-  border-radius: 20px;
   font-size: 30px;
   text-align: center;
-  width: 150px;
-  margin-right: 10px; /* Added margin to create space between buttons */
+  width: 110px;
+  padding-left: 2px;
+  background-color: #0f100e;
+  color: #f8f5f5;
 }
 
 .saveenterbudget:hover,
@@ -47,54 +49,66 @@ td {
   color: black;
 }
 
+
 .viewbutton {
-  position: relative;
-  left: 20px;
-  background-color: #000000;
-  color: #fff;
-  border-radius: 5px;
-  font-size: 15px;
+  background-color: black;
+  color: #f8f5f5;
+  font-size: 20px;
+  padding: 8px 16px;
+  margin-left: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-decoration: solid;
 }
 
 .viewbutton:hover {
-  font-size: 16px;
-  color: black;
   background-color: white;
+  color: black;
 }
 
-.AC {
-  width: 50px;
-}
-.Editenterbudget{
-  left: 140px;
-  width: 100px;
-  padding-left: 5px;
-}
-.saveenterbudget{
-  width: 100px;
-  left: 130px;
-}
-.cancelenterbudget{
-  width: 110px;
-  left: 136px;
-  padding-left: 10px;
-  padding-right: 40px;
-}
-
-.budget_input
-{
-  border-radius: 0%;
-  color: red;
-  border-color: aquamarine;
-  border-width: 60px;
+.actexp {
+  background-color: transparent;
+  outline: none;
   text-align: center;
 }
-/* 
-.actexp{
-  color: blue;
-  padding-left: 60px;
-  padding-right: 50px;
-  text-align: center;
-  text-wrap: nowrap;
 
-} */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.Itemcol,
+.Budgetcol,
+.Actexpcol {
+  background-color: #d1ff7a;
+  color: #000000;
+}
+
+.FinanYear {
+  display: inline-block;
+  margin-bottom: 20px;
+  margin-right: 10px;
+  font-size: 20px;
+  font-style: italic;
+  color: #333;
+  padding: 8px;
+  background-color: rgb(168, 253, 149);
+}
+
+.FinanYear:hover {
+  background-color: #4ecc05;
+}
+
+.year {
+  padding: 8px;
+  font-size: 22px;
+  width: 200px;
+  margin-bottom: 20px;
+  background-color: rgb(229, 255, 220);
+  transition: border-color 0.3s;
+}
+
+.year:focus {
+  outline: none;
+}

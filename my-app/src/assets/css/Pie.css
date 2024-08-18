@@ -1,0 +1,14 @@
+.Pie-graph{
+    width: 970px;
+    position: relative;
+    margin: 0 auto; /* Center horizontally */
+    bottom: -50px;
+    left:-80px;
+    box-shadow: 0 32px 32px 0 rgba(12, 12, 12, 0.2); /* Add shadow effect */
+    transition: 0.3s; /* Add transition effect for hover */
+    border-radius: 10px; /* Add border radius for rounded corners */
+    padding: 10px; /* Add padding for inner content */
+}
+.Pie-graph:hover {
+    box-shadow: 0 100px 100px 0 rgba(12, 12, 12, 0.2); /* Increase shadow on hover */
+}

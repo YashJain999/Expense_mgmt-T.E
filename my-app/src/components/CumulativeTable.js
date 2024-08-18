@@ -1,6 +1,7 @@
 import React from 'react';
+import TableComponent from './TableComponent';
 
-const Table = ({ data }) => {
+const Table = ({ data, caption }) => {
   const itemNames = {
     'LAB-CONSUME': 'Laboratory Consumables',
     'LAB-EQ': 'Laboratory Equipment',
@@ -45,50 +46,48 @@ const Table = ({ data }) => {
     const orderedItems = ['LAB-CONSUME', 'LAB-EQ', 'MAINT-SPARE', 'MISC', 'RND', 'SOFT', 'T&T'];
 
     orderedItems.forEach(item => {
-      const rowCells = [<td key={`${item}-name`}>{itemNames[item]}</td>];
+      let row = []
+      let rowCell1 = {}
+      // const rowCells = [<td key={`${item}-name`}>{itemNames[item]}</td>];
+      rowCell1["item"] = item;
+      rowCell1["styles"] = {width: "300px"};
+      rowCell1["className"] = "bg-primary text-white text-start";
+      row.push(rowCell1);
       uniqueYears.forEach(year => {
         const data = items[item][year] || { budgeted_amt: 0, actual_exp: 0 };
-        rowCells.push(
-          <React.Fragment key={`${item}-${year}`}>
-            <td>{data.budgeted_amt}</td>
-            <td>{data.actual_exp}</td>
-          </React.Fragment>
-        );
+        let rowCellBudget_amt = {}
+        rowCellBudget_amt["item"] = data.budgeted_amt;
+        rowCellBudget_amt["styles"] = {};
+        rowCellBudget_amt["className"] = "";
+        row.push(rowCellBudget_amt)
+
+        let rowCellActual_exp = {}
+        rowCellActual_exp["item"] = data.actual_exp;
+        rowCellActual_exp["styles"] = {};
+        rowCellActual_exp["className"] = "";
+        row.push(rowCellActual_exp)
       });
-      rows.push(<tr key={`${item}-row`}>{rowCells}</tr>);
+      rows.push(row);
     });
 
     return rows;
   };
 
   return (
-    <div>
-      <h2>Budget Data</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Items</th>
-            {uniqueYears.map(year => (
-              <React.Fragment key={year}>
-                <th>Budgeted Amount {year}</th>
-                <th>Actual Expense {year}</th>
-              </React.Fragment>
-            ))}
-          </tr>
-        </thead>
-        <tbody>{generateRows()}</tbody>
-        <tfoot>
-          <tr>
-            <td>Total</td>
-            {uniqueYears.map(year => (
-              <React.Fragment key={year}>
-                <td>{totals[year].budgeted_amt}</td>
-                <td>{totals[year].actual_exp}</td>
-              </React.Fragment>
-            ))}
-          </tr>
-        </tfoot>
-      </table>
+    <div className='w-100 h-100'>
+      <TableComponent
+        caption={caption}
+        thData={[{ text: "Items" },
+        ...uniqueYears.flatMap(year =>
+          [{ text: "Budget Amount" + year }, { text: "Actual Expense" + year }]
+        )
+        ]}
+        tbData={generateRows()}
+        tfData={[{ text: "Total" },
+        ...uniqueYears.flatMap(year => (
+          [{ text: totals[year].budgeted_amt.toString() }, { text: totals[year].actual_exp.toString() }]
+        ))]}
+      />
     </div>
   );
 };
