@@ -20,7 +20,7 @@ function App() {
         <Route path="/register" element={<RegistrationForm />} />
         <Route path="/password-reset" element={<PasswordReset />} />
         <Route 
-          path="/home/:username/:u_dept?" 
+          path="/home/:username/:u_dept?/*" 
           element={<Home isOffcanvasOpen={isOffcanvasOpen} toggleOffcanvas={toggleOffcanvas} />} 
         />
       </Routes>

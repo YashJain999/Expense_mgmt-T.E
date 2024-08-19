@@ -30,10 +30,11 @@ function Login() {
 
           }
           else if (responsedata['u_desig'] === 'Principal'){
+            const u_desig = responsedata['u_desig']
             // navigate(`/principal`);
             setUsername('');
             setPassword('');
-            navigate(`/home/${username}/${'principal'}`,{state:{desig:responsedata["u_desig"]}});
+            navigate(`/home/${username}/${u_desig}`,{state:{desig:responsedata["u_desig"]}});
           }
         } 
         else if (responsedata['code'] === '20') {

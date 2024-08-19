@@ -138,7 +138,7 @@ function Home() {
             ></Route>
             <Route
               exact
-              path="/principal"
+              path="/principalbudget"
               element={
                 <PrincipalDashboard
                   isOffcanvasOpen={isOffcanvasOpen}

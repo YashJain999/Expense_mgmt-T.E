@@ -18,6 +18,7 @@ export default function Navbar({
     navigate('/');
   };
 
+  const displaydepartment  = u_dept === 'undefine' ? `Department: ${u_dept}` : "Designation: Principal";
   const navbarStyle = {
     left: isOffcanvasOpen ? "260px" : "70px",
     right: "0px",
@@ -50,7 +51,7 @@ export default function Navbar({
           <div className="container-fluid">
             <span className="navbar-brand mb-0 h1">Username: {username}</span>
             
-            <span className="navbar-brand mb-0 h1">Department: {u_dept}</span>
+            <span className="navbar-brand mb-0 h1">{displaydepartment}</span>
           </div>
         </nav>
       </div>
