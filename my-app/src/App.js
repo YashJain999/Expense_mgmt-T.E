@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import RegistrationForm from "./components/RegistrationForm";
 import PasswordReset from "./components/PasswordReset";
 import Home from "./components/Home";
+import PrivateRoute from "./PrivateRoute";
 
 function App() {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(true);
@@ -21,7 +22,8 @@ function App() {
         <Route path="/password-reset" element={<PasswordReset />} />
         <Route 
           path="/home/:username/:u_dept?/*" 
-          element={<Home isOffcanvasOpen={isOffcanvasOpen} toggleOffcanvas={toggleOffcanvas} />} 
+          element={
+          <PrivateRoute> <Home isOffcanvasOpen={isOffcanvasOpen} toggleOffcanvas={toggleOffcanvas} /></PrivateRoute>} 
         />
       </Routes>
     </div>

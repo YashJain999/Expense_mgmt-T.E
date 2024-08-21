@@ -13,12 +13,12 @@ export default function Navbar({
 
   const handleLogout = () => {
     // Clear session data
-    sessionStorage.clear();  // or localStorage.clear();
+    sessionStorage.clear(); 
     // Redirect to login page
     navigate('/');
   };
 
-  const displaydepartment  = u_dept === 'undefine' ? `Department: ${u_dept}` : "Designation: Principal";
+  const displaydepartment = u_dept !== "undefined" ? `Department: ${u_dept}` : `Designation: Principal`;
   const navbarStyle = {
     left: isOffcanvasOpen ? "260px" : "70px",
     right: "0px",

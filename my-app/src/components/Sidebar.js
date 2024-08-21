@@ -382,7 +382,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
              <ul className="w-100 h-100 list-group list-group-flush">
                 <li className={`w-100 justify-content-center list-group-item list-unstyled  ${!isOffcanvasOpen && 'px-0'}`} style={{border: 'none'}}>
                   <NavLink
-                    to={`/home/${username}/`}
+                    to={`/home/${username}/${u_dept}/`}
                     className="isActive w-100 h-100"
                     state={{ desig: location.state.desig }}
                     style={NavLinkStyle}

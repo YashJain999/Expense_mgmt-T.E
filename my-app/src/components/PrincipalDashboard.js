@@ -101,7 +101,6 @@ function PrincipalDashboard({isOffcanvasOpen,toggleOffcanvas,closeOffcanvas}) {
   }
   };
   
-  
   const handleSaveButtonClick = async (department) => {
     try {
       // Send status and comment to the backend
