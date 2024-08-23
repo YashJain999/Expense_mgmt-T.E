@@ -39,6 +39,7 @@ urlpatterns = [
     path('api/expenses/', ExpenseList.as_view(), name='expense-list'),
     path("post_year_desc/",views.post_year_desc, name="anything"),
     path('upload_budget/', views.upload_budget, name='anything'),
+    path('delete_budget/', views.delete_budget, name='anything'),
     path('get_uploaded_docs/',views.get_uploaded_docs,name='anything'),
     path('get_budget_details/', views.get_budget_details, name='anything'),
     path('update_budget_details/',views.update_budget_details,name='anything'),

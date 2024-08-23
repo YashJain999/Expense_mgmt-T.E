@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db import IntegrityError
 from django.core.files.base import ContentFile
+from django.db import transaction
 from django.http import Http404
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
@@ -347,12 +348,13 @@ def post_year_desc(request):
         return Response({'message': 'Data added successfully'})
     else:
         return Response({'error': 'Invalid data provided'}, status=400)
-    
+        
+
 @api_view(['POST'])
 def upload_budget(request):
     username = request.data.get('username')
     selectedYear = request.data.get('selectedYear')
-    branch=User.objects.get(u_email=username).u_dep
+    branch = User.objects.get(u_email=username).u_dep
 
     try:
         year = financialyear.objects.get(Desc=selectedYear).F_year
@@ -368,29 +370,53 @@ def upload_budget(request):
         content = file.read()
         content_file = io.BytesIO(content)
         content_file.seek(0)
-        
+
         # Generate a unique pdf_id
-        pdf_id = f"{uuid4().hex}"
+        pdf_id = uuid4().hex
 
         try:
-            budget, created = Pdf.objects.update_or_create(
-                dept=branch,
-                f_year=year,
-                defaults={
-                    'pdf': ContentFile(content_file.read(), name=file.name),
-                    'description': description,
-                    'status': status,
-                    'comment': comment,
-                    'pdf_id': pdf_id,  # Assign the generated pdf_id
-                    'pdf_name': file.name  # Save the PDF name
-                }
-            )
-            return Response({"message": "PDF uploaded successfully", "pdf_id": pdf_id}, status=201)
-        except IntegrityError as e:
+            with transaction.atomic():
+                # Delete existing entry (if any) before inserting new data
+                Pdf.objects.filter(dept=branch, f_year=year).delete()
+
+                # Now insert the new entry
+                Pdf.objects.create(
+                    dept=branch,
+                    f_year=year,
+                    pdf=ContentFile(content_file.read(), name=file.name),
+                    description=description,
+                    status=status,
+                    comment=comment,
+                    pdf_id=pdf_id,  # Assign the generated pdf_id
+                    pdf_name=file.name  # Save the PDF name
+                )
+                return Response({"message": "PDF uploaded successfully", "pdf_id": pdf_id}, status=201)
+        except Exception as e:
             return Response({"message": "Failed to upload PDF: " + str(e)}, status=500)
     else:
         return Response({"message": "No file provided"}, status=400)
-    
+
+
+@api_view(['POST'])
+def delete_budget(request):
+    username = request.data.get('username')
+    selectedYear = request.data.get('selectedYear')
+    branch = User.objects.get(u_email=username).u_dep
+
+    try:
+        year = financialyear.objects.get(Desc=selectedYear).F_year
+    except financialyear.DoesNotExist:
+        return Response({"message": "Specified year not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        budget = Pdf.objects.get(dept=branch, f_year=year)
+        budget.delete()
+        return Response({"message": "Budget deleted successfully"}, status=status.HTTP_200_OK)
+    except Pdf.DoesNotExist:
+        return Response({"message": "No budget found to delete"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"message": "Failed to delete budget: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 @api_view(['POST'])
