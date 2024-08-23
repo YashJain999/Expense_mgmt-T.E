@@ -8,9 +8,11 @@ function Login() {
   const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     
     const handleLogin = async (e) => {
       e.preventDefault();
+      setLoading(true);
       try {
         const response = await axios.post('http://127.0.0.1:8000/login/', {
           username: username,
@@ -18,15 +20,23 @@ function Login() {
         });
         const responsedata=response.data;  
         if (responsedata['code'] === '10') {
+          const u_dept = responsedata['u_dep'];
+          sessionStorage.setItem('authToken', responsedata['token']); // Set auth token or session info
           if (responsedata['u_desig'] === 'HOD'){
             // navigate(`/home/${username}/${responsedata['u_dep']}`);
             const u_dept = responsedata['u_dep'];
             console.log(u_dept)
+            setUsername('');
+            setPassword('');
             navigate(`/home/${username}/${u_dept}`,{state:{desig:responsedata['u_desig']}});
+
           }
           else if (responsedata['u_desig'] === 'Principal'){
+            const u_desig = responsedata['u_desig']
             // navigate(`/principal`);
-            navigate(`/home/${username}`,{state:{desig:responsedata["u_desig"]}});
+            setUsername('');
+            setPassword('');
+            navigate(`/home/${username}/${u_desig}`,{state:{desig:responsedata["u_desig"]}});
           }
         } 
         else if (responsedata['code'] === '20') {
@@ -42,6 +52,9 @@ function Login() {
       catch (error) {
         console.error('Error:', error);
         window.alert('Invalid User Email');
+      }
+      finally{
+        setLoading(false);
       }
     };
     return (

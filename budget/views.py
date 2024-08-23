@@ -36,7 +36,34 @@ import os
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from .prediction import predict_budgeted_amount
+from .train import train_and_save_model
 
+@api_view(['POST'])
+def train(request):
+    try:
+        username = request.data.get('username')  # Assuming 'username' is the correct field
+        if not username:
+            return JsonResponse({'status': 'error', 'message': 'Username is required'}, status=400)
+        
+        # Retrieve department from the User model
+        try:
+            user = User.objects.get(u_email=username)
+            dept = user.u_dep
+        except User.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'User not found'}, status=404)
+        
+        # Retrieve data from the Budget table
+        budget_data = budget.objects.all()
+        
+        # Pass the retrieved data to the model training function
+        train_and_save_model(budget_data, dept)
+        
+        # Return a success response
+        return JsonResponse({'status': 'success', 'message': 'Model trained successfully'})
+    
+    except Exception as e:
+        # Return an error response if something goes wrong
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 @api_view(['POST'])
 def predict(request):
@@ -45,6 +72,7 @@ def predict(request):
     # Retrieve data from the Budget table
     budget_data = budget.objects.all()
     # Pass the retrieved data to the predictor function
+    # train_and_save_model(budget_data, dept)
     predictions_df = predict_budgeted_amount(budget_data,dept)
     predictions = predictions_df.to_dict(orient='records')
     return Response(predictions)
