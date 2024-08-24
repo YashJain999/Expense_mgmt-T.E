@@ -302,11 +302,12 @@ function PrincipalDashboard({isOffcanvasOpen, toggleOffcanvas, closeOffcanvas}) 
 
 function getInitialDepartmentStates() {
   return {
-    "Computer Engineering": { selectedOption: '', hasPlaceholder: false, placeholderValue: '', editVisible: false, pdfAvailable: false },
+    "Artificial Intelligence and Machine Learning": { selectedOption: '', hasPlaceholder: false, placeholderValue: '', editVisible: false, pdfAvailable: false },
+    "Civil": { selectedOption: '', hasPlaceholder: false, placeholderValue: '', editVisible: false, pdfAvailable: false },
+    "Computer Science": { selectedOption: '', hasPlaceholder: false, placeholderValue: '', editVisible: false, pdfAvailable: false },
+    "Data Science": { selectedOption: '', hasPlaceholder: false, placeholderValue: '', editVisible: false, pdfAvailable: false },
     "Information Technology": { selectedOption: '', hasPlaceholder: false, placeholderValue: '', editVisible: false, pdfAvailable: false },
-    "Civil Engineering": { selectedOption: '', hasPlaceholder: false, placeholderValue: '', editVisible: false, pdfAvailable: false },
-    "Mechanical Engineering": { selectedOption: '', hasPlaceholder: false, placeholderValue: '', editVisible: false, pdfAvailable: false },
-    "Electrical Engineering": { selectedOption: '', hasPlaceholder: false, placeholderValue: '', editVisible: false, pdfAvailable: false },
+    "Mechanical": { selectedOption: '', hasPlaceholder: false, placeholderValue: '', editVisible: false, pdfAvailable: false },
   };
 }
 

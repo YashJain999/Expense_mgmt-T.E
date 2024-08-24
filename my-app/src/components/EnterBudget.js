@@ -1,31 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import '../assets/css/EnterBudget.css';
 import axios from 'axios';
 import TableComponent from './TableComponent';
 import ButtonComponent from './ButtonComponent';
 
-
 function EnterBudget({ isOffcanvasOpen }) {
     const [selectedYear, setSelectedYear] = useState('');
-    const [budgetData, setBudgetData] = useState(getItemData); //
-    /**
-     *  budgetData={
-     *      "Laboratory Consumables":{
-                    budgeted_amt: '',
-                    actual_exp: '',
-                    editVisible: false,
-                    placeholderValue: '',
-                },...
-            }
-     * */
+    const [budgetData, setBudgetData] = useState(getItemData);
     const [fetchedData, setFetchedData] = useState([]);
     const { username } = useParams();
     const [originalBudgetData, setOriginalBudgetData] = useState({});
-    // const [itemData, setItemData] = useState(getItemData());
     const [isEditing, setIsEditing] = useState(false);
     const [showEditWarning, setShowEditWarning] = useState(false);
-    //list items
+
     function getItemData() {
         const items = [
             "Laboratory Consumables",
@@ -48,6 +36,7 @@ function EnterBudget({ isOffcanvasOpen }) {
         });
         return initialState;
     }
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -56,63 +45,47 @@ function EnterBudget({ isOffcanvasOpen }) {
         try {
             const response = await axios.get('http://localhost:8000/dropdown/');
             setFetchedData(response.data);
-
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
 
     const handleEditClick = () => {
-        setIsEditing(true); // Set isEditing to true to activate editing mode
-        // Update each item in budgetData to set editVisible to true
+        setIsEditing(true); 
         const updatedBudgetData = Object.keys(budgetData).reduce((acc, item) => {
             acc[item] = { ...budgetData[item], editVisible: true };
             return acc;
         }, {});
         setBudgetData(updatedBudgetData);
-        setOriginalBudgetData({ ...budgetData }); // Store original data
+        setOriginalBudgetData({ ...budgetData });
     };
-
 
     const handleSaveClick = async () => {
         try {
-            // Create an array to store all the data to be sent
             const updatedData = [];
 
-            // Loop through each item in budgetData
             Object.keys(budgetData).forEach(item => {
-                // Push the data of each item into the updatedData array
                 updatedData.push({
                     item: item,
                     budgeted_amt: budgetData[item].budgeted_amt,
                     actual_exp: budgetData[item].actual_exp
                 });
             });
-            console.log("updatedData", updatedData)
-            // Send a POST request to your backend with the updatedData array
+            console.log("updatedData", updatedData);
             await axios.post("http://localhost:8000/update_budget_details/", { selectedYear, updatedData, username });
-            // Set isEditing to false to exit editing mode
             setIsEditing(false);
-            // Display a pop-up message
-            alert("Save button clicked! Data saved successfully!");
         } catch (error) {
             console.error("Error saving status:", error);
-            // Handle the error here, such as displaying an error message
         }
     };
 
-
     const handleCancelClick = () => {
-        // Revert changes by replacing current budget data with original copy
-        setBudgetData(originalBudgetData); // Revert changes
-        setIsEditing(false); // Exit editing mode
+        setBudgetData(originalBudgetData);
+        setIsEditing(false);
     };
 
-    useEffect(() => {
-        handleYearSubmit();
-    }, [selectedYear])
-    const handleYearSubmit = async () => {
-        if (selectedYear != '') {
+    const handleYearSubmit = useCallback(async () => {
+        if (selectedYear !== '') {
             try {
                 const response = await axios.post('http://localhost:8000/get_budget_details/', { selectedYear, username });
                 const formattedData = {};
@@ -128,12 +101,16 @@ function EnterBudget({ isOffcanvasOpen }) {
                 console.error('Error fetching budget details:', error);
             }
         }
-    };
+    }, [selectedYear, username]);
+
+    useEffect(() => {
+        handleYearSubmit();
+    }, [selectedYear, handleYearSubmit]);
 
     const handleBudAmtChange = (item, newValue) => {
         if (!budgetData[item]?.editVisible) {
             setShowEditWarning(true);
-            setTimeout(() => setShowEditWarning(false), 5000); // Auto hide after 5 seconds
+            setTimeout(() => setShowEditWarning(false), 5000);
             return;
         }
         setShowEditWarning(false);
@@ -149,7 +126,7 @@ function EnterBudget({ isOffcanvasOpen }) {
     const handleActExpChange = (item, newValue) => {
         if (!budgetData[item]?.editVisible) {
             setShowEditWarning(true);
-            setTimeout(() => setShowEditWarning(false), 5000); // Auto hide after 5 seconds
+            setTimeout(() => setShowEditWarning(false), 5000);
             return;
         }
         setShowEditWarning(false);
@@ -161,6 +138,7 @@ function EnterBudget({ isOffcanvasOpen }) {
             }
         }));
     };
+
     const calculateTotal = () => {
         let totalBudgetedAmt = 0;
         let totalActualExpenses = 0;
@@ -174,53 +152,34 @@ function EnterBudget({ isOffcanvasOpen }) {
     };
 
     const getTableBodyItemsFromBudgetData = () => {
-        /*             
- *  budgetData={
-          "Laboratory Consumables":{
-                budgeted_amt: '',
-                actual_exp: '',
-                editVisible: false,
-                placeholderValue: '',
-            },...
-        }
-  */
-
-        /*
-         * response=[
-                        [
-                            { item: "Lab", styles: { textAlign: 'left', width: "40%" }, className: "Itemname text-left bg-secondary text-white" },
-                            { item: <input type='number' className='text-center border-success w-100 h-100' value={budgetData[item].budgeted_amt} onChange={(e) => handleBudAmtChange(item, e.target.value)} placeholder=''></input>, styles: { width: "30%" }, className: "tdbudgetinput text-center p-0" },
-                        ],
-                    ]
-         */
-
-        let budgeteTableBodyRows = []
+        let budgeteTableBodyRows = [];
         Object.keys(budgetData).forEach(bItem => {
-            let budgeteTableBodyRow = []
-            console.log(bItem);
-            let rowCell1 = {};
-            rowCell1["item"] = bItem;
-            rowCell1["styles"] = { textAlign: 'left', width: "40%" };
-            rowCell1["className"] = "Itemname text-left bg-primary bg-gradient text-white";
-            budgeteTableBodyRow.push(rowCell1)
+            let budgeteTableBodyRow = [];
+            let rowCell1 = {
+                item: bItem,
+                styles: { textAlign: 'left', width: "40%" },
+                className: "Itemname text-left bg-primary bg-gradient text-white"
+            };
+            budgeteTableBodyRow.push(rowCell1);
 
-            let rowCell2 = {};
-            rowCell2["item"] = <input type='number' className='text-center border-success w-100 h-100' value={budgetData[bItem].budgeted_amt} onChange={(e) => handleBudAmtChange(bItem, e.target.value)} placeholder=''></input>;
-            rowCell2["styles"] = { width: "30%" };
-            rowCell2["className"] = "tdbudgetinput text-center p-0";
-            budgeteTableBodyRow.push(rowCell2)
+            let rowCell2 = {
+                item: <input type='number' className='text-center border-success w-100 h-100' value={budgetData[bItem].budgeted_amt} onChange={(e) => handleBudAmtChange(bItem, e.target.value)} placeholder='' />,
+                styles: { width: "30%" },
+                className: "tdbudgetinput text-center p-0"
+            };
+            budgeteTableBodyRow.push(rowCell2);
 
-            let rowCell3 = {};
-            rowCell3["item"] = <input type='number' className="text-center border-danger w-100 h-100" value={budgetData[bItem].actual_exp} onChange={(e) => handleActExpChange(bItem, e.target.value)} placeholder=''></input>;
-            rowCell3["styles"] = {};
-            rowCell3["className"] = "tdactexp text-center p-0 m-0";
-            budgeteTableBodyRow.push(rowCell3)
+            let rowCell3 = {
+                item: <input type='number' className="text-center border-danger w-100 h-100" value={budgetData[bItem].actual_exp} onChange={(e) => handleActExpChange(bItem, e.target.value)} placeholder='' />,
+                styles: {},
+                className: "tdactexp text-center p-0 m-0"
+            };
+            budgeteTableBodyRow.push(rowCell3);
 
             budgeteTableBodyRows.push(budgeteTableBodyRow);
-        })
-        console.log(budgeteTableBodyRows)
+        });
         return budgeteTableBodyRows;
-    }
+    };
 
     return (
         <div className='container p-2 w-100 h-100'>

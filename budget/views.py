@@ -282,6 +282,11 @@ def dropdown(request):
     return Response(years)
 
 @api_view(['GET'])
+def departments(request):
+    dept = Deptmaster.objects.values_list('desc', flat=True)
+    return Response(dept)
+
+@api_view(['GET'])
 def item_dropdown(request):
     item = itemmaster.objects.values_list('item_desc', flat=True)
     return Response(item)

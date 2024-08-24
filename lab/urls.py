@@ -32,6 +32,7 @@ urlpatterns = [
     path('update-password/', views.update_password, name='anything'),
     path('generate_pdf/',views.generate_pdf_view, name='generate_pdf' ),
     path('dropdown/', views.dropdown, name="anything"),
+    path('departments/', views.departments, name="anything"),
     path("submit_year/", views.getyear, name = 'anything'),
     path("get_financialyears/", views.get_financialyears, name='anything'),
     path("show_data/", views.show_enter_data, name='anything'),
