@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import '../assets/css/UploadQuotation.css';
 import { Dropdown, DropdownButton, Card, Button, Modal, Form, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,44 +14,7 @@ export default function FolderCreator() {
   const [newFolderName, setNewFolderName] = useState('');
   const [renamingFolder, setRenamingFolder] = useState(null);
   const [showRenameModal, setShowRenameModal] = useState(false);
-
-  const handleSelect = (eventKey) => {
-    if (eventKey === 'addFile') {
-      console.log('Add New File selected');
-    } else if (eventKey === 'addFolder') {
-      setShowModal(true);
-    }
-  };
-
-  const handleCreateFolder = () => {
-    setFolders([...folders, newFolderName]);
-    setNewFolderName('');
-    setShowModal(false);
-  };
-
-  const handleRename = () => {
-    setFolders(folders.map((folder, index) => 
-      index === renamingFolder ? newFolderName : folder
-    ));
-    setNewFolderName('');
-    setRenamingFolder(null);
-    setShowRenameModal(false);
-  };
-
-  const handleIconClick = (folderIndex, action, event) => {
-    event.stopPropagation(); // Prevent card click event
-    if (action === 'rename') {
-      setRenamingFolder(folderIndex);
-      setNewFolderName(folders[folderIndex]);
-      setShowRenameModal(true);
-    } else if (action === 'delete') {
-      setFolders(folders.filter((_, index) => index !== folderIndex));
-    }
-  };
-
-  const handleCardClick = (folder) => {
-    alert(`Clicked on folder: ${folder}`);
-  };
+  const { username } = useParams();
 
   useEffect(() => {
     fetchData();
@@ -65,17 +29,94 @@ export default function FolderCreator() {
     }
   };
 
-  useEffect(() => {
-    if (selectedYear !== '') {
-      handleYearSubmit();
+  const fetchFolders = useCallback(async () => {
+    if (selectedYear) {
+      try {
+        const response = await axios.post('http://localhost:8000/get_req/', {
+          selectedYear, 
+          username
+        });
+        setFolders(response.data.map(folder => folder.req_name));
+      } catch (error) {
+        console.error('Error fetching folders:', error);
+      }
     }
-  }, [selectedYear]);
+  }, [selectedYear, username]);
 
-  const handleYearSubmit = async () => {
+  useEffect(() => {
+    fetchFolders();
+  }, [selectedYear, fetchFolders]);
+
+  const handleCreateFolder = async () => {
+    if (!selectedYear) {
+      alert('Please select a financial year.');
+      return;
+    }
+
     try {
-      console.log("Handle year submit clicked");
+      await axios.post('http://localhost:8000/add_req/', {
+        selectedYear,
+        username,
+        req_name: newFolderName
+      });
+      setFolders([...folders, newFolderName]);
+      setNewFolderName('');
+      setShowModal(false);
     } catch (error) {
-      console.error('Error fetching budget details:', error);
+      console.error('Error creating folder:', error);
+    }
+  };
+
+  const handleRename = async () => {
+    if (!selectedYear) {
+      alert('Please select a financial year.');
+      return;
+    }
+
+    try {
+      await axios.post('http://localhost:8000/rename_req/', {
+        selectedYear,
+        username,
+        old_name: folders[renamingFolder],
+        new_name: newFolderName
+      });
+      setFolders(folders.map((folder, index) => 
+        index === renamingFolder ? newFolderName : folder
+      ));
+      setNewFolderName('');
+      setRenamingFolder(null);
+      setShowRenameModal(false);
+    } catch (error) {
+      console.error('Error renaming folder:', error);
+    }
+  };
+
+  const handleDelete = async (folderIndex) => {
+    if (!selectedYear) {
+      alert('Please select a financial year.');
+      return;
+    } 
+
+    try {
+      await axios.post('http://localhost:8000/delete_req/', {
+        selectedYear,
+        username,
+        req_name: folders[folderIndex]
+      });
+      setFolders(folders.filter((_, index) => index !== folderIndex));
+    } catch (error) {
+      console.error('Error deleting folder:', error);
+    }
+  };
+
+  const handleIconClick = (folderIndex, action, event) => {
+    event.stopPropagation(); // Prevent card click event
+    if (action === 'rename') {
+      setRenamingFolder(folderIndex);
+      setNewFolderName(folders[folderIndex]);
+      setShowRenameModal(true);
+    } else if (action === 'delete') {
+      handleDelete(folderIndex);
     }
   };
 
@@ -90,7 +131,9 @@ export default function FolderCreator() {
             </>
           }
           variant="primary"
-          onSelect={handleSelect}
+          onSelect={(eventKey) => {
+            if (eventKey === 'addFolder') setShowModal(true);
+          }}
         >
           <Dropdown.Item eventKey="addFile">Add New File</Dropdown.Item>
           <Dropdown.Item eventKey="addFolder">Add New Folder</Dropdown.Item>
@@ -98,7 +141,6 @@ export default function FolderCreator() {
 
         <select
           className="w-25 bg-primary text-white h5 border px-2"
-          aria-labelledby="dropdownMenuButton2"
           value={selectedYear}
           onChange={(e) => setSelectedYear(e.target.value)}
         >
@@ -117,13 +159,11 @@ export default function FolderCreator() {
             <Card 
               style={{ width: '160px', position: 'relative' }} 
               className="text-center clickable-card"
-              onClick={() => handleCardClick(folder)}
             >
               <Card.Body>
                 <FontAwesomeIcon icon={faFolder} size="3x" className="mb-3" />
                 <Card.Title className="text-truncate">{folder}</Card.Title>
 
-                {/* Custom Dropdown Button */}
                 <Dropdown className="position-absolute" style={{ bottom: '0', right: '0' }}>
                   <Dropdown.Toggle as={Button} variant="link" className="custom-options-icon">
                     <div className="dot"></div>
@@ -154,7 +194,6 @@ export default function FolderCreator() {
                 type="text"
                 placeholder="Enter folder name"
                 value={newFolderName}
-                className="w-75 p-2 border-primary"  
                 onChange={(e) => setNewFolderName(e.target.value)}
               />
             </Form.Group>
@@ -183,7 +222,6 @@ export default function FolderCreator() {
                 type="text"
                 placeholder="Enter new folder name"
                 value={newFolderName}
-                className="w-75 p-2 border-primary"  
                 onChange={(e) => setNewFolderName(e.target.value)}
               />
             </Form.Group>

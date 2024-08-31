@@ -115,7 +115,7 @@ function UpdateFinancialYear({ isOffcanvasOpen }) {
         }
       />
       {!addButtonClicked &&
-        <ButtonComponent onClick={handleDownloadClick} text={"Add Icon"} />}
+        <ButtonComponent onClick={handleDownloadClick} text={"Add Financial year"} />}
       <br></br><br></br>
       {showInputs && (
         <div className='container m-2'>

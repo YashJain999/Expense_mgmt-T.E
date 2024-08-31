@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db import IntegrityError
 from django.core.files.base import ContentFile
+from django.db import transaction
 from django.http import Http404
 from django.db.utils import IntegrityError
 from django.http import JsonResponse
@@ -36,6 +37,46 @@ import os
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from .prediction import predict_budgeted_amount
+from .train import train_and_save_model
+
+@api_view(['POST'])
+def train(request):
+    try:
+        username = request.data.get('username')  # Assuming 'username' is the correct field
+        if not username:
+            return JsonResponse({'status': 'error', 'message': 'Username is required'}, status=400)
+        
+        # Retrieve department from the User model
+        try:
+            user = User.objects.get(u_email=username)
+            dept = user.u_dep
+        except User.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'User not found'}, status=404)
+        
+        # Retrieve data from the Budget table
+        budget_data = budget.objects.all()
+        
+        # Pass the retrieved data to the model training function
+        train_and_save_model(budget_data, dept)
+        
+        # Return a success response
+        return JsonResponse({'status': 'success', 'message': 'Model trained successfully'})
+    
+    except Exception as e:
+        # Return an error response if something goes wrong
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+@api_view(['POST'])
+def predict(request):
+    username = request.data.get('username')  # Assuming 'u_email' is the username field
+    dept=User.objects.get(u_email=username).u_dep   
+    # Retrieve data from the Budget table
+    budget_data = budget.objects.all()
+    # Pass the retrieved data to the predictor function
+    # train_and_save_model(budget_data, dept)
+    predictions_df = predict_budgeted_amount(budget_data,dept)
+    predictions = predictions_df.to_dict(orient='records')
+    return Response(predictions)
 
 
 class LoginView(APIView):
@@ -206,10 +247,13 @@ def generate_pdf_view(request):
     footer = Paragraph(footer_text, footer_style)
     elements.append(footer)
 
+    
+
     # Build the PDF document
     doc.build(elements)
 
     return response
+
 
 
 @api_view(['POST'])
@@ -236,6 +280,11 @@ def getyear(request):
 def dropdown(request):
     years = financialyear.objects.values_list('Desc', flat=True)
     return Response(years)
+
+@api_view(['GET'])
+def departments(request):
+    dept = Deptmaster.objects.values_list('desc', flat=True)
+    return Response(dept)
 
 @api_view(['GET'])
 def item_dropdown(request):
@@ -268,6 +317,7 @@ def show_enter_data(request):
     enter_data = list(budget.objects.filter(dept='IT',f_year__in=desc).values('budgeted_amt','actual_exp'))
     print(enter_data)
     return Response(enter_data)
+
 
 class ExpenseList(APIView):
     def get(self, request):
@@ -303,13 +353,13 @@ def post_year_desc(request):
         return Response({'message': 'Data added successfully'})
     else:
         return Response({'error': 'Invalid data provided'}, status=400)
+        
 
-    
 @api_view(['POST'])
 def upload_budget(request):
     username = request.data.get('username')
     selectedYear = request.data.get('selectedYear')
-    branch=User.objects.get(u_email=username).u_dep
+    branch = User.objects.get(u_email=username).u_dep
 
     try:
         year = financialyear.objects.get(Desc=selectedYear).F_year
@@ -325,29 +375,54 @@ def upload_budget(request):
         content = file.read()
         content_file = io.BytesIO(content)
         content_file.seek(0)
-        
+
         # Generate a unique pdf_id
-        pdf_id = f"{uuid4().hex}"
+        pdf_id = uuid4().hex
 
         try:
-            budget, created = Pdf.objects.update_or_create(
-                dept=branch,
-                f_year=year,
-                defaults={
-                    'pdf': ContentFile(content_file.read(), name=file.name),
-                    'description': description,
-                    'status': status,
-                    'comment': comment,
-                    'pdf_id': pdf_id,  # Assign the generated pdf_id
-                    'pdf_name': file.name  # Save the PDF name
-                }
-            )
-            return Response({"message": "PDF uploaded successfully", "pdf_id": pdf_id}, status=201)
-        except IntegrityError as e:
+            with transaction.atomic():
+                # Delete existing entry (if any) before inserting new data
+                Pdf.objects.filter(dept=branch, f_year=year).delete()
+
+                # Now insert the new entry
+                Pdf.objects.create(
+                    dept=branch,
+                    f_year=year,
+                    pdf=ContentFile(content_file.read(), name=file.name),
+                    description=description,
+                    status=status,
+                    comment=comment,
+                    pdf_id=pdf_id,  # Assign the generated pdf_id
+                    pdf_name=file.name  # Save the PDF name
+                )
+                return Response({"message": "PDF uploaded successfully", "pdf_id": pdf_id}, status=201)
+        except Exception as e:
             return Response({"message": "Failed to upload PDF: " + str(e)}, status=500)
     else:
         return Response({"message": "No file provided"}, status=400)
-    
+
+
+@api_view(['POST'])
+def delete_budget(request):
+    username = request.data.get('username')
+    selectedYear = request.data.get('selectedYear')
+    branch = User.objects.get(u_email=username).u_dep
+
+    try:
+        year = financialyear.objects.get(Desc=selectedYear).F_year
+    except financialyear.DoesNotExist:
+        return Response({"message": "Specified year not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        budget = Pdf.objects.get(dept=branch, f_year=year)
+        budget.delete()
+        return Response({"message": "Budget deleted successfully"}, status=status.HTTP_200_OK)
+    except Pdf.DoesNotExist:
+        return Response({"message": "No budget found to delete"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"message": "Failed to delete budget: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
 @api_view(['POST'])
 def get_uploaded_docs(request):
@@ -383,7 +458,6 @@ def get_budget_details(request):
                 'actual_exp': record.actual_exp, 
             }
             data.append(pdf_data)
-            print(pdf_data)
         return Response(data)
     except :
         return Response({'message': 'Error in finding data'})
@@ -459,8 +533,35 @@ def get_list_amount(request):
         return Response(data_response)
     except :
         return Response({'message':'Error in finding data'})
-    
-from django.core.exceptions import ObjectDoesNotExist
+def has_non_zero_values(data):
+    for item in data['data_budget']:
+        if item.get('budgeted_amt', 0) != 0:
+            return True
+    for item in data['data_actual']:
+        if item.get('actual_exp', 0) != 0:
+            return True
+    return False
+@api_view(['POST'])
+def get_pie(request):
+    try:
+        selectedYear = request.data.get('selectedYear')
+        username = request.data.get('username')
+        dept=User.objects.get(u_email=username).u_dep
+        year = financialyear.objects.get(Desc=selectedYear).F_year
+        data_budget = list(budget.objects.filter(dept = dept  ,f_year = year).values('item','budgeted_amt'))
+        data_actual = list(budget.objects.filter(dept = dept  ,f_year = year).values('item','actual_exp'))
+        response_data = {
+            'data_budget': data_budget,
+            'data_actual': data_actual,
+            }
+        if has_non_zero_values(response_data):
+            return Response(response_data)
+        else :
+            return Response({'code':'10','year':selectedYear})
+    except:
+        return Response({'message':'Error in finding data'})
+      
+
 @csrf_exempt
 @api_view(['POST'])
 def update_budget_details(request):
@@ -523,6 +624,7 @@ def update_budget_details(request):
 
     else:
         return Response({'error': 'Invalid request method.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
 @api_view(['GET'])
 def download_pdf(request, pdf_id):
@@ -601,43 +703,3 @@ def principal_status(request):
             return Response({'error': 'PDF instance not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-def has_non_zero_values(data):
-    for item in data['data_budget']:
-        if item.get('budgeted_amt', 0) != 0:
-            return True
-    for item in data['data_actual']:
-        if item.get('actual_exp', 0) != 0:
-            return True
-    return False
-
-@api_view(['POST'])
-def get_pie(request):
-    try:
-        selectedYear = request.data.get('selectedYear')
-        username = request.data.get('username')
-        dept=User.objects.get(u_email=username).u_dep
-        year = financialyear.objects.get(Desc=selectedYear).F_year
-        data_budget = list(budget.objects.filter(dept = dept  ,f_year = year).values('item','budgeted_amt'))
-        data_actual = list(budget.objects.filter(dept = dept  ,f_year = year).values('item','actual_exp'))
-        response_data = {
-            'data_budget': data_budget,
-            'data_actual': data_actual,
-            }
-        if has_non_zero_values(response_data):
-            return Response(response_data)
-        else :
-            return Response({'code':'10','year':selectedYear})
-    except:
-        return Response({'message':'Error in finding data'})
-    
-@api_view(['POST'])
-def predict(request):
-    username = request.data.get('username')  # Assuming 'u_email' is the username field
-    dept=User.objects.get(u_email=username).u_dep   
-    # Retrieve data from the Budget table
-    budget_data = budget.objects.all()
-    # Pass the retrieved data to the predictor function
-    predictions_df = predict_budgeted_amount(budget_data,dept)
-    predictions = predictions_df.to_dict(orient='records')
-    return Response(predictions)

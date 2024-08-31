@@ -32,6 +32,7 @@ urlpatterns = [
     path('update-password/', views.update_password, name='anything'),
     path('generate_pdf/',views.generate_pdf_view, name='generate_pdf' ),
     path('dropdown/', views.dropdown, name="anything"),
+    path('departments/', views.departments, name="anything"),
     path("submit_year/", views.getyear, name = 'anything'),
     path("get_financialyears/", views.get_financialyears, name='anything'),
     path("show_data/", views.show_enter_data, name='anything'),
@@ -39,6 +40,7 @@ urlpatterns = [
     path('api/expenses/', ExpenseList.as_view(), name='expense-list'),
     path("post_year_desc/",views.post_year_desc, name="anything"),
     path('upload_budget/', views.upload_budget, name='anything'),
+    path('delete_budget/', views.delete_budget, name='anything'),
     path('get_uploaded_docs/',views.get_uploaded_docs,name='anything'),
     path('get_budget_details/', views.get_budget_details, name='anything'),
     path('update_budget_details/',views.update_budget_details,name='anything'),
@@ -49,9 +51,16 @@ urlpatterns = [
     path('get_item_amount/', views.get_item_amount, name='anything'),
     path('get_list_amount/', views.get_list_amount, name='anything'),
     path('get_pie/', views.get_pie, name='anything'),
-    path('predict/', views.predict, name='predict'),
+    path('predict/', views.predict, name='predict'),    
+    path('train/', views.train, name='predict'),
     path('get_req/',get_req, name='anything'),
-    path('add_req/',add_req,name='anything')
+    path('add_req/',add_req,name='anything'),
+    path('rename_req/', rename_req, name='rename_req'),
+    path('delete_req/', delete_req, name='delete_req')
+    # path('api/get_req/', views.get_req, name='get_req'),
+    # path('api/add_req/', views.add_req, name='add_req'),
+    # path('api/rename_req/', views.rename_req, name='rename_req'),
+    # path('api/delete_req/', views.delete_req, name='delete_req')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
