@@ -191,40 +191,89 @@ function PrincipalDashboard({ isOffcanvasOpen, toggleOffcanvas, closeOffcanvas }
 
       row.push({
         item: pdfRecords.some(record => record.dept === department) ? (
-          <i className="fas fa-download fa-2xl" onClick={() => handleDownloadPDF(pdfRecords.find(record => record.dept === department)?.pdf_id, department)}></i>
+          <div className="d-flex flex-column justify-content-center align-items-center h-100">
+            <i 
+              className="fas fa-download fa-3x text-danger mb-2"
+              onClick={() => handleDownloadPDF(pdfRecords.find(record => record.dept === department)?.pdf_id, department)}
+              style={{ cursor: 'pointer' }}
+            ></i>
+          </div>
         ) : (
-          <span>No PDF</span>
+          <div className="d-flex flex-column justify-content-end align-items-center h-100 text-secondary">
+            <span>No PDF</span>
+          </div>
         ),
         styles: { textAlign: 'center', width: "20%" },
         className: "downloadfile text-center"
       });
+      
 
       row.push({
         item: departmentStates[department]?.pdfAvailable ? (
-          <>
-            <input className="Dashprincipalinp" type="radio" name={department} value='Accept' checked={departmentStates[department]?.selectedOption === 'Accept'} onChange={() => handleOptionChange(department, 'Accept')} />
-            <input className="Dashprincipalinp" type="radio" name={department} value='Reject' checked={departmentStates[department]?.selectedOption === 'Reject'} onChange={() => handleOptionChange(department, 'Reject')} />
-            <textarea value={departmentStates[department]?.placeholderValue} onChange={(e) => handleCommentChange(department, e.target.value)} placeholder='Add comment...' disabled={!departmentStates[department]?.editVisible} />
-            <div className="buttons">
+          <div className="border rounded p-3 shadow-sm bg-light">
+            <div className="d-flex justify-content-center mb-3">
+              <div className="form-check me-3">
+                <input 
+                  className="form-check-input" 
+                  type="radio" 
+                  name={`${department}_status`} 
+                  id={`${department}_accept`} 
+                  value='Accept' 
+                  checked={departmentStates[department]?.selectedOption === 'Accept'} 
+                  onChange={() => handleOptionChange(department, 'Accept')} 
+                />
+                <label className="form-check-label" htmlFor={`${department}_accept`}>
+                  Accept
+                </label>
+              </div>
+              <div className="form-check">
+                <input 
+                  className="form-check-input" 
+                  type="radio" 
+                  name={`${department}_status`} 
+                  id={`${department}_reject`} 
+                  value='Reject' 
+                  checked={departmentStates[department]?.selectedOption === 'Reject'} 
+                  onChange={() => handleOptionChange(department, 'Reject')} 
+                />
+                <label className="form-check-label" htmlFor={`${department}_reject`}>
+                  Reject
+                </label>
+              </div>
+            </div>
+            <div className="mb-3">
+              <textarea 
+                className="form-control" 
+                rows="3" 
+                value={departmentStates[department]?.placeholderValue} 
+                onChange={(e) => handleCommentChange(department, e.target.value)} 
+                placeholder='Comemt Here' 
+                disabled={!departmentStates[department]?.editVisible} 
+              />
+            </div>
+            <div className="d-flex justify-content-center">
               {departmentStates[department]?.editVisible ? (
                 <>
                   <ButtonComponent
-                    className='btn-success' text="Save"
+                    className='btn btn-success mx-2' 
+                    text="Save"
                     onClick={() => handleSaveButtonClick(department)}
                   />
                   <ButtonComponent
                     onClick={() => handleCancelButtonClick(department)}
-                    text="Cancel" className="btn-danger"
+                    text="Cancel" 
+                    className="btn btn-danger mx-2"
                   />
                 </>
               ) : (
                 <ButtonComponent
                   onClick={() => handleEditButtonClick(department)}
-                  text="Edit" className='btn-primary'
+                  text="Edit" 
+                  className='btn btn-primary w-15'
                 />
               )}
             </div>
-          </>
+          </div>
         ) : (
           <div className="alert alert-warning">
             No PDF uploaded for this department.
@@ -233,6 +282,8 @@ function PrincipalDashboard({ isOffcanvasOpen, toggleOffcanvas, closeOffcanvas }
         styles: { textAlign: 'center', width: "40%" },
         className: "status text-center"
       });
+      
+
 
       principalDashRows.push(row);
     });
@@ -263,18 +314,23 @@ function PrincipalDashboard({ isOffcanvasOpen, toggleOffcanvas, closeOffcanvas }
       )}
 
       <TableComponent
-        thData={[{ text: "Departments", className: "Deptcol" }, { text: "Download", className: "Downloadcol" }, { text: "Status", className: "Statuscol" }]}
+        thData={[
+          { text: "Departments", className: "Deptcol" }, 
+          { text: "Download", className: "Downloadcol" }, 
+          { text: "Status", className: "Statuscol" }
+        ]}
         tbData={generatePrincipalDashRows()}
         caption={
           <div className='d-flex flex-row justify-content-between px-3 mt-2'>
             <span className='h2'>Dashboard</span>
             <select
-              className="w-25 bg-primary text-white h5 border px-2" aria-labelledby="dropdownMenuButton2"
+              className="w-25 bg-primary text-white h5 border px-2" 
+              aria-labelledby="dropdownMenuButton2"
               value={selectedYear}
               onChange={(e) => { setSelectedYear(e.target.value); }}>
-              <option className="" value="" disabled >Financial Year</option>
+              <option value="" disabled >Financial Year</option>
               {YearDetails.map((item, index) => (
-                <option className='' key={index} value={item}>
+                <option key={index} value={item}>
                   {item}
                 </option>
               ))}
@@ -298,4 +354,3 @@ function getInitialDepartmentStates() {
 };
 
 export default PrincipalDashboard;
-
