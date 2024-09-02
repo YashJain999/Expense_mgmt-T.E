@@ -23,6 +23,7 @@ export default function FolderCreator() {
   const [itemQty, setItemQty] = useState('');
   const [file, setFile] = useState(null);
   const [fileCards, setFileCards] = useState([]);
+  const [addItems, setAddItems] = useState(false);
 
   const { username } = useParams();
 
@@ -180,6 +181,10 @@ const handleFileUpload = async () => {
       setIsDropdownDisabled(false); // Re-enable dropdown
     }
   };
+
+  const handleAddItem = async () => {
+    setAddItems(true)
+  };
   
   return (
     <div className="folder-creator">
@@ -263,17 +268,12 @@ const handleFileUpload = async () => {
           <Modal.Title className="text-primary font-weight-bold">Create New Folder</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
-            <Form.Group controlId="formFolderName">
-              <Form.Label className="font-weight-bold text-dark">Folder Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter folder name"
-                value={newFolderName}
-                onChange={(e) => setNewFolderName(e.target.value)}
-              />
-            </Form.Group>
-          </Form>
+        <Form>
+      <Form.Group className="mb-3" controlId="formFolderName">
+        <Form.Label>Folder Name</Form.Label>
+        <Form.Control type="text" placeholder="Enter folder name" value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)} style={{width: '50%'}}/>
+      </Form.Group>
+    </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
@@ -291,62 +291,43 @@ const handleFileUpload = async () => {
     <Modal.Title>Upload File</Modal.Title>
   </Modal.Header>
   <Modal.Body>
-    <Form>
-      {/* File upload fields */}
-      <Form.Group controlId="formFileName">
+  <Form >
+      <Form.Group className="mb-3" controlId="formFileName">
         <Form.Label>File Name</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter file name"
-          value={newFileName}
-          onChange={(e) => setNewFileName(e.target.value)}
-        />
+        <Form.Control className="w-100 border  border-secondary rounded-end" type="text" placeholder="Enter file name" value={newFileName} onChange={(e) => setNewFileName(e.target.value)}/>
       </Form.Group>
-      <Form.Group controlId="formVendorName">
-        <Form.Label>Vendor Name</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter vendor name"
-          value={vendorName}
-          onChange={(e) => setVendorName(e.target.value)}
-        />
+
+      <Form.Group className="mb-3" controlId="formVendorName">
+        <Form.Label>Vender Name</Form.Label>
+        <Form.Control className="w-100 border  border-secondary rounded-end" type="text" placeholder="Enter Vendor name" value={vendorName} onChange={(e) => setVendorName(e.target.value)}   />
       </Form.Group>
-      <Form.Group controlId="formItemName">
-        <Form.Label>Item Name</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter item name"
-          value={itemName}
-          onChange={(e) => setItemName(e.target.value)}
-        />
-      </Form.Group>
-      <Form.Group controlId="formItemQty">
-        <Form.Label>Item Quantity</Form.Label>
-        <Form.Control
-          type="number"
-          placeholder="Enter quantity"
-          value={itemQty}
-          onChange={(e) => setItemQty(e.target.value)}
-        />
-      </Form.Group>
-      <Form.Group controlId="formItemPrice">
-        <Form.Label>Item Price</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter price"
-          value={itemPrice}
-          onChange={(e) => setItemPrice(e.target.value)}
-        />
-      </Form.Group>
-      <Form.Group controlId="formFileUpload">
-        <Form.Label className="font-weight-bold text-dark">Upload File (PDF only)</Form.Label>
-        <Form.Control
-          type="file"
-          accept=".pdf"
-          onChange={(e) => setFile(e.target.files[0])}
-        />
+  
+      <Form.Group className="mb-3" controlId="formFileUpload">
+        <Form.Label>Upload Pdf File</Form.Label>
+        <Form.Control className="w-100 border  border-secondary rounded-end" type="file" accept=".pdf" onChange={(e) => setFile(e.target.files[0])} />
       </Form.Group>
     </Form>
+       {addItems &&  (
+        <>
+<Form.Group className="mb-3" controlId="formItemName">
+        <Form.Label>Item Name</Form.Label>
+        <Form.Control className="w-100 border  border-secondary rounded-end" type="text" placeholder="Enter Item name" value={itemName} onChange={(e) => setItemName(e.target.value)} />
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="formItemQty">
+        <Form.Label>Item Quantity</Form.Label>
+        <Form.Control className="w-100 border  border-secondary rounded-end" type="number" placeholder="Enter quantity" value={itemQty} onChange={(e) => setItemQty(e.target.value)} />
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="formItemPrice">
+        <Form.Label>Item Price</Form.Label>
+        <Form.Control className="w-100 border  border-secondary rounded-end" type="text" placeholder="Enter price" value={itemPrice} onChange={(e) => setItemPrice(e.target.value)} />
+      </Form.Group>
+      </>)}
+      
+    <Button variant="primary" onClick={handleAddItem} >
+    <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon> Add Items
+          </Button>
   </Modal.Body>
   <Modal.Footer>
     <Button variant="secondary" onClick={() => setShowFileModal(false)}>
@@ -383,15 +364,10 @@ const handleFileUpload = async () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formRenameFolder">
-              <Form.Label className="font-weight-bold text-dark">New Folder Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter new folder name"
-                value={newFolderName}
-                onChange={(e) => setNewFolderName(e.target.value)}
-              />
-            </Form.Group>
+          <Form.Group className="mb-3" controlId="formRenameFolder">
+        <Form.Label>Folder Name</Form.Label>
+        <Form.Control type="text" placeholder="Rename folder name" value={newFolderName} onChange={(e) => setNewFolderName(e.target.value)} style={{width: '50%'}}/>
+      </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
