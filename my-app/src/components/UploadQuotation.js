@@ -18,12 +18,9 @@ export default function FolderCreator() {
   const [showFileModal, setShowFileModal] = useState(false);
   const [newFileName, setNewFileName] = useState('');
   const [vendorName, setVendorName] = useState('');
-  const [itemName, setItemName] = useState('');
-  const [itemPrice, setItemPrice] = useState('');
-  const [itemQty, setItemQty] = useState('');
   const [file, setFile] = useState(null);
   const [fileCards, setFileCards] = useState([]);
-  const [addItems, setAddItems] = useState(false);
+
 
   const { username } = useParams();
 
@@ -146,19 +143,37 @@ export default function FolderCreator() {
   
   // Handle file upload to create a new file card
 const handleFileUpload = async () => {
-  if (!selectedYear || !file || !newFileName || !vendorName || !itemName || !itemQty || !itemPrice) {
+  if (!selectedYear || !file || !newFileName || !vendorName) {
     alert('Please fill all fields and select a file.');
     return;
   }
 
-  // Create a new file card
+  const formData = new FormData();
+  formData.append('username', username);
+  formData.append('selectedYear', selectedYear);
+  formData.append('file',file);
+
+  axios.post('http://localhost:8000/upload_quotation/', formData,{
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    }
+  })
+  .then(response => {
+    if(response.status === 200){
+      alert('File uploaded successfully');
+    }
+    else{
+      alert('Error uploading file');
+    }
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+
+  //Create a new file card
   const newFileCard = {
     name: newFileName,
-    vendor: vendorName,
-    item: itemName,
-    quantity: itemQty,
-    price: itemPrice,
-    file: file.name
   };
 
   // Update file cards state
@@ -167,9 +182,6 @@ const handleFileUpload = async () => {
   // Reset fields and close the modal
   setNewFileName('');
   setVendorName('');
-  setItemName('');
-  setItemQty('');
-  setItemPrice('');
   setFile(null);
   setShowFileModal(false);
 };
@@ -180,10 +192,6 @@ const handleFileUpload = async () => {
       setCurrentFolder(null); // Reset folder view
       setIsDropdownDisabled(false); // Re-enable dropdown
     }
-  };
-
-  const handleAddItem = async () => {
-    setAddItems(true)
   };
   
   return (
@@ -304,30 +312,10 @@ const handleFileUpload = async () => {
   
       <Form.Group className="mb-3" controlId="formFileUpload">
         <Form.Label>Upload Pdf File</Form.Label>
-        <Form.Control className="w-100 border  border-secondary rounded-end" type="file" accept=".pdf" onChange={(e) => setFile(e.target.files[0])} />
+        <Form.Control className="w-100 border  border-secondary rounded-end" type="file" accept=".pdf" id="file" name="file" onChange={(e) => setFile(e.target.files[0])} />
       </Form.Group>
     </Form>
-       {addItems &&  (
-        <>
-<Form.Group className="mb-3" controlId="formItemName">
-        <Form.Label>Item Name</Form.Label>
-        <Form.Control className="w-100 border  border-secondary rounded-end" type="text" placeholder="Enter Item name" value={itemName} onChange={(e) => setItemName(e.target.value)} />
-      </Form.Group>
-
-      <Form.Group className="mb-3" controlId="formItemQty">
-        <Form.Label>Item Quantity</Form.Label>
-        <Form.Control className="w-100 border  border-secondary rounded-end" type="number" placeholder="Enter quantity" value={itemQty} onChange={(e) => setItemQty(e.target.value)} />
-      </Form.Group>
-
-      <Form.Group className="mb-3" controlId="formItemPrice">
-        <Form.Label>Item Price</Form.Label>
-        <Form.Control className="w-100 border  border-secondary rounded-end" type="text" placeholder="Enter price" value={itemPrice} onChange={(e) => setItemPrice(e.target.value)} />
-      </Form.Group>
-      </>)}
       
-    <Button variant="primary" onClick={handleAddItem} >
-    <FontAwesomeIcon icon={faPlus}></FontAwesomeIcon> Add Items
-          </Button>
   </Modal.Body>
   <Modal.Footer>
     <Button variant="secondary" onClick={() => setShowFileModal(false)}>
@@ -379,9 +367,6 @@ const handleFileUpload = async () => {
           </Button>
         </Modal.Footer>
       </Modal>
-
-      
     </div>
-    
   );
 }

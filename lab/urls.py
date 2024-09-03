@@ -56,11 +56,13 @@ urlpatterns = [
     path('get_req/',get_req, name='anything'),
     path('add_req/',add_req,name='anything'),
     path('rename_req/', rename_req, name='rename_req'),
-    path('delete_req/', delete_req, name='delete_req')
-    # path('api/get_req/', views.get_req, name='get_req'),
-    # path('api/add_req/', views.add_req, name='add_req'),
-    # path('api/rename_req/', views.rename_req, name='rename_req'),
-    # path('api/delete_req/', views.delete_req, name='delete_req')
+    path('delete_req/', delete_req, name='delete_req'),
+     path('upload_quotation/', upload_quotation, name='anything'),
+    # # path('api/get_req/', views.get_req, name='get_req'),
+    # # path('api/add_req/', views.add_req, name='add_req'),
+    # # path('api/rename_req/', views.rename_req, name='rename_req'),
+    # # path('api/delete_req/', views.delete_req, name='delete_req')
+    # path('upload_quotation_file/', QuotationListCreateAPIView.as_view(), name='anything'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

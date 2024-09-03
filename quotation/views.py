@@ -4,6 +4,13 @@ from rest_framework.exceptions import NotFound
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db.utils import IntegrityError
+# new imports
+from django.shortcuts import get_object_or_404
+from uuid import uuid4
+import os
+import io
+from django.core.files.base import ContentFile
+from django.db import transaction
 
 @api_view(['POST'])
 def get_req(request):
@@ -80,3 +87,43 @@ def delete_req(request):
         raise NotFound(detail="Requirement not found")
     except Exception as e:
         return Response({'message': 'Failed to delete requirement', 'error': str(e)}, status=400)
+    
+@api_view(['POST'])
+def upload_quotation(request):
+    username = request.data.get('username')
+    selectedYear = request.data.get('selectedYear')
+    branch = User.objects.get(u_email=username).u_dep
+
+    try:
+        year = financialyear.objects.get(Desc=selectedYear).F_year
+    except financialyear.DoesNotExist:
+        raise NotFound(detail='Specified year not found')
+    
+    file = request.FILES.get('file')
+    if file:
+        content = file.read()
+        content_file = io.BytesIO(content)
+        content_file.seek(0)
+
+        pdf_id = uuid4().hex
+
+        try:
+            with transaction.atomic():
+                # Retrieve the requirement name based on department and financial year
+                requirement_obj = get_object_or_404(requirement, dept=branch, F_year=year)
+                req_name = requirement_obj.req_name
+
+                # now insert the pdf entry
+                quotation.objects.create(
+                    dept=branch,
+                    f_year=year,
+                    pdf_file=ContentFile(content_file.read(),name=file.name),
+                    pdf_id=pdf_id,
+                    pdf_name=file.name,
+                    req_name=req_name  # Add the retrieved requirement name here
+                )
+                return Response({'message': 'Quotation uploaded successfully'}, status=200)
+        except Exception as e:
+            return Response({'message': 'Failed to upload quotation', 'error': str(e)}, status=500)
+    else:
+        return Response({'message': 'No file provided'}, status=400)

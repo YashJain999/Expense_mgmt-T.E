@@ -87,7 +87,7 @@ class Pdf(models.Model):
     )
     pdf = models.FileField(
         verbose_name='PDF',
-        upload_to=generate_pdf_filename  # Use the custom filename generator function
+        upload_to=generate_pdf_filename 
     )
     description = models.CharField(
         verbose_name='Description',

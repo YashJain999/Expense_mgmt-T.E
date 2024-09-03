@@ -27,6 +27,11 @@ class quotation(models.Model):
         max_length = 255,
         null=False
     )
+    pdf_file = models.FileField(
+        verbose_name="PDF File",
+        upload_to='pdfs/',
+        null=False
+    )
 class requirement(models.Model):
     dept = models.CharField( 
         verbose_name='Department',
