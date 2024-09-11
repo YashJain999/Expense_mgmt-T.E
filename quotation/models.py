@@ -1,4 +1,12 @@
 from django.db import models
+from django.utils import timezone
+import uuid
+
+def generate_pdf_filename(instance, filename):
+    """Generate unique filename for PDF files."""
+    timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+    unique_id = uuid.uuid4().hex[:10]
+    return f'quotation/{timestamp}_{unique_id}.pdf'
 
 class quotation(models.Model):
     dept = models.CharField( 
@@ -32,6 +40,18 @@ class quotation(models.Model):
         upload_to='pdfs/',
         null=False
     )
+    file_name = models.CharField(
+        verbose_name= "file_name",
+        max_length = 255,
+        null=False,
+        default='default_filename.pdf'  # Setting a default value here
+    )
+    vendor_name = models.CharField(
+        verbose_name= "vendor_name",
+        max_length = 255,
+        null=False,
+        default='default_vendor_name'
+    )
 class requirement(models.Model):
     dept = models.CharField( 
         verbose_name='Department',
@@ -50,3 +70,23 @@ class requirement(models.Model):
     )
     class Meta:
         unique_together = (('dept', 'F_year', 'req_name'),)
+
+class items(models.Model):
+    pdf_id = models.CharField(
+        max_length=225,
+        verbose_name='PDF ID',
+        null=False
+    )
+    item_name = models.CharField(
+        max_length=225,
+        verbose_name='Item Name',
+        null=False
+    )
+    quantity = models.IntegerField(
+        verbose_name='Quantity',
+        null=False
+    )
+    price = models.IntegerField(
+        verbose_name='Price',
+        null=False
+    )

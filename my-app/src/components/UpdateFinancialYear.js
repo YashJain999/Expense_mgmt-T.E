@@ -6,22 +6,11 @@ import ButtonComponent from './ButtonComponent';
 import { Modal, Form, Button } from 'react-bootstrap';
 
 function UpdateFinancialYear({ isOffcanvasOpen }) {
-  const AppStyle = {
-    // position: "relative",
-    // top: "-100px",
-    // left: isOffcanvasOpen ? '10px' : '0%',
-    // width: isOffcanvasOpen ? 'calc(100% - 260px)' : '100%',
-    // transition: 'all 0.5s ease',
-    // zIndex: 999,
-  };
-
   const [financialYears, setFinancialYears] = useState([]);
-  const [showInputs, setShowInputs] = useState(false);
   const [addButtonClicked, setAddButtonClicked] = useState(false);
   const [yearValue, setYearValue] = useState('');
   const [descValue, setDescValue] = useState('');
   const [showModal, setShowModal] = useState(false);
-
   const fetchData = async () => {
     try {
       const response = await axios.get('http://localhost:8000/get_financialyears/');
@@ -32,13 +21,10 @@ function UpdateFinancialYear({ isOffcanvasOpen }) {
       console.error('Error fetching data:', error);
     }
   };
-
   useEffect(() => {
     fetchData();
   }, []);
-
   const handleDownloadClick = () => {
-    // setShowInputs(true);
     setShowModal(true);
     setAddButtonClicked(true);
   };
@@ -49,7 +35,6 @@ function UpdateFinancialYear({ isOffcanvasOpen }) {
       console.log('Data sent successfully:', response.data);
       alert('Data sent successfully!');
       fetchData();
-      setShowInputs(false)
       setAddButtonClicked(false)
       setShowModal(false);
       setYearValue('');
@@ -59,18 +44,16 @@ function UpdateFinancialYear({ isOffcanvasOpen }) {
       alert('Failed to send data');
     }
   };
-  // const handleYearChange = (e) => {
-  //     const newYearValue = e.target.value;
-  //     const newDescValue = `${parseInt(newYearValue) - 1}-${newYearValue}`;
-  //     setYearValue(newYearValue);
-  //     setDescValue(newDescValue);
-  //   };
   // Function to update the value of yearValue and generate the description dynamically
   const handleYearChange = (e) => {
     const newYearValue = e.target.value;
     setYearValue(newYearValue);
     setDescValue(generateDescription(newYearValue));
   };
+  const handleCloseClick =(e)=>{
+    setShowModal(false);
+    setAddButtonClicked(false);
+  }
 
   // Function to generate the description dynamically based on the year value
   const generateDescription = (yearValue) => {
@@ -107,9 +90,8 @@ function UpdateFinancialYear({ isOffcanvasOpen }) {
     return updateFinancialYearBodyRows;
 
   }
-
   return (
-    <div className='w-100 h-100' style={AppStyle}>
+    <div className='w-100 h-100'>
       <br></br>
       <TableComponent
         thData={[{ text: "Financial Year", className: "" }, { text: "Description", className: "" }]}
@@ -153,7 +135,7 @@ function UpdateFinancialYear({ isOffcanvasOpen }) {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant="secondary" onClick={handleCloseClick}>
             Cancel
           </Button>
           <Button variant="primary" onClick={handleSaveClick}>

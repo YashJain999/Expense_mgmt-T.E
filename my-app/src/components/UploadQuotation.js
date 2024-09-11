@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
@@ -27,12 +26,6 @@ export default function FolderCreator() {
   const [fileCards, setFileCards] = useState([]);
   const [addItems, setAddItems] = useState(false);
   const [fileFolders, setFileFolders] = useState([]);
-
-  // const [itemsByYear, setItemsByYear] = useState({});
-  // const [currentYearItems, setCurrentYearItems] = useState([]);
-
-
-
   const { username } = useParams();
 
   useEffect(() => {
@@ -139,10 +132,22 @@ export default function FolderCreator() {
     }
   };
 
-  const handleFolderDoubleClick = (folderName) => {
-    setFolders([]); // Clear folder list to simulate navigation
+  const handleFolderDoubleClick = async (folderName) => {
     setCurrentFolder(folderName); // Set the current folder
     setIsDropdownDisabled(true); // Disable the dropdown
+
+    // Make API call to fetch PDFs for the selected folder and year
+    try {
+      console.log(folderName);
+      const response = await axios.post('http://localhost:8000/fetch_req_data/', {
+        selectedYear,
+        username,
+        folderName,
+      });
+      setFileCards(response.data["pdfs"]); // Update file cards with fetched PDF data
+    } catch (error) {
+      console.error('Error fetching PDFs:', error);
+    }
   };
 
   const handleHomeClick = () => {
@@ -154,29 +159,49 @@ export default function FolderCreator() {
 
   // Handle file upload to create a new file card
   const handleFileUpload = async () => {
-    // Check if all required fields for the file upload are filled
-    if (!selectedYear || !file || !newFileName || items.length === 0) {
-      alert('please fill all fields and select financial year before uploading the file.');
+    if (!selectedYear || !file || !newFileName || !vendorName) {
+      alert('Please fill all fields and select a file.');
       return;
     }
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('selectedYear', selectedYear);
+    formData.append('file', file);
+    formData.append('items', JSON.stringify(items));
+    formData.append('vendor_name',vendorName);
+    formData.append('file_name',newFileName)
 
-    // Create a new file card with the details
+    axios.post('http://localhost:8000/upload_quotation/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    })
+      .then(response => {
+        if (response.status === 200) {
+          alert('File uploaded successfully');
+        }
+        else {
+          alert('Error uploading file');
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+
+    //Create a new file card
     const newFileCard = {
       name: newFileName,
-      vendor: vendorName,
-      items: items, // Save all the items here
-      file: file.name
     };
 
-    // Update the file cards state
+    // Update file cards state
     setFileCards([...fileCards, newFileCard]);
 
-    // Reset all fields and close the modal
+    // Reset fields and close the modal
     setNewFileName('');
     setVendorName('');
-    setItems([]); // Reset the items array
     setFile(null);
-    setShowFileModal(false); // Close the modal after successful upload
+    setShowFileModal(false);
   };
 
   const handleCloseModal = () => {
@@ -226,8 +251,8 @@ export default function FolderCreator() {
             else if (eventKey === 'addFile') setShowFileModal(true); // Open File Modal
           }}
         >
-          <Dropdown.Item eventKey="addFile">Add New File</Dropdown.Item>
-          <Dropdown.Item eventKey="addFolder">Add New Folder</Dropdown.Item>
+          <Dropdown.Item eventKey="addFile" disabled={!currentFolder}>Add New File</Dropdown.Item>
+          <Dropdown.Item eventKey="addFolder" disabled={!selectedYear}>Add New Folder</Dropdown.Item>
         </DropdownButton>
 
         <select
@@ -391,74 +416,41 @@ export default function FolderCreator() {
           </Button>
         </Modal.Footer>
       </Modal>
-
-      {/* <div className="file-cards mt-4">
-        {fileCards.map((fileCard, index) => (
-          <Card key={index} className="mb-3">
-            <Card.Body>
-              <Card.Title>{fileCard.name}</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">Vendor: {fileCard.vendor}</Card.Subtitle>
-              <Card.Text>
-                <div className="d-flex flex-between">
-                  {fileCard.items.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="p-2"
-                      style={{
-                        flex: '1 1 30%',
-                        minWidth: '200px',
-                        textAlign: 'left' // Ensure text is left-aligned
-                      }}
-                    >
-                      <strong>Item:</strong> {item.name} <br />
-                      <strong>Quantity:</strong> {item.quantity} <br />
-                      <strong>Price:</strong> {item.price}
+      <div className="file-folder-list mt-4">
+        <Row>
+          {fileCards.map((fileCard, index) => (
+            <Col key={index} xs={6} sm={4} md={3} lg={2} className="d-flex justify-content-center">
+              <Card
+                style={{ width: '160px', position: 'relative' }}
+                className="text-center clickable-card"
+                onClick={() => setFileCards(prevState =>
+                  prevState.map((card, cardIndex) =>
+                    cardIndex === index ? { ...card, isOpen: !card.isOpen } : card
+                  )
+                )}
+              >
+                <Card.Body>
+                  <FontAwesomeIcon icon={faFolder} size="3x" className="mb-3" />
+                  <Card.Title className="text-truncate">{fileCard.name}</Card.Title>
+                  <Card.Subtitle className="text-truncate">Vendor: {fileCard.vendor}</Card.Subtitle>
+                  {fileCard.isOpen && (
+                    <div style={{ textAlign: 'left', marginTop: '10px' }}>
+                      {fileCard.items.map((item, idx) => (
+                        <div key={idx}>
+                          <strong>Item:</strong> {item.name} <br />
+                          <strong>Quantity:</strong> {item.quantity} <br />
+                          <strong>Price:</strong> {item.price} <br />
+                        </div>
+                      ))}
+                      <strong>File:</strong> {fileCard.file}
                     </div>
-                  ))}
-                </div>
-                <div style={{ textAlign: 'left' }}>
-                  <strong>File:</strong> {fileCard.file}
-                </div>
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        ))}
-      </div> */}
-<div className="file-folder-list mt-4">
-  <Row>
-    {fileCards.map((fileCard, index) => (
-      <Col key={index} xs={6} sm={4} md={3} lg={2} className="d-flex justify-content-center">
-        <Card
-          style={{ width: '160px', position: 'relative' }}
-          className="text-center clickable-card"
-          onClick={() => setFileCards(prevState =>
-            prevState.map((card, cardIndex) =>
-              cardIndex === index ? { ...card, isOpen: !card.isOpen } : card
-            )
-          )}
-        >
-          <Card.Body>
-            <FontAwesomeIcon icon={faFolder} size="3x" className="mb-3" />
-            <Card.Title className="text-truncate">{fileCard.name}</Card.Title>
-            <Card.Subtitle className="text-truncate">Vendor: {fileCard.vendor}</Card.Subtitle>
-            {fileCard.isOpen && (
-              <div style={{ textAlign: 'left', marginTop: '10px' }}>
-                {fileCard.items.map((item, idx) => (
-                  <div key={idx}>
-                    <strong>Item:</strong> {item.name} <br />
-                    <strong>Quantity:</strong> {item.quantity} <br />
-                    <strong>Price:</strong> {item.price} <br />
-                  </div>
-                ))}
-                <strong>File:</strong> {fileCard.file}
-              </div>
-            )}
-          </Card.Body>
-        </Card>
-      </Col>
-    ))}
-  </Row>
-</div>
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </div>
 
       {/* Rename Folder Modal */}
       <Modal show={showRenameModal} onHide={() => setShowRenameModal(false)}>

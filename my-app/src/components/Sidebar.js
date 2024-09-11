@@ -429,10 +429,10 @@ import React, { useState } from "react";
 import { NavLink, useParams, useLocation } from "react-router-dom";
 import "../assets/css/Sidebar.css";
 import "../../src/App.css";
-import { text } from "@fortawesome/fontawesome-svg-core";
+// import { text } from "@fortawesome/fontawesome-svg-core";
 
 export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
-  const { username, u_dept, u_desig } = useParams();
+  const { username, u_dept } = useParams();
   const location = useLocation();
 
   const NavLinkStyle = {
@@ -461,7 +461,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
   const toggleQuotationList = () => {
     const buttonObject2 = [
       { text: "Upload Quotation", path: `/home/${username}/${u_dept}/quotation/uploadquotation` },
-      { text: "Q.B2", path: `/home/${username}/${u_dept}/quotation/reviewquotation` },
+      { text: "Compare Quotation", path: `/home/${username}/${u_dept}/quotation/comparequotation` },
     ];
     setShouldShowQuotation(buttonObject2);
     setIsQuotationListVisible(!isQuotationListVisible);

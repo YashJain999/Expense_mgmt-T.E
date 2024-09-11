@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import '../assets/css/PrincipalDashboard.css'; 
+// import '../assets/css/PrincipalDashboard.css';
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
+import ButtonComponent from './ButtonComponent';
+import TableComponent from './TableComponent';
 
-function PrincipalDashboard({isOffcanvasOpen, toggleOffcanvas, closeOffcanvas}) {
+function PrincipalDashboard({ isOffcanvasOpen, toggleOffcanvas, closeOffcanvas }) {
   const AppStyle = {
-    position:"relative",
-    top:"-100px",
+    position: "relative",
+    top: "-0px",
     left: isOffcanvasOpen ? '0px' : '0%',
     width: isOffcanvasOpen ? 'calc(100% - 260px)' : '100%',
     transition: 'all 0.5s ease',
@@ -23,6 +25,7 @@ function PrincipalDashboard({isOffcanvasOpen, toggleOffcanvas, closeOffcanvas}) 
   const fetchData = async () => {
     try {
       const response = await axios.get('http://localhost:8000/dropdown/');
+      console.log(response.data)
       setYearDetails(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -36,17 +39,16 @@ function PrincipalDashboard({isOffcanvasOpen, toggleOffcanvas, closeOffcanvas}) 
 
       const response = await axios.get(`http://localhost:8000/get_all_pdf_records/?selectedYear=${selectedYear}`);
       const fetchedData = response.data;
-
       setPdfRecords(fetchedData);
 
-      const updatedDepartmentStates = getInitialDepartmentStates(); 
+      const updatedDepartmentStates = getInitialDepartmentStates();
       fetchedData.forEach((record) => {
         updatedDepartmentStates[record.dept] = {
           ...updatedDepartmentStates[record.dept],
           selectedOption: record.status || '',
           hasPlaceholder: true,
           placeholderValue: record.comment || '',
-          pdfAvailable: true, // Set pdfAvailable to true when PDF exists
+          pdfAvailable: true,
         };
       });
 
@@ -175,6 +177,129 @@ function PrincipalDashboard({isOffcanvasOpen, toggleOffcanvas, closeOffcanvas}) 
       });
   };
 
+  const generatePrincipalDashRows = () => {
+    const principalDashRows = [];
+
+    Object.keys(departmentStates).forEach(department => {
+      const row = [];
+
+      row.push({
+        item: department,
+        styles: { textAlign: 'left', width: "40%" },
+        className: "Itemname text-left bg-primary bg-gradient text-white"
+      });
+
+      row.push({
+        item: pdfRecords.some(record => record.dept === department) ? (
+          <div className="d-flex flex-column justify-content-center align-items-center h-100">
+            <i
+              className="fas fa-download fa-3x text-danger mb-2"
+              onClick={() => handleDownloadPDF(pdfRecords.find(record => record.dept === department)?.pdf_id, department)}
+              style={{ cursor: 'pointer' }}
+            ></i>
+          </div>
+        ) : (
+          <div className="d-flex flex-column justify-content-end align-items-center h-100 text-secondary">
+            <span>No PDF</span>
+          </div>
+        ),
+        styles: { textAlign: 'center', width: "20%" },
+        className: "downloadfile text-center"
+      });
+
+
+      row.push({
+        item: departmentStates[department]?.pdfAvailable ? (
+          <div className="border rounded p-3 shadow-sm bg-light">
+            <div className="d-flex justify-content-center mb-3">
+              <div className="form-check me-3">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name={`${department}_status`}
+                  id={`${department}_accept`}
+                  value='Accept'
+                  checked={departmentStates[department]?.selectedOption === 'Accept'}
+                  onChange={() => handleOptionChange(department, 'Accept')}
+                  disabled={!departmentStates[department]?.editVisible}
+                />
+                <label className="form-check-label" htmlFor={`${department}_accept`}>
+                  Accept
+                </label>
+              </div>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name={`${department}_status`}
+                  id={`${department}_reject`}
+                  value='Reject'
+                  checked={departmentStates[department]?.selectedOption === 'Reject'}
+                  onChange={() => handleOptionChange(department, 'Reject')}
+                  disabled={!departmentStates[department]?.editVisible}
+                />
+                <label className="form-check-label" htmlFor={`${department}_reject`}>
+                  Reject
+                </label>
+              </div>
+            </div>
+            <div className="mb-3">
+              <textarea
+                className="form-control"
+                rows="3"
+                value={departmentStates[department]?.placeholderValue}
+                onChange={(e) => handleCommentChange(department, e.target.value)}
+                placeholder='Comemt Here'
+                disabled={!departmentStates[department]?.editVisible}
+              />
+            </div>
+            <div className="d-flex justify-content-center">
+              {departmentStates[department]?.editVisible ? (
+                <>
+                  <ButtonComponent
+                    className='btn btn-success mx-2'
+                    text="Save"
+                    onClick={() => handleSaveButtonClick(department)}
+                  />
+                  <ButtonComponent
+                    onClick={() => handleCancelButtonClick(department)}
+                    text="Cancel"
+                    className="btn btn-danger mx-2"
+                  />
+                </>
+              ) : (
+                <ButtonComponent
+                  onClick={() => handleEditButtonClick(department)}
+                  text="Edit"
+                  className='btn btn-primary w-15'
+                />
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="alert alert-warning">
+            No PDF uploaded for this department.
+          </div>
+        ),
+        styles: { textAlign: 'center', width: "40%" },
+        className: "status text-center"
+      });
+
+
+
+      principalDashRows.push(row);
+    });
+
+    return principalDashRows;
+  };
+  useEffect(() => {
+    if (!isOffcanvasOpen) {
+      const timeout = setTimeout(() => closeOffcanvas(), 500);
+      return () => clearTimeout(timeout);
+    }
+  }, [isOffcanvasOpen, closeOffcanvas]);
+  
+
   return (
     <div className='container p-2 mw-5' style={AppStyle}>
       <Navbar
@@ -188,114 +313,40 @@ function PrincipalDashboard({isOffcanvasOpen, toggleOffcanvas, closeOffcanvas}) 
           toggleOffcanvas={toggleOffcanvas}
         />
       </div>
-      <h1>Review the Budget Reports</h1>
-      <label htmlFor="language">Financial Year :</label>
-      <select
-        className="year"
-        value={selectedYear}
-        onChange={(e) => setSelectedYear(e.target.value)}
-      >
-        <option value="" disabled>Select Year</option>
-        {YearDetails.map((item, index) => (
-          <option key={index} value={item}>
-            {item}
-          </option>
-        ))}
-      </select>
-      {/* <button className='viewDetails' onClick={handleViewDetails}>View</button> */}
+
       {showEditWarning && (
         <div className="alert alert-warning" role="alert">
           {departmentStates[selectedYear]?.pdfAvailable
             ? "Please click the 'Edit' button to make changes."
-            : "No PDF uploaded by this department."}
+            : "Please click the 'Edit' button to make changes."}
         </div>
       )}
-      <table>
-        <thead>
-          <tr>
-            <th style={{ width: "100px" }}>Department</th>
-            <th>Download</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.keys(departmentStates).map((department, index) => (
-            <tr key={index}>
-              <td className='deptname'>{department}</td>
-              <td className='downloadfile'>
-                {pdfRecords.some((record) => record.dept === department) ? (
-                  <i className="fas fa-download fa-2xl" onClick={() => handleDownloadPDF(pdfRecords.find((record) => record.dept === department)?.pdf_id, department)}></i>
-                ) : (
-                  <span>No PDF</span>
-                )}
-              </td>
-              <td className='status'>
-                {departmentStates[department]?.pdfAvailable ? (
-                  <>
-                    <label>
-                      <input
-                        className="Dashprincipalinp"
-                        type="radio"
-                        name={department}
-                        value='Accept'
-                        checked={departmentStates[department]?.selectedOption === 'Accept'}
-                        onChange={() => handleOptionChange(department, 'Accept')}
-                      />
-                      Accept
-                    </label>
-                    <label>
-                      <input
-                        className="Dashprincipalinp"
-                        type="radio"
-                        name={department}
-                        value='Reject'
-                        checked={departmentStates[department]?.selectedOption === 'Reject'}
-                        onChange={() => handleOptionChange(department, 'Reject')}
-                      />
-                      Reject
-                    </label>
-                    <textarea 
-                      value={departmentStates[department]?.placeholderValue}
-                      onChange={(e) => handleCommentChange(department, e.target.value)}
-                      placeholder='Add comment...'
-                      disabled={!departmentStates[department]?.editVisible}
-                    />
-                    <div className="buttons">
-                      {departmentStates[department]?.editVisible ? (
-                        <>
-                          <button
-                            className='savebtn'
-                            onClick={() => handleSaveButtonClick(department)}
-                          >
-                            Save
-                          </button>
-                          <button
-                            className='cancelbtn'
-                            onClick={() => handleCancelButtonClick(department)}
-                          >
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          className='editbtn'
-                          onClick={() => handleEditButtonClick(department)}
-                        >
-                          Edit
-                        </button>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <div className="alert alert-warning">
-                    No PDF uploaded for this department.
-                  </div>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+
+      <TableComponent
+        thData={[
+          { text: "Departments", className: "Deptcol" },
+          { text: "Download", className: "Downloadcol" },
+          { text: "Status", className: "Statuscol" }
+        ]}
+        tbData={generatePrincipalDashRows()}
+        caption={
+          <div className='d-flex flex-row justify-content-between px-3 mt-2'>
+            <span className='h2'>Dashboard</span>
+            <select
+              className="w-25 bg-primary text-white h5 border px-2"
+              aria-labelledby="dropdownMenuButton2"
+              value={selectedYear}
+              onChange={(e) => { setSelectedYear(e.target.value); }}>
+              <option value="" disabled >Financial Year</option>
+              {YearDetails.map((item, index) => (
+                <option key={index} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+        }
+      />
     </div>
   );
 }
@@ -309,6 +360,6 @@ function getInitialDepartmentStates() {
     "Information Technology": { selectedOption: '', hasPlaceholder: false, placeholderValue: '', editVisible: false, pdfAvailable: false },
     "Mechanical": { selectedOption: '', hasPlaceholder: false, placeholderValue: '', editVisible: false, pdfAvailable: false },
   };
-}
+};
 
 export default PrincipalDashboard;

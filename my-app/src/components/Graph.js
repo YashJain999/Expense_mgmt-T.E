@@ -34,8 +34,7 @@ function Graph() {
               Pie Graph
             </button>
           </div>
-        </div>
-        <br /><br /><br /><br/><br/>    
+        </div>   
         {selectedOption === 'bar' && <BarGraph />}
         {selectedOption === 'line' && <LineGraphs />}
         {selectedOption === 'pie' && <PieGraph />}

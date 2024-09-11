@@ -15,24 +15,14 @@ export default function BarGraph() {
     const [data_actual, setDataActual] = useState([]);
     const [data_year, setDataYear] = useState([]);
     const [showInputs, setShowInputs] = useState(false);
-
-    const AppStyle = {
-        position: "relative",
-        top: "-130px",
-        transition: 'all 0.5s ease',
-        zIndex: 1000,
-    };
-
     useEffect(() => {
         fetchData();
         fetchitem();
     }, []);
-
     // Handle the data fetching logic
     const handleYearSubmit = useCallback(async () => {
         const numYearFrom = extractYear(selectedYearfrom);
         const numYearTo = extractYear(selectedYearto);
-
         if (numYearFrom <= numYearTo) {
             try {
                 const response1 = await axios.post('http://localhost:8000/get_item_amount/', { selectedYearfrom, selectedYearto, selecteditem, username });
@@ -84,51 +74,37 @@ export default function BarGraph() {
 
     return (
         <>
-            <div className='container p-2 mw-5' style={AppStyle}>
-                <label htmlFor='language' className='l1'>
-                    Financial Year
-                </label>
-                <br />
-                <label htmlFor="language">
-                    Select from:
-                </label>
+            <div className='container p-2 mw-5' >
                 <select
-                    className="ddfor-from"
+                    className="dd-bar"
                     value={selectedYearfrom}
                     onChange={(e) => setSelectedYearfrom(e.target.value)}
                 >
-                    <option value="" disabled>Select an option</option>
+                    <option value="" disabled>Financial Year From</option>
                     {budgetData.map((item, index) => (
                         <option key={index} value={item}>
                             {item}
                         </option>
                     ))}
                 </select>
-                <label htmlFor="language">
-                    Select to:
-                </label>
                 <select
-                    className="ddfor-to"
+                    className="dd-bar"
                     value={selectedYearto}
                     onChange={(e) => setSelectedYearto(e.target.value)}
                 >
-                    <option value="" disabled>Select an option</option>
+                    <option value="" disabled>Financial Year To</option>
                     {budgetData.map((item, index) => (
                         <option key={index} value={item}>
                             {item}
                         </option>
                     ))}
                 </select>
-                <br />
-                <label htmlFor="language">
-                    Select item:
-                </label>
                 <select
-                    className="ddfor-item"
+                    className="dd-bar"
                     value={selecteditem}
                     onChange={(e) => setSelectedItem(e.target.value)}
                 >
-                    <option value="" disabled>Select an option</option>
+                    <option value="" disabled>Select item:</option>
                     {item_list.map((item, index) => (
                         <option key={index} value={item}>
                             {item}
@@ -136,7 +112,7 @@ export default function BarGraph() {
                     ))}
                 </select>
                 {showInputs && (
-                    <div className='graph'>
+                    <div className='Bar'>
                         <Bars
                             data_budget={data_budget}
                             data_actual={data_actual}
