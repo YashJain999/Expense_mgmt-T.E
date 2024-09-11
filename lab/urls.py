@@ -16,7 +16,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from budget.views import *
 from budget.models import *
 from quotation.models import *
@@ -56,11 +56,10 @@ urlpatterns = [
     path('get_req/',get_req, name='anything'),
     path('add_req/',add_req,name='anything'),
     path('rename_req/', rename_req, name='rename_req'),
-    path('delete_req/', delete_req, name='delete_req')
-    # path('api/get_req/', views.get_req, name='get_req'),
-    # path('api/add_req/', views.add_req, name='add_req'),
-    # path('api/rename_req/', views.rename_req, name='rename_req'),
-    # path('api/delete_req/', views.delete_req, name='delete_req')
+    path('delete_req/', delete_req, name='delete_req'),
+    path('upload_quotation/', upload_quotation, name='upload_file'),
+    path('fetch_req_data/',fetch_req_data, name='fetch_req_data'),    
+    path('fetch_compare_data/',fetch_compare_data, name='fetch_req_data'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -21,28 +21,15 @@ export default function LineGraphs({ isOffcanvasOpen }) {
     const [item_7, setitem_7] = useState([]);
     const [data_year, setDataYear] = useState([]);
     const rep = selectedprice;
-    const isButtonDisabled = !selectedYearfrom || !selectedYearto || !selectedprice;
-    const AppStyle = {
-        position: "relative",
-        top: "-130px",
-        left: isOffcanvasOpen ? '0px' : '0%',
-        width: isOffcanvasOpen ? 'calc(100% - 260px)' : '100%',
-        transition: 'all 0.5s ease',
-        zIndex: 1000,
-    };
-
     useEffect(() => {
         fetchData();
     }, []);
-
     const extractYear = (yearString) => {
         const parts = yearString.split('-');
         return parseInt(parts[0], 10);
     };
-
     const numYearFrom = extractYear(selectedYearfrom);
     const numYearTo = extractYear(selectedYearto);
-
     const fetchData = async () => {
         try {
             const response = await axios.get('http://localhost:8000/dropdown/');
@@ -51,7 +38,6 @@ export default function LineGraphs({ isOffcanvasOpen }) {
             console.error('Error fetching data:', error);
         }
     };
-
     const handleYearSubmit = useCallback(async () => {
         if (numYearFrom < numYearTo) {
             try {
@@ -78,46 +64,39 @@ export default function LineGraphs({ isOffcanvasOpen }) {
             handleYearSubmit();
         }
     }, [selectedYearfrom, selectedYearto, selectedprice, handleYearSubmit]);
-
     return (
         <>
-            <div className='container p-2 mw-5' style={AppStyle}>
-                <label className='l2'>Financial Year</label>
-                <br />
-                <label className='l2'>Select from:</label>
+            <div className='container p-2 mw-5'>
                 <select
-                    className="ddfor-from"
+                    className="dd-line"
                     value={selectedYearfrom}
                     onChange={(e) => setSelectedYearfrom(e.target.value)}
                 >
-                    <option value="" disabled>Select an option</option>
+                    <option value="" disabled>Financial Year From:</option>
                     {budgetData.map((item, index) => (
                         <option key={index} value={item}>
                             {item}
                         </option>
                     ))}
                 </select>
-                <label className='l2'>Select to:</label>
                 <select
-                    className="ddfor-to"
+                    className="dd-line"
                     value={selectedYearto}
                     onChange={(e) => setSelectedYearto(e.target.value)}
                 >
-                    <option value="" disabled>Select an option</option>
+                    <option value="" disabled>Financial Year To:</option>
                     {budgetData.map((item, index) => (
                         <option key={index} value={item}>
                             {item}
                         </option>
                     ))}
                 </select>
-                <br />
-                <label className='l2'>Select one:</label>
                 <select
-                    className='price'
+                    className='dd-line'
                     value={selectedprice}
                     onChange={(e) => setSelectedprice(e.target.value)}
                 >
-                    <option value="" disabled>Select an option</option>
+                    <option value="" disabled>Select one:</option>
                     {option.map((item, index) => (
                         <option key={index} value={item}>
                             {item}
@@ -125,7 +104,7 @@ export default function LineGraphs({ isOffcanvasOpen }) {
                     ))}
                 </select>
                 {showInputs && (
-                    <div className='line-graph'>
+                    <div className='line'>
                         <Lines
                             item_1={item_1}
                             item_2={item_2}
@@ -139,7 +118,6 @@ export default function LineGraphs({ isOffcanvasOpen }) {
                         />
                     </div>
                 )}
-                <br /><br />
             </div>
         </>
     );

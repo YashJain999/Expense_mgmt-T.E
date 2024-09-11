@@ -4,14 +4,17 @@ import axios from 'axios';
 import { useParams } from "react-router-dom";
 import TableComponent from './TableComponent';
 import ButtonComponent from './ButtonComponent';
+import { Modal, Button, Form } from 'react-bootstrap';
 
 function UploadBudget() {
   const [selectedYear, setSelectedYear] = useState('');
   const [budgetData, setBudgetData] = useState([]);
-  const [showInputs, setShowInputs] = useState(false);
+  // const [showInputs, setShowInputs] = useState(false);
   const [descValue, setDescValue] = useState('');
   const [fetchedData, setFetchedData] = useState([]);
   const [showYearWarning, setShowYearWarning] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [file, setFile] = useState(null);
   const { username } = useParams();
 
   useEffect(() => {
@@ -47,7 +50,7 @@ function UploadBudget() {
           if (response2.data.length === 0) {
             setShowYearWarning(true); // Show warning if no data is available
             setFetchedData([]); // Clear fetchedData to show an empty table
-            setShowInputs(false); // Hide input fields initially
+            setShowModal(false); // Hide input fields initially
           } else {
             setShowYearWarning(false); // Hide warning if data is available
             setFetchedData(response2.data.map(item => ({
@@ -71,7 +74,7 @@ function UploadBudget() {
   }, [selectedYear, handleYearSubmit]);
 
   const handleUploadClick = () => {
-    setShowInputs(true); // Show input fields when user clicks Upload
+    setShowModal(true);
   };
 
   const handleSaveClick = () => {
@@ -97,7 +100,7 @@ function UploadBudget() {
         if (response.status === 201) {
           console.log('Data successfully submitted:', response.data);
           handleYearSubmit();
-          setShowInputs(false);
+          setShowModal(false);
         } else {
           console.error('Error submitting data:', response.data);
         }
@@ -122,7 +125,7 @@ function UploadBudget() {
       if (response.status === 200) {
         console.log('Budget deleted successfully:', response.data);
         setFetchedData([]);
-        setShowInputs(false);
+        setShowModal(false);
       } else {
         console.error('Error deleting data:', response.data);
       }
@@ -138,6 +141,10 @@ function UploadBudget() {
       uploadBudgetTableBodyRows.push(uploadBudgetTableBodyRow);
     });
     return uploadBudgetTableBodyRows;
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false); // Close modal
   };
 
   return (
@@ -171,7 +178,7 @@ function UploadBudget() {
       )}
 
       {fetchedData.length === 0 ? (
-        <ButtonComponent onClick={handleUploadClick} text={"Upload"} />
+        <ButtonComponent onClick={handleUploadClick} text={"Upload"}  />
       ) : (
         <>
           <ButtonComponent onClick={handleDeleteClick} text={"Delete"} className='btn-danger' />
@@ -181,24 +188,33 @@ function UploadBudget() {
 
       <br /><br /><br />
       
-      {showInputs && (
-        <fieldset>
-          <br />
-          Upload Your File Here: <input type="file" name="file" id="file" />
-          <br />
-          Description:
-          <input
-            className="des-budget"
-            type='text'
-            name='description'
-            id='description'
-            style={{ border: '1px solid black' }}
-            value={descValue}
-            onChange={(e) => setDescValue(e.target.value)}
-          />
-          <ButtonComponent onClick={handleSaveClick} text={"Submit"} className='btn-success' />
-        </fieldset>
-      )}
+      <Modal show={showModal} onHide={handleCloseModal}>
+      <Modal.Header closeButton>
+        <Modal.Title className='text-primary font-weight-bold'>Upload Budget File</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+      <Form>
+            <Form.Group className="mb-3" controlId="formpdfdescription">
+              <Form.Label>File Description</Form.Label>
+              <Form.Control type="text" placeholder="Enter file description" className="w-100 border border-secondary rounded-end" name='description' id='description' value={descValue}
+              onChange={(e) => setDescValue(e.target.value)} />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formFileUpload">
+              <Form.Label>Upload Pdf File</Form.Label>
+              <Form.Control className="w-100 border border-secondary rounded-end" type="file" accept=".pdf" onChange={(e) => setFile(e.target.files[0])} id='file' name='file' />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+          <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSaveClick}>
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

@@ -20,12 +20,10 @@ function Login() {
         });
         const responsedata=response.data;  
         if (responsedata['code'] === '10') {
-          const u_dept = responsedata['u_dep'];
           sessionStorage.setItem('authToken', responsedata['token']); // Set auth token or session info
           if (responsedata['u_desig'] === 'HOD'){
             // navigate(`/home/${username}/${responsedata['u_dep']}`);
             const u_dept = responsedata['u_dep'];
-            console.log(u_dept)
             setUsername('');
             setPassword('');
             navigate(`/home/${username}/${u_dept}`,{state:{desig:responsedata['u_desig']}});

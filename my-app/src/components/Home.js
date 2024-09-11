@@ -167,9 +167,7 @@
 // export default Home;
 
 import React from "react";
-// import "../../src/App.css" 
-// import { useParams } from "react-router-dom";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
@@ -188,7 +186,7 @@ import PrincipalQuotation from "./PrincipalQuotation";
 import Graph from "./Graph";
 import Prediction from "./Prediction";	
 import UploadQuotation from './UploadQuotation';
-import BgImage from '../assets/images/temp.png'
+import CompareQuotation from './CompareQuotation';
 
 
 function Home() {
@@ -205,16 +203,8 @@ function Home() {
     left: isOffcanvasOpen ? "130px" : "0%",
     width: isOffcanvasOpen ? "calc(100% - 130px)" : "100%",
     transition: "all 0.5s ease",
-    // zIndex: 1000,
-    // backgroundImage: `url(${BgImage})`,
-    // backgroundRepeat: "no-repeat",
-    // // backgroundAttachment: "fixed", 
-    // backgroundSize: "100% 100vh"
-    // background: "black"
   };
 
-  const location = useLocation();
-  console.log(location);
   return (
     <div>
       <div className="container p-2 w-100 h-100" style={AppStyle}>
@@ -282,6 +272,11 @@ function Home() {
               exact
               path="/quotation/uploadquotation"
               element={<UploadQuotation isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+             <Route
+              exact
+              path="/quotation/comparequotation"
+              element={<CompareQuotation isOffcanvasOpen={isOffcanvasOpen} />}
             ></Route>
             <Route
               exact

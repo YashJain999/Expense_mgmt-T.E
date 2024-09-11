@@ -11,20 +11,9 @@ export default function PieGraph({ isOffcanvasOpen }) {
     const [budgetData, setBudgetData] = useState([]);
     const [showInputs, setShowInputs] = useState(false);
     const { username } = useParams();
-    const isButtonDisabled = !selectedYear;
-    const AppStyle = {
-        position: "relative",
-        top: "-130px",
-        left: isOffcanvasOpen ? '0px' : '0%',
-        width: isOffcanvasOpen ? 'calc(100% - 260px)' : '100%',
-        transition: 'all 0.5s ease',
-        zIndex: 1000,
-    };
-
     useEffect(() => {
         fetchData();
     }, []);
-
     const fetchData = async () => {
         try {
             const response = await axios.get('http://localhost:8000/dropdown/');
@@ -33,7 +22,6 @@ export default function PieGraph({ isOffcanvasOpen }) {
             console.error('Error fetching data:', error);
         }
     };
-
     const handleYearSubmit = useCallback(async () => {
         try {
             const response1 = await axios.post('http://localhost:8000/get_pie/', { selectedYear, username });
@@ -48,25 +36,20 @@ export default function PieGraph({ isOffcanvasOpen }) {
             console.error('Error fetching data:', error.message);
         }
     }, [selectedYear, username]);
-
     useEffect(() => {
         if (selectedYear) {
             handleYearSubmit();
         }
     }, [selectedYear, handleYearSubmit]);
-
     return (
         <>
-            <div className='container p-2 mw-5' style={AppStyle}>
-                <label htmlFor='language' className='l2'>Financial Year</label>
-                <br />
-                <label htmlFor="language">Select:</label>
+            <div className='container p-2 mw-5'>
                 <select
-                    className="ddfor-from"
+                    className="dd-pie"
                     value={selectedYear}
                     onChange={(e) => setSelectedYear(e.target.value)}
                 >
-                    <option value="" disabled>Select an option</option>
+                    <option value="" disabled>Financial Year:</option>
                     {budgetData.map((item, index) => (
                         <option key={index} value={item}>
                             {item}
@@ -74,7 +57,7 @@ export default function PieGraph({ isOffcanvasOpen }) {
                     ))}
                 </select>
                 {showInputs && (
-                    <div className='Pie-graph'>
+                    <div className='Pie'>
                         <Pie dataBudget={data_budget} dataActual={data_actual} />
                     </div>
                 )}
