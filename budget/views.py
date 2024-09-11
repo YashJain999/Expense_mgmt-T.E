@@ -349,80 +349,10 @@ def post_year_desc(request):
                     budgeted_amt=0.0,
                     actual_exp=0.0
                 )
-        # Add any additional logic or error handling here
         return Response({'message': 'Data added successfully'})
     else:
         return Response({'error': 'Invalid data provided'}, status=400)
         
-
-@api_view(['POST'])
-def upload_budget(request):
-    username = request.data.get('username')
-    selectedYear = request.data.get('selectedYear')
-    branch = User.objects.get(u_email=username).u_dep
-
-    try:
-        year = financialyear.objects.get(Desc=selectedYear).F_year
-    except financialyear.DoesNotExist:
-        raise NotFound(detail="Specified year not found")
-
-    file = request.FILES.get('file')
-    description = request.data.get('description')
-    status = ''
-    comment = ''
-
-    if file:
-        content = file.read()
-        content_file = io.BytesIO(content)
-        content_file.seek(0)
-
-        # Generate a unique pdf_id
-        pdf_id = uuid4().hex
-
-        try:
-            with transaction.atomic():
-                # Delete existing entry (if any) before inserting new data
-                Pdf.objects.filter(dept=branch, f_year=year).delete()
-
-                # Now insert the new entry
-                Pdf.objects.create(
-                    dept=branch,
-                    f_year=year,
-                    pdf=ContentFile(content_file.read(), name=file.name),
-                    description=description,
-                    status=status,
-                    comment=comment,
-                    pdf_id=pdf_id,  # Assign the generated pdf_id
-                    pdf_name=file.name  # Save the PDF name
-                )
-                return Response({"message": "PDF uploaded successfully", "pdf_id": pdf_id}, status=201)
-        except Exception as e:
-            return Response({"message": "Failed to upload PDF: " + str(e)}, status=500)
-    else:
-        return Response({"message": "No file provided"}, status=400)
-
-
-@api_view(['POST'])
-def delete_budget(request):
-    username = request.data.get('username')
-    selectedYear = request.data.get('selectedYear')
-    branch = User.objects.get(u_email=username).u_dep
-
-    try:
-        year = financialyear.objects.get(Desc=selectedYear).F_year
-    except financialyear.DoesNotExist:
-        return Response({"message": "Specified year not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    try:
-        budget = Pdf.objects.get(dept=branch, f_year=year)
-        budget.delete()
-        return Response({"message": "Budget deleted successfully"}, status=status.HTTP_200_OK)
-    except Pdf.DoesNotExist:
-        return Response({"message": "No budget found to delete"}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({"message": "Failed to delete budget: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 
 @api_view(['POST'])
 def get_uploaded_docs(request):
@@ -433,7 +363,7 @@ def get_uploaded_docs(request):
 
     # Retrieve the required data from the model
     try:
-        data = list(Pdf.objects.filter(dept=branch, f_year=year).values('pdf_name', 'description', 'status', 'comment'))
+        data = list(Pdf.objects.filter(dept=branch, f_year=year).values('pdf_name', 'description', 'status', 'comment','pdf_id'))
         
         print(data)  # Assuming you have defined a PdfSerializer for the pdf model
         return Response(data)
@@ -703,3 +633,85 @@ def principal_status(request):
             return Response({'error': 'PDF instance not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['POST'])
+def upload_budget(request):
+    username = request.data.get('username')
+    selectedYear = request.data.get('selectedYear')
+    branch = User.objects.get(u_email=username).u_dep
+
+    try:
+        year = financialyear.objects.get(Desc=selectedYear).F_year
+    except financialyear.DoesNotExist:
+        raise NotFound(detail="Specified year not found")
+
+    file = request.FILES.get('file')
+    description = request.data.get('description')
+
+    if file:
+        content = file.read()
+        content_file = io.BytesIO(content)
+        content_file.seek(0)
+
+        # Generate a unique pdf_id
+        pdf_id = uuid4().hex
+
+        try:
+            with transaction.atomic():
+                # Call the helper function to delete any existing budget entries
+                print("rehahj")
+                # Check if an entry exists in the Pdf model
+                if Pdf.objects.filter(dept=branch, f_year=year).exists():
+                    # If it exists, call the helper function to delete the existing budget
+                    delete_existing_budget(username, selectedYear)
+
+                # Insert the new entry
+                Pdf.objects.create(
+                    dept=branch,
+                    f_year=year,
+                    pdf=ContentFile(content_file.read(), name=file.name),
+                    description=description,
+                    status='',
+                    comment='',
+                    pdf_id=pdf_id,  # Assign the generated pdf_id
+                    pdf_name=file.name  # Save the PDF name
+                )
+                return Response({"message": "PDF uploaded successfully", "pdf_id": pdf_id}, status=201)
+        except Exception as e:
+            return Response({"message": "Failed to upload PDF: " + str(e)}, status=500)
+    else:
+        return Response({"message": "No file provided"}, status=400)
+
+def delete_existing_budget(username, selectedYear):
+    branch = User.objects.get(u_email=username).u_dep
+    try:
+        year = financialyear.objects.get(Desc=selectedYear).F_year
+    except financialyear.DoesNotExist:
+        raise NotFound(detail="Specified year not found")
+    
+    try:
+        budget_entry = Pdf.objects.get(dept=branch, f_year=year)
+    except Pdf.DoesNotExist:
+        raise NotFound(detail="PDF entry not found")
+
+    # Remove the leading 'b' character and decode the byte string
+    budget_file_path = os.path.join(settings.MEDIA_ROOT, str(budget_entry.pdf)[2:-1])
+    if os.path.exists(budget_file_path):
+        os.remove(budget_file_path)
+    
+    # Delete the Pdf instance itself
+    budget_entry.delete()
+
+    return "PDF deleted successfully"
+
+@api_view(['POST'])
+def delete_budget(request):
+    username = request.data.get('username')
+    selectedYear = request.data.get('selectedYear')
+    try:
+        # Call the helper function
+        message = delete_existing_budget(username, selectedYear)
+        return Response({"message": message}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"message": f"Failed to delete PDF: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
