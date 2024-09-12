@@ -24,8 +24,6 @@ export default function FolderCreator() {
   const [itemQty, setItemQty] = useState('');
   const [file, setFile] = useState(null);
   const [fileCards, setFileCards] = useState([]);
-  const [addItems, setAddItems] = useState(false);
-  const [fileFolders, setFileFolders] = useState([]);
   const { username } = useParams();
 
   useEffect(() => {
@@ -120,6 +118,26 @@ export default function FolderCreator() {
       console.error('Error deleting folder:', error);
     }
   };
+  const handleDelete_file = async (folderIndex) => {
+    if (!selectedYear) {
+      alert('Please select a financial year.');
+      return;
+    }
+    try {
+      await axios.post('http://localhost:8000/delete_file/', {
+        selectedYear,
+        username,
+        req_name: currentFolder,
+        filename:fileCards[folderIndex]
+      });
+      // setFileCards([file.filter((_, index) => index !== folderIndex)]);
+      setFileCards([]);
+              // After successful upload, call handleFolderDoubleClick to refresh the file cards
+              await handleFolderDoubleClick(currentFolder);
+    } catch (error) {
+      console.error('Error deleting folder:', error);
+    }
+  };
 
   const handleIconClick = (folderIndex, action, event) => {
     event.stopPropagation();
@@ -135,15 +153,18 @@ export default function FolderCreator() {
   const handleFolderDoubleClick = async (folderName) => {
     setCurrentFolder(folderName); // Set the current folder
     setIsDropdownDisabled(true); // Disable the dropdown
+    setFolders([]);
 
     // Make API call to fetch PDFs for the selected folder and year
     try {
-      console.log(folderName);
       const response = await axios.post('http://localhost:8000/fetch_req_data/', {
         selectedYear,
         username,
         folderName,
       });
+      if (response.data.status === 404) {
+        alert('file is not');
+      }
       setFileCards(response.data["pdfs"]); // Update file cards with fetched PDF data
     } catch (error) {
       console.error('Error fetching PDFs:', error);
@@ -155,6 +176,7 @@ export default function FolderCreator() {
     setSelectedYear('');
     setFolders([]);
     setIsDropdownDisabled(false); // Re-enable dropdown
+    setFileCards([]);
   };
 
   // Handle file upload to create a new file card
@@ -163,50 +185,48 @@ export default function FolderCreator() {
       alert('Please fill all fields and select a file.');
       return;
     }
+  
     const formData = new FormData();
     formData.append('username', username);
     formData.append('selectedYear', selectedYear);
     formData.append('file', file);
     formData.append('items', JSON.stringify(items));
-    formData.append('vendor_name',vendorName);
-    formData.append('file_name',newFileName)
-
-    axios.post('http://localhost:8000/upload_quotation/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      }
-    })
-      .then(response => {
-        if (response.status === 200) {
-          alert('File uploaded successfully');
+    formData.append('vendor_name', vendorName);
+    formData.append('file_name', newFileName);
+    formData.append('req_name', currentFolder);
+  
+    try {
+      const response = await axios.post('http://localhost:8000/upload_quotation/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         }
-        else {
-          alert('Error uploading file');
-        }
-      })
-      .catch(error => {
-        console.error(error);
       });
-
-
-    //Create a new file card
-    const newFileCard = {
-      name: newFileName,
-    };
-
-    // Update file cards state
-    setFileCards([...fileCards, newFileCard]);
-
+  
+      if (response.status === 200) {
+        alert('File uploaded successfully');
+        
+        // After successful upload, call handleFolderDoubleClick to refresh the file cards
+        await handleFolderDoubleClick(currentFolder);
+      } else {
+        alert('Error uploading file');
+      }
+  
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  
     // Reset fields and close the modal
     setNewFileName('');
     setVendorName('');
     setFile(null);
     setShowFileModal(false);
+    setItems([]);
   };
+  
 
   const handleCloseModal = () => {
     setShowFileModal(false); // Close the modal
-    setAddItems(false); // Reset addItems state if necessary
+    setItems([]);
   };
 
 
@@ -215,6 +235,7 @@ export default function FolderCreator() {
       await fetchFolders();
       setCurrentFolder(null); // Reset folder view
       setIsDropdownDisabled(false); // Re-enable dropdown
+      setFileCards([]);
     }
   };
 
@@ -234,6 +255,10 @@ export default function FolderCreator() {
       alert('Please fill all item fields before adding.');
     }
   };
+  const handleOpenPdf = (pdfId) => {
+    const pdfUrl = `http://localhost:8000/get_pdf/${pdfId}/`;
+      window.open(pdfUrl, '_blank');
+  };
 
   return (
     <div className="folder-creator">
@@ -252,7 +277,7 @@ export default function FolderCreator() {
           }}
         >
           <Dropdown.Item eventKey="addFile" disabled={!currentFolder}>Add New File</Dropdown.Item>
-          <Dropdown.Item eventKey="addFolder" disabled={!selectedYear}>Add New Folder</Dropdown.Item>
+          <Dropdown.Item eventKey="addFolder" disabled={!selectedYear || currentFolder}>Add New Folder</Dropdown.Item>
         </DropdownButton>
 
         <select
@@ -336,7 +361,7 @@ export default function FolderCreator() {
 
       {/*File upload MOdal*/}
       <Modal show={showFileModal} onHide={() => setShowFileModal(false)}>
-        <Modal.Header closeButton onClick={() => setAddItems(false)}>
+        <Modal.Header closeButton >
           <Modal.Title>Upload File</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -423,16 +448,12 @@ export default function FolderCreator() {
               <Card
                 style={{ width: '160px', position: 'relative' }}
                 className="text-center clickable-card"
-                onClick={() => setFileCards(prevState =>
-                  prevState.map((card, cardIndex) =>
-                    cardIndex === index ? { ...card, isOpen: !card.isOpen } : card
-                  )
-                )}
+                onDoubleClick={() => handleOpenPdf(fileCard.pdf_id)} // Handle double-click
               >
                 <Card.Body>
                   <FontAwesomeIcon icon={faFolder} size="3x" className="mb-3" />
-                  <Card.Title className="text-truncate">{fileCard.name}</Card.Title>
-                  <Card.Subtitle className="text-truncate">Vendor: {fileCard.vendor}</Card.Subtitle>
+                  <Card.Title className="text-truncate">{fileCard.pdf_name}</Card.Title>
+                  <Card.Subtitle className="text-truncate">Vendor: {fileCard.vendor_name}</Card.Subtitle>
                   {fileCard.isOpen && (
                     <div style={{ textAlign: 'left', marginTop: '10px' }}>
                       {fileCard.items.map((item, idx) => (
@@ -445,6 +466,16 @@ export default function FolderCreator() {
                       <strong>File:</strong> {fileCard.file}
                     </div>
                   )}
+                  <Dropdown className="position-absolute" style={{ bottom: '0', right: '0' }}>
+                  <Dropdown.Toggle as={Button} variant="link" className="custom-options-icon">
+                    <div className="dot"></div>
+                    <div className="dot"></div>
+                    <div className="dot"></div>
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={(e) => handleDelete_file(index)}>Delete</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
                 </Card.Body>
               </Card>
             </Col>

@@ -152,7 +152,7 @@ class items(models.Model):
         verbose_name='Quantity',
         null=False
     )
-    price = models.IntegerField(
+    price = models.FloatField(
         verbose_name='Price',
         null=False
     )

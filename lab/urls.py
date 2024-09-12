@@ -60,6 +60,9 @@ urlpatterns = [
     path('upload_quotation/', upload_quotation, name='upload_file'),
     path('fetch_req_data/',fetch_req_data, name='fetch_req_data'),    
     path('fetch_compare_data/',fetch_compare_data, name='fetch_req_data'),
+    path('delete_file/', delete_file, name='delete_req'),
+    path('get_pdf/<str:pdf_id>/', get_pdf, name='get_pdf'),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
