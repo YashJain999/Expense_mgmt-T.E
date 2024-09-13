@@ -12,7 +12,8 @@ export default function FolderCreator() {
   const [isNewButtonDisabled, setIsNewButtonDisabled] = useState(true);
   const [currentFolder, setCurrentFolder] = useState('');
   const [date, setDate] = useState('');
-  
+  const [warrantyDate, setWarrantyDate] = useState('');  // New state for warranty date
+
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [vendorName, setVendorName] = useState('');
@@ -20,7 +21,7 @@ export default function FolderCreator() {
   const [quantity, setQuantity] = useState('');
   const [productPurchased, setProductPurchased] = useState('');
   const [pdfFile, setPdfFile] = useState(null);
-  
+
   // State to hold files by year and folder
   const [filesByYearAndFolder, setFilesByYearAndFolder] = useState({});
 
@@ -76,18 +77,20 @@ export default function FolderCreator() {
 
   const handleFileSubmit = (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
-  
+
     const newFile = {
       vendorName,
       totalAmount,
       quantity,
       productPurchased,
       pdfFile,
+      date, // Include date in file object
+      warrantyDate // Include warranty date in file object
     };
-  
+
     // Create a unique key for the selected year and folder
     const key = `${selectedYear}-${currentFolder}`;
-  
+
     // Update the files state
     setFilesByYearAndFolder((prev) => {
       const updatedFiles = { ...prev };
@@ -97,27 +100,32 @@ export default function FolderCreator() {
       updatedFiles[key] = [...updatedFiles[key], newFile]; // Add the new file to the list
       return updatedFiles;
     });
-  
+
     handleCloseModal(); // Close the modal
-  
+
     // Reset form fields to clear out the inputs
     setVendorName('');
     setTotalAmount('');
     setQuantity('');
     setProductPurchased('');
     setPdfFile(null);
+    setDate(''); // Reset the date input
+    setWarrantyDate(''); // Reset the warranty date input
   };
-  
 
   // Function to delete a file
-  const handleDeleteFile = (index) => {
-    const key = `${selectedYear}-${currentFolder}`;
-    setFilesByYearAndFolder((prev) => {
-      const updatedFiles = { ...prev };
-      updatedFiles[key].splice(index, 1); // Remove the file at the specified index
-      return updatedFiles;
-    });
-  };
+  // Function to delete a file
+const handleDeleteFile = (index) => {
+  const key = `${selectedYear}-${currentFolder}`;
+  setFilesByYearAndFolder((prev) => {
+    const updatedFiles = { ...prev };
+    if (updatedFiles[key]) {
+      updatedFiles[key] = updatedFiles[key].filter((_, i) => i !== index); // Create a new array without the clicked file
+    }
+    return updatedFiles;
+  });
+};
+
 
   return (
     <div className="folder-creator">
@@ -157,54 +165,53 @@ export default function FolderCreator() {
       </Breadcrumb>
 
       {selectedYear && !currentFolder && (
-  <Row className="folder-list mt-4">
-    {folders.map((folder, index) => (
-      <Col key={index} xs={12} sm={6} md={3} lg={3} className="d-flex justify-content-center">
-        <Card
-          style={{
-            width: '240px',
-            position: 'relative',
-            backgroundColor: `hsl(${index * 40}, 80%, 90%)`, // Unique pastel background color for each card
-            border: 'none', // Remove default border
-            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Add shadow for a 3D effect
-            transition: 'transform 0.3s ease, box-shadow 0.3s ease', // Smooth hover effect
-            marginTop: '20px', // Increased space between top folders
-          }}
-          className="text-center clickable-card"
-          onClick={() => handleFolderClick(folder)}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.05)'; // Zoom on hover
-            e.currentTarget.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.2)'; // Stronger shadow on hover
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)'; // Reset scale
-            e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)'; // Reset shadow
-          }}
-        >
-          <Card.Body>
-            <FontAwesomeIcon
-              icon={faFolder}
-              size="3x"
-              className="mb-3"
-              style={{ color: `hsl(${index * 40}, 60%, 50%)` }} // Colorful folder icons
-            />
-            <Card.Title
-              className="folder-title text-truncate"
-              style={{
-                fontSize: '0.9rem',
-                fontWeight: 'bold',
-                color: 'hsl(220, 15%, 30%)', // Darker text for better contrast
-              }}
-            >
-              {folder}
-            </Card.Title>
-          </Card.Body>
-        </Card>
-      </Col>
-    ))}
-  </Row>
-)}
-
+        <Row className="folder-list mt-4">
+          {folders.map((folder, index) => (
+            <Col key={index} xs={12} sm={6} md={3} lg={3} className="d-flex justify-content-center">
+              <Card
+                style={{
+                  width: '240px',
+                  position: 'relative',
+                  backgroundColor: `hsl(${index * 40}, 80%, 90%)`, // Unique pastel background color for each card
+                  border: 'none', // Remove default border
+                  boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Add shadow for a 3D effect
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease', // Smooth hover effect
+                  marginTop: '20px', // Increased space between top folders
+                }}
+                className="text-center clickable-card"
+                onClick={() => handleFolderClick(folder)}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05)'; // Zoom on hover
+                  e.currentTarget.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.2)'; // Stronger shadow on hover
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)'; // Reset scale
+                  e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)'; // Reset shadow
+                }}
+              >
+                <Card.Body>
+                  <FontAwesomeIcon
+                    icon={faFolder}
+                    size="3x"
+                    className="mb-3"
+                    style={{ color: `hsl(${index * 40}, 60%, 50%)` }} // Colorful folder icons
+                  />
+                  <Card.Title
+                    className="folder-title text-truncate"
+                    style={{
+                      fontSize: '0.9rem',
+                      fontWeight: 'bold',
+                      color: 'hsl(220, 15%, 30%)', // Darker text for better contrast
+                    }}
+                  >
+                    {folder}
+                  </Card.Title>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
 
       {currentFolder && (
         <div className="mt-4">
@@ -215,33 +222,36 @@ export default function FolderCreator() {
               {filesByYearAndFolder[`${selectedYear}-${currentFolder}`].map((file, index) => (
                 <Col key={index} xs={6} sm={4} md={3} lg={2} className="d-flex justify-content-center">
                   <Card 
-                    style={{ width: '160px', position: 'relative' }} 
-                    className="text-center clickable-card"
-                  >
-                    <Card.Body>
-                      <FontAwesomeIcon icon={faFilePdf} size="3x" className="mb-3" />
-                      <Card.Title className="file-title text-truncate" style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>
-                        {file.vendorName} - {file.productPurchased}
-                      </Card.Title>
-                      <Card.Text>
-                        Amount: {file.totalAmount} <br />
-                        Quantity: {file.quantity}
-                      </Card.Text>
-                      {file.pdfFile && (
-                        <span>
-                          <FontAwesomeIcon icon={faFilePdf} className="ml-2" /> {/* PDF icon */}
-                          <span className="ml-1">PDF uploaded</span>
-                        </span>
-                      )}
-                      <Button 
-                        variant="danger" 
-                        className="mt-2" 
-                        onClick={() => handleDeleteFile(index)} // Delete file on click
-                      >
-                        <FontAwesomeIcon icon={faTrash} /> {/* Trash icon */}
-                      </Button>
-                    </Card.Body>
-                  </Card>
+  style={{ width: '200px', position: 'relative', padding: '15px', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)' }} 
+  className="text-center clickable-card"
+>
+  <Card.Body>
+    {/* PDF Icon */}
+    <FontAwesomeIcon icon={faFilePdf} size="3x" className="mb-3" />
+    
+    {/* Vendor Name and Product */}
+    <Card.Title className="file-title" style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '10px' }}>
+      {file.vendorName}
+    </Card.Title>
+    <Card.Subtitle className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '15px' }}>
+      {file.productPurchased}
+    </Card.Subtitle>
+    
+    {/* File details */}
+    <Card.Text style={{ textAlign: 'left', fontSize: '0.75rem', lineHeight: '1.5' }}>
+      <strong>Amount:</strong> {file.totalAmount} <br />
+      <strong>Quantity:</strong> {file.quantity} <br />
+      <strong>Date:</strong> {file.date} <br />
+      <strong>Warranty:</strong> {file.warrantyDate}
+    </Card.Text>
+
+    {/* Delete Button */}
+    <Button variant="danger" size="sm" onClick={() => handleDeleteFile(index)} style={{ marginTop: '10px' }}>
+      <FontAwesomeIcon icon={faTrash} /> Delete
+    </Button>
+  </Card.Body>
+</Card>
+
                 </Col>
               ))}
             </Row>
@@ -249,93 +259,89 @@ export default function FolderCreator() {
         </div>
       )}
 
-      {/* Modal for adding new file */}
+      {/* Modal for file upload */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
-  <Modal.Header closeButton>
-    <Modal.Title className="text-primary">Add Bill Details and PDF</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <Form onSubmit={handleFileSubmit}>
-      <Form.Group controlId="vendorName">
-        <Form.Label className="text-dark">Vendor Name</Form.Label>
-        <Form.Control 
-          type="text" 
-          value={vendorName} 
-          onChange={(e) => setVendorName(e.target.value)} 
-          required 
-          className="mb-3 border-primary rounded-lg p-2" 
-          style={{ borderWidth: '5px', fontSize: '1rem' }} 
-        />
-      </Form.Group>
+        <Modal.Header closeButton>
+          <Modal.Title>Upload New Bill Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleFileSubmit}>
+            <Form.Group>
+              <Form.Label>Vendor Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={vendorName}
+                onChange={(e) => setVendorName(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-      <Form.Group controlId="totalAmount">
-        <Form.Label className="text-dark">Total Amount</Form.Label>
-        <Form.Control 
-          type="number" 
-          value={totalAmount} 
-          onChange={(e) => setTotalAmount(e.target.value)} 
-          required 
-          className="mb-3 border-primary rounded-lg p-2" 
-          style={{ borderWidth: '2px', fontSize: '1rem' }} 
-        />
-      </Form.Group>
+            <Form.Group>
+              <Form.Label>Total Amount</Form.Label>
+              <Form.Control
+                type="number"
+                value={totalAmount}
+                onChange={(e) => setTotalAmount(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-      <Form.Group controlId="quantity">
-        <Form.Label className="text-dark">Quantity</Form.Label>
-        <Form.Control 
-          type="number" 
-          value={quantity} 
-          onChange={(e) => setQuantity(e.target.value)} 
-          required 
-          className="mb-3 border-primary rounded-lg p-2" 
-          style={{ borderWidth: '2px', fontSize: '1rem' }} 
-        />
-      </Form.Group>
+            <Form.Group>
+              <Form.Label>Quantity</Form.Label>
+              <Form.Control
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-      <Form.Group controlId="productPurchased">
-        <Form.Label className="text-dark">Product Purchased</Form.Label>
-        <Form.Control 
-          type="text" 
-          value={productPurchased} 
-          onChange={(e) => setProductPurchased(e.target.value)} 
-          required 
-          className="mb-3 border-primary rounded-lg p-2" 
-          style={{ borderWidth: '2px', fontSize: '1rem' }} 
-        />
-      </Form.Group>
+            <Form.Group>
+              <Form.Label>Product Purchased</Form.Label>
+              <Form.Control
+                type="text"
+                value={productPurchased}
+                onChange={(e) => setProductPurchased(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-      <Form.Group controlId="date">
-        <Form.Label className="text-dark">Date</Form.Label>
-        <Form.Control 
-          type="date" 
-          value={date} 
-          onChange={(e) => setDate(e.target.value)} 
-          required 
-          className="mb-3 border-primary rounded-lg p-2" 
-          style={{ borderWidth: '2px' }} 
-        />
-      </Form.Group>
+            <Form.Group>
+              <Form.Label>Upload PDF</Form.Label>
+              <Form.Control
+                type="file"
+                accept="application/pdf"
+                onChange={(e) => setPdfFile(e.target.files[0])}
+                required
+              />
+            </Form.Group>
 
-      <Form.Group controlId="pdfFile">
-        <Form.Label className="text-dark">Upload PDF</Form.Label>
-        <Form.Control 
-          type="file" 
-          accept="application/pdf" 
-          onChange={(e) => setPdfFile(e.target.files[0])} 
-          className="mb-3 border-primary rounded-lg p-2" 
-          style={{ borderWidth: '2px' }} 
-        />
-      </Form.Group>
+            <Form.Group>
+              <Form.Label>Bill Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-      <Button variant="primary" type="submit" className="w-100 rounded-pill">
-        Add File
-      </Button>
-    </Form>
-  </Modal.Body>
-</Modal>
+            <Form.Group>
+              <Form.Label>Warranty Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={warrantyDate}
+                onChange={(e) => setWarrantyDate(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-
-
+            <Button variant="primary" type="submit" className="mt-3">
+              Upload
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }
