@@ -21,8 +21,9 @@ from budget.views import *
 from budget.models import *
 from quotation.models import *
 from quotation.views import *
-from django.conf import settings
+from lab import settings
 from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -60,6 +61,10 @@ urlpatterns = [
     path('upload_quotation/', upload_quotation, name='upload_file'),
     path('fetch_req_data/',fetch_req_data, name='fetch_req_data'),    
     path('fetch_compare_data/',fetch_compare_data, name='fetch_req_data'),
+    path('delete_file/',delete_file,name='delete_req'),
+    path('get_pdf/<str:pdf_id>/', get_pdf, name='get_pdf'),
+    path('get_file_item_details/<selectedYear>/<username>/<req_name>/<file_id>/',get_file_item_details, name='get_file_item_details'),
+    path('update_file_quotation/',update_file_quotation, name='update_file_quotation')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

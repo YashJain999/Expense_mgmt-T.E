@@ -3,7 +3,8 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { Breadcrumb, Dropdown, DropdownButton, Card, Button, Modal, Form, Row, Col } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faFolder } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faFolder, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
+import "../assets/css/UploadQuotation.css";
 
 export default function FolderCreator() {
   const [selectedYear, setSelectedYear] = useState('');
@@ -24,13 +25,15 @@ export default function FolderCreator() {
   const [itemQty, setItemQty] = useState('');
   const [file, setFile] = useState(null);
   const [fileCards, setFileCards] = useState([]);
-  const [addItems, setAddItems] = useState(false);
-  const [fileFolders, setFileFolders] = useState([]);
+  const [modalMode, setModalMode] = useState('upload');
+  const [selectedItem, setSelectedItem] = useState(null);
   const { username } = useParams();
+
 
   useEffect(() => {
     fetchData();
   }, []);
+
 
   const fetchData = async () => {
     try {
@@ -121,6 +124,66 @@ export default function FolderCreator() {
     }
   };
 
+  const handleFileOperation = (folderIndex, action, event) => {
+    event.stopPropagation();
+    if (action === 'update') {
+      // setUpdateFile(folderIndex);
+      setModalMode('update');
+      setShowFileModal(true);
+      handleUpdateFile([folderIndex])
+    } else if (action === 'delete') {
+      handleDelete_file(folderIndex);
+    }
+  };
+
+  const handleUpdateFile = async (folderIndex) => {
+    if (!selectedYear) {
+      alert('Please select a financial year.');
+      return;
+    }
+    try {
+      const response = await axios.get(`http://localhost:8000/get_file_item_details/${selectedYear}/${username}/${currentFolder}/${fileCards[folderIndex].pdf_id}/`);
+      const { items, pdfs } = response.data;
+      console.log(items, pdfs)
+      if (pdfs && pdfs.length > 0) {
+        setNewFileName(pdfs[0].file_name || '');
+        setVendorName(pdfs[0].vendor_name || '');
+        // setFile(pdfs[0].pdf_file || '');
+      }
+      const flattenedItems = items.flat().map(item => ({
+        name: item.item_name,
+        quantity: item.quantity,
+        price: item.price
+      }));
+      setItems(flattenedItems);
+      // setPdfs(pdfs);
+    }
+    catch (error) {
+      console.error('Error updating file:', error);
+    }
+  };
+
+  const handleDelete_file = async (folderIndex) => {
+    if (!selectedYear) {
+      alert('Please select a financial year.');
+      return;
+    }
+    try {
+      await axios.post('http://localhost:8000/delete_file/', {
+        selectedYear,
+        username,
+        req_name: currentFolder,
+        filename: fileCards[folderIndex]
+      });
+      // setFileCards([file.filter((_, index) => index !== folderIndex)]);
+      setFileCards([]);
+      // After successful upload, call handleFolderDoubleClick to refresh the file cards
+      await handleFolderDoubleClick(currentFolder);
+    } catch (error) {
+      console.error('Error deleting folder:', error);
+    }
+  };
+
   const handleIconClick = (folderIndex, action, event) => {
     event.stopPropagation();
     if (action === 'rename') {
@@ -135,15 +198,18 @@ export default function FolderCreator() {
   const handleFolderDoubleClick = async (folderName) => {
     setCurrentFolder(folderName); // Set the current folder
     setIsDropdownDisabled(true); // Disable the dropdown
+    setFolders([]);
 
     // Make API call to fetch PDFs for the selected folder and year
     try {
-      console.log(folderName);
       const response = await axios.post('http://localhost:8000/fetch_req_data/', {
         selectedYear,
         username,
         folderName,
       });
+      if (response.data.status === 404) {
+        alert('file is not');
+      }
       setFileCards(response.data["pdfs"]); // Update file cards with fetched PDF data
     } catch (error) {
       console.error('Error fetching PDFs:', error);
@@ -155,6 +221,7 @@ export default function FolderCreator() {
     setSelectedYear('');
     setFolders([]);
     setIsDropdownDisabled(false); // Re-enable dropdown
+    setFileCards([]);
   };
 
   // Handle file upload to create a new file card
@@ -163,50 +230,48 @@ export default function FolderCreator() {
       alert('Please fill all fields and select a file.');
       return;
     }
+
     const formData = new FormData();
     formData.append('username', username);
     formData.append('selectedYear', selectedYear);
     formData.append('file', file);
     formData.append('items', JSON.stringify(items));
-    formData.append('vendor_name',vendorName);
-    formData.append('file_name',newFileName)
+    formData.append('vendor_name', vendorName);
+    formData.append('file_name', newFileName);
+    formData.append('req_name', currentFolder);
 
-    axios.post('http://localhost:8000/upload_quotation/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      }
-    })
-      .then(response => {
-        if (response.status === 200) {
-          alert('File uploaded successfully');
+    try {
+      const response = await axios.post('http://localhost:8000/upload_quotation/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
         }
-        else {
-          alert('Error uploading file');
-        }
-      })
-      .catch(error => {
-        console.error(error);
       });
 
+      if (response.status === 200) {
+        alert('File uploaded successfully');
 
-    //Create a new file card
-    const newFileCard = {
-      name: newFileName,
-    };
+        // After successful upload, call handleFolderDoubleClick to refresh the file cards
+        await handleFolderDoubleClick(currentFolder);
+      } else {
+        alert('Error uploading file');
+      }
 
-    // Update file cards state
-    setFileCards([...fileCards, newFileCard]);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
 
     // Reset fields and close the modal
     setNewFileName('');
     setVendorName('');
     setFile(null);
     setShowFileModal(false);
+    setItems([]);
   };
+
 
   const handleCloseModal = () => {
     setShowFileModal(false); // Close the modal
-    setAddItems(false); // Reset addItems state if necessary
+    setItems([]);
   };
 
 
@@ -215,24 +280,105 @@ export default function FolderCreator() {
       await fetchFolders();
       setCurrentFolder(null); // Reset folder view
       setIsDropdownDisabled(false); // Re-enable dropdown
+      setFileCards([]);
     }
   };
 
   const handleAddItem = () => {
     if (itemName && itemQty && itemPrice) {
-      const newItem = {
-        name: itemName,
-        quantity: itemQty,
-        price: itemPrice,
-      };
-      // Add the new item to the current year's items
-      setItems([...items, newItem]);
+      if (selectedItem) {
+        // Update existing item
+        setItems(prevItems =>
+          prevItems.map(item =>
+            item === selectedItem
+              ? { ...item, name: itemName, quantity: parseFloat(itemQty), price: parseFloat(itemPrice) }
+              : item
+          )
+        );
+        setSelectedItem(null); // Clear selection
+      } else {
+        // Add new item
+        const newItem = {
+          name: itemName,
+          quantity: parseFloat(itemQty),  // Ensure quantity is a number
+          price: parseFloat(itemPrice),    // Ensure price is a number
+        };
+        setItems([...items, newItem]);
+      }
       setItemName('');
       setItemQty('');
       setItemPrice('');
     } else {
       alert('Please fill all item fields before adding.');
     }
+  };
+
+  const handleOpenPdf = (pdfId) => {
+    const pdfUrl = `http://localhost:8000/get_pdf/${pdfId}/`;
+    window.open(pdfUrl, '_blank');
+  };
+
+  const handleItemEditClick = (item) => {
+    setSelectedItem(item);
+    console.log(item)
+    setItemName(item.name);
+    setItemQty(item.quantity);
+    setItemPrice(item.price);
+
+  };
+
+  const handleItemDeleteClick = (itemToDelete) => {
+    console.log('Delete clicked:', itemToDelete);
+
+    // Filter out the item to be deleted
+    const updatedItems = items.filter(item => item !== itemToDelete);
+    
+    // Update the state with the filtered items
+    setItems(updatedItems);
+
+  };
+
+  const handleFileUpdate = async () => {
+    if (!selectedYear || !vendorName) {
+      alert('Please fill all fields and select a file.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('selectedYear', selectedYear);
+    formData.append('items', JSON.stringify(items));
+    formData.append('vendor_name', vendorName);
+    formData.append('file_name', newFileName);
+    formData.append('req_name', currentFolder);
+
+
+    try {
+      const response = await axios.post('http://localhost:8000/update_file_quotation/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+
+      if (response.status === 200) {
+        alert('value updated successfully');
+
+        // After successful upload, call handleFolderDoubleClick to refresh the file cards
+        await handleFolderDoubleClick(currentFolder);
+      } else {
+        alert('Error uploading file');
+      }
+
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+
+    // Reset fields and close the modal
+    setNewFileName('');
+    setVendorName('');
+    setFile(null);
+    setShowFileModal(false);
+    setItems([]);
   };
 
   return (
@@ -248,11 +394,12 @@ export default function FolderCreator() {
           variant="primary"
           onSelect={(eventKey) => {
             if (eventKey === 'addFolder') setShowModal(true);
-            else if (eventKey === 'addFile') setShowFileModal(true); // Open File Modal
+            else if (eventKey === 'addFile') setModalMode('upload'); setShowFileModal(true); setNewFileName('');
+            setVendorName(''); setItems([]); // Open File Modal
           }}
         >
           <Dropdown.Item eventKey="addFile" disabled={!currentFolder}>Add New File</Dropdown.Item>
-          <Dropdown.Item eventKey="addFolder" disabled={!selectedYear}>Add New Folder</Dropdown.Item>
+          <Dropdown.Item eventKey="addFolder" disabled={!selectedYear || currentFolder}>Add New Folder</Dropdown.Item>
         </DropdownButton>
 
         <select
@@ -286,13 +433,31 @@ export default function FolderCreator() {
         {folders.map((folder, index) => (
           <Col key={index} xs={6} sm={4} md={3} lg={2} className="d-flex justify-content-center">
             <Card
-              style={{ width: '160px', position: 'relative' }}
+              style={{ width: '200px', position: 'relative',
+                backgroundColor: `hsl(${index * 40}, 80%, 90%)`,
+                border: 'none', // Remove default border
+                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Add shadow for a 3D effect
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease', // Smooth hover effect
+                marginTop: '20px', // Increased space between top folders
+               }}
               className="text-center clickable-card"
               onDoubleClick={() => handleFolderDoubleClick(folder)}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)'; // Zoom on hover
+                e.currentTarget.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.2)'; // Stronger shadow on hover
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)'; // Reset scale
+                e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)'; // Reset shadow
+              }}
             >
               <Card.Body>
-                <FontAwesomeIcon icon={faFolder} size="3x" className="mb-3" />
-                <Card.Title className="text-truncate">{folder}</Card.Title>
+                <FontAwesomeIcon icon={faFolder} size="3x" className="mb-3" style={{ color: `hsl(${index * 40}, 60%, 50%)` }} />
+                <Card.Title className="text-truncate" style={{
+                      fontSize: '0.9rem',
+                      fontWeight: 'bold',
+                      color: 'hsl(220, 15%, 30%)', // Darker text for better contrast
+                    }}>{folder}</Card.Title>
 
                 <Dropdown className="position-absolute" style={{ bottom: '0', right: '0' }}>
                   <Dropdown.Toggle as={Button} variant="link" className="custom-options-icon">
@@ -336,25 +501,34 @@ export default function FolderCreator() {
 
       {/*File upload MOdal*/}
       <Modal show={showFileModal} onHide={() => setShowFileModal(false)}>
-        <Modal.Header closeButton onClick={() => setAddItems(false)}>
-          <Modal.Title>Upload File</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
+  <Modal.Header closeButton>
+    <Modal.Title>{modalMode === 'upload' ? 'Upload File' : 'Update Values'}</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
           <Form >
-            <Form.Group className="mb-3" controlId="formFileName">
-              <Form.Label>File Name</Form.Label>
-              <Form.Control className="w-100 border border-secondary rounded-end" type="text" placeholder="Enter file name" value={newFileName} onChange={(e) => setNewFileName(e.target.value)} />
-            </Form.Group>
-
+            {modalMode === 'upload' && (
+               <Form.Group className="mb-3" controlId="formFileName">
+               <Form.Label>File Name</Form.Label>
+               <Form.Control className="w-100 border border-secondary rounded-end" type="text" placeholder="Enter file name" value={newFileName || ''} onChange={(e) => setNewFileName(e.target.value)} />
+             </Form.Group>
+            )}
+           
             <Form.Group className="mb-3" controlId="formVendorName">
               <Form.Label>Vendor Name</Form.Label>
               <Form.Control className="w-100 border border-secondary rounded-end" type="text" placeholder="Enter Vendor name" value={vendorName} onChange={(e) => setVendorName(e.target.value)} />
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formFileUpload">
-              <Form.Label>Upload Pdf File</Form.Label>
-              <Form.Control className="w-100 border border-secondary rounded-end" type="file" accept=".pdf" onChange={(e) => setFile(e.target.files[0])} />
-            </Form.Group>
+            {modalMode === 'upload' && (
+        <Form.Group className="mb-3" controlId="formFileUpload">
+          <Form.Label>Upload Pdf File</Form.Label>
+          <Form.Control
+            className="w-100 border border-secondary rounded-end"
+            type="file"
+            accept=".pdf"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
+        </Form.Group>
+      )}
             <>
               <Form.Group className="mb-3" controlId="formItemName">
                 <Form.Label>Item Name</Form.Label>
@@ -382,7 +556,7 @@ export default function FolderCreator() {
                 <Form.Label>Item Price</Form.Label>
                 <Form.Control
                   className="w-100 border border-secondary rounded-end"
-                  type="text"
+                  type="number"
                   placeholder="Enter price"
                   value={itemPrice}
                   onChange={(e) => setItemPrice(e.target.value)}
@@ -395,11 +569,28 @@ export default function FolderCreator() {
               {/* Displaying the list of added items */}
               <div className="mt-3">
                 <h5>Items List</h5>
-                {items.map((item, index) => (
-                  <div key={index}>
-                    <p>{item.name} - Quantity: {item.quantity}, Price: {item.price}</p>
-                  </div>
-                ))}
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Quantity</th>
+                      <th>Price</th>
+                      <th>Edit</th>
+                      <th>Delete</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {items.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.name}</td>
+                        <td>{item.quantity}</td>
+                        <td>{item.price}</td>
+                        <td><FontAwesomeIcon icon={faEdit} onClick={() => handleItemEditClick(item)} /> </td>
+                        <td><FontAwesomeIcon icon={faTrash} onClick={() => handleItemDeleteClick(item)} /> </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </>
             {/* )} */}
@@ -411,40 +602,64 @@ export default function FolderCreator() {
           <Button variant="secondary" onClick={handleCloseModal}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleFileUpload}>
-            Save
-          </Button>
+          <Button variant="primary" onClick={modalMode === 'upload' ? handleFileUpload : handleFileUpdate}>
+      {modalMode === 'upload' ? 'Upload' : 'Update'}
+    </Button>
         </Modal.Footer>
       </Modal>
+
+      {/*file cards */}
+      
       <div className="file-folder-list mt-4">
         <Row>
+          
           {fileCards.map((fileCard, index) => (
             <Col key={index} xs={6} sm={4} md={3} lg={2} className="d-flex justify-content-center">
               <Card
-                style={{ width: '160px', position: 'relative' }}
+                style={{ width: '250px', height:'250px',backgroundColor: `hsl(${index * 40}, 80%, 90%)`, // Unique pastel background color for each card
+                border: 'none', // Remove default border
+                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Add shadow for a 3D effect
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease', // Smooth hover effect
+                marginTop: '20px', position: 'relative' }}
                 className="text-center clickable-card"
-                onClick={() => setFileCards(prevState =>
-                  prevState.map((card, cardIndex) =>
-                    cardIndex === index ? { ...card, isOpen: !card.isOpen } : card
-                  )
-                )}
+                onDoubleClick={() => handleOpenPdf(fileCard.pdf_id)} // Handle double-click
+              onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05)'; // Zoom on hover
+                  e.currentTarget.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.2)'; // Stronger shadow on hover
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)'; // Reset scale
+                  e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)'; // Reset shadow
+                }}
               >
                 <Card.Body>
                   <FontAwesomeIcon icon={faFolder} size="3x" className="mb-3" />
-                  <Card.Title className="text-truncate">{fileCard.name}</Card.Title>
-                  <Card.Subtitle className="text-truncate">Vendor: {fileCard.vendor}</Card.Subtitle>
+                  <Card.Title className="text-truncate">{fileCard.file_name || 'No file name available'}</Card.Title>
+                  <Card.Subtitle className="text-truncate">Vendor: {fileCard.vendor_name}</Card.Subtitle>
                   {fileCard.isOpen && (
                     <div style={{ textAlign: 'left', marginTop: '10px' }}>
-                      {fileCard.items.map((item, idx) => (
-                        <div key={idx}>
+                      {items.map((item, index) => (
+                        <div key={index}>
                           <strong>Item:</strong> {item.name} <br />
                           <strong>Quantity:</strong> {item.quantity} <br />
                           <strong>Price:</strong> {item.price} <br />
                         </div>
                       ))}
-                      <strong>File:</strong> {fileCard.file}
                     </div>
                   )}
+                  <Dropdown className="position-absolute" style={{ bottom: '0', right: '0' }}>
+                    <Dropdown.Toggle as={Button} variant="link" className="custom-options-icon">
+                      <div className="dot"></div>
+                      <div className="dot"></div>
+                      <div className="dot"></div>
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {/* <Dropdown.Item onClick={(e) => handleDelete_file(index)}>Delete</Dropdown.Item>
+                    <Dropdown.Item onClick={(e) => handleUpdate_file(index)}>Delete</Dropdown.Item> */}
+                      <Dropdown.Item onClick={(e) => handleFileOperation(index, 'update', e)}>Update</Dropdown.Item>
+                      <Dropdown.Item onClick={(e) => handleFileOperation(index, 'delete', e)}>Delete</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
                 </Card.Body>
               </Card>
             </Col>
