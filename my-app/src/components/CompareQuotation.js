@@ -93,7 +93,7 @@ export default function CompareQuotation() {
     // Add item_name, quantity, and price for the PDF with the maximum items
     const maxItems = items[maxItemsIndex];
     maxItems.forEach((_, index) => {
-      dynamicHeaders.push(`item_name ${index + 1}`, `quantity ${index + 1}`, `price ${index + 1}`);
+      dynamicHeaders.push(`item_name ${index + 1}`, `quantity ${index + 1}`, `price ${index + 1}`,`warranty_date ${index + 1}`);
     });
 
     setDynamicHeaders(dynamicHeaders);
@@ -114,6 +114,7 @@ export default function CompareQuotation() {
         rowData.push({ item: item.item_name, className: "" });
         rowData.push({ item: item.quantity, className: "" });
         rowData.push({ item: item.price, className: "" });
+        rowData.push({ item: item.warranty_date, className: ""});
       });
 
       // Fill the remaining columns with empty cells if the number of items is less than the max
@@ -122,6 +123,7 @@ export default function CompareQuotation() {
         rowData.push({ item: '', className: '' });
         rowData.push({ item: '', className: '' });
         rowData.push({ item: '', className: '' });
+        rowData.push({ item: '', className: ''});
       }
 
       return rowData;

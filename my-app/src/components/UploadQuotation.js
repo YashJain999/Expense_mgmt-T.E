@@ -27,6 +27,7 @@ export default function FolderCreator() {
   const [fileCards, setFileCards] = useState([]);
   const [modalMode, setModalMode] = useState('upload');
   const [selectedItem, setSelectedItem] = useState(null);
+  const [warrantyDate, setWarrantyDate] = useState('');
   const { username } = useParams();
 
 
@@ -153,7 +154,8 @@ export default function FolderCreator() {
       const flattenedItems = items.flat().map(item => ({
         name: item.item_name,
         quantity: item.quantity,
-        price: item.price
+        price: item.price,
+        warranty_date: item.warranty_date
       }));
       setItems(flattenedItems);
       // setPdfs(pdfs);
@@ -239,6 +241,7 @@ export default function FolderCreator() {
     formData.append('vendor_name', vendorName);
     formData.append('file_name', newFileName);
     formData.append('req_name', currentFolder);
+    formData.append('warranty_date', warrantyDate);
 
     try {
       const response = await axios.post('http://localhost:8000/upload_quotation/', formData, {
@@ -285,13 +288,13 @@ export default function FolderCreator() {
   };
 
   const handleAddItem = () => {
-    if (itemName && itemQty && itemPrice) {
+    if (itemName && itemQty && itemPrice && warrantyDate) {
       if (selectedItem) {
         // Update existing item
         setItems(prevItems =>
           prevItems.map(item =>
             item === selectedItem
-              ? { ...item, name: itemName, quantity: parseFloat(itemQty), price: parseFloat(itemPrice) }
+              ? { ...item, name: itemName, quantity: parseFloat(itemQty), price: parseFloat(itemPrice), warranty_date: warrantyDate }
               : item
           )
         );
@@ -301,13 +304,17 @@ export default function FolderCreator() {
         const newItem = {
           name: itemName,
           quantity: parseFloat(itemQty),  // Ensure quantity is a number
-          price: parseFloat(itemPrice),    // Ensure price is a number
+          price: parseFloat(itemPrice),  
+          warranty_date: warrantyDate,
+           // Ensure price is a number
         };
+        console.log(warrantyDate) 
         setItems([...items, newItem]);
       }
       setItemName('');
       setItemQty('');
       setItemPrice('');
+      setWarrantyDate('');
     } else {
       alert('Please fill all item fields before adding.');
     }
@@ -324,6 +331,7 @@ export default function FolderCreator() {
     setItemName(item.name);
     setItemQty(item.quantity);
     setItemPrice(item.price);
+    setWarrantyDate(item.warranty_date);
 
   };
 
@@ -562,6 +570,17 @@ export default function FolderCreator() {
                   onChange={(e) => setItemPrice(e.target.value)}
                 />
               </Form.Group>
+
+              <Form.Group className="mb-3" controlId="formItemPrice">
+                <Form.Label>Item Warranty Date</Form.Label>
+                <Form.Control
+                  className="w-100 border border-secondary rounded-end"
+                  type="date"
+                  placeholder="Enter Warranty Date"
+                  value={warrantyDate}
+                  onChange={(e) => setWarrantyDate(e.target.value)}
+                />
+              </Form.Group>
               <Button variant="primary" onClick={handleAddItem}>
                 <FontAwesomeIcon icon={faPlus} /> Add Item
               </Button>
@@ -575,6 +594,7 @@ export default function FolderCreator() {
                       <th>Name</th>
                       <th>Quantity</th>
                       <th>Price</th>
+                      <th>Warranty Date</th>
                       <th>Edit</th>
                       <th>Delete</th>
                     </tr>
@@ -585,6 +605,7 @@ export default function FolderCreator() {
                         <td>{item.name}</td>
                         <td>{item.quantity}</td>
                         <td>{item.price}</td>
+                        <td>{item.warranty_date}</td>
                         <td><FontAwesomeIcon icon={faEdit} onClick={() => handleItemEditClick(item)} /> </td>
                         <td><FontAwesomeIcon icon={faTrash} onClick={() => handleItemDeleteClick(item)} /> </td>
                       </tr>
@@ -593,7 +614,6 @@ export default function FolderCreator() {
                 </table>
               </div>
             </>
-            {/* )} */}
           </Form>
         </Modal.Body>
 
@@ -609,10 +629,8 @@ export default function FolderCreator() {
       </Modal>
 
       {/*file cards */}
-      
       <div className="file-folder-list mt-4">
         <Row>
-          
           {fileCards.map((fileCard, index) => (
             <Col key={index} xs={6} sm={4} md={3} lg={2} className="d-flex justify-content-center">
               <Card
@@ -654,8 +672,6 @@ export default function FolderCreator() {
                       <div className="dot"></div>
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                      {/* <Dropdown.Item onClick={(e) => handleDelete_file(index)}>Delete</Dropdown.Item>
-                    <Dropdown.Item onClick={(e) => handleUpdate_file(index)}>Delete</Dropdown.Item> */}
                       <Dropdown.Item onClick={(e) => handleFileOperation(index, 'update', e)}>Update</Dropdown.Item>
                       <Dropdown.Item onClick={(e) => handleFileOperation(index, 'delete', e)}>Delete</Dropdown.Item>
                     </Dropdown.Menu>

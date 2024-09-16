@@ -66,6 +66,8 @@
 from django.db import models
 from django.utils import timezone
 import uuid
+from django.utils.timezone import now
+
 
 
 def generate_pdf_filename(instance, filename):
@@ -156,3 +158,9 @@ class items(models.Model):
         verbose_name='Price',
         null=False
     )
+    warranty_date = models.DateField(
+        verbose_name='Warranty Date',
+        null=False,
+        default='timezone.now'  
+    )
+   

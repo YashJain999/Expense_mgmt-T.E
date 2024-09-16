@@ -157,7 +157,8 @@ def upload_quotation(request):
                         pdf_id=pdf_id,
                         item_name=item['name'],
                         quantity=int(item['quantity']),  # Ensure correct data types
-                        price=item['price']        # Ensure correct data types
+                        price=item['price'], 
+                        warranty_date=item['warranty_date']     # Ensure correct data types
                     )
                 return Response({'message': 'Quotation uploaded successfully'}, status=200)
         else:
@@ -205,7 +206,7 @@ def fetch_compare_data(request):
             return Response({'message': 'No PDFs found for the selected year and department'}, status=404)
         itemms=[]
         for id in list(pdfs):
-            ite=list(items.objects.filter(pdf_id=id['pdf_id']).values('item_name','quantity','price'))
+            ite=list(items.objects.filter(pdf_id=id['pdf_id']).values('item_name','quantity','price','warranty_date'))
             itemms.append(list(ite))        
         return Response({'pdfs': list(pdfs),'items': list(itemms)}, status=200)
     except User.DoesNotExist:
@@ -276,7 +277,7 @@ def get_file_item_details(request, username, selectedYear, req_name, file_id):
         pdf_file_url = request.build_absolute_uri(settings.MEDIA_URL + str(pdf_file)[2:-1])
 
         # Fetch associated items
-        items_list = list(items.objects.filter(pdf_id=file_id).values('item_name', 'quantity', 'price'))
+        items_list = list(items.objects.filter(pdf_id=file_id).values('item_name', 'quantity', 'price','warranty_date'))
 
         # Add the PDF file URL to the response
         pdfs[0]['pdf_file_url'] = pdf_file_url
@@ -320,7 +321,8 @@ def update_file_quotation(request):
                 pdf_id = pdf_id,
                 item_name = item['name'],
                 quantity=item['quantity'],  # Ensure correct data types
-                price=item['price']        # Ensure correct data types
+                price=item['price'],
+                warranty_date=item['warranty_date']       # Ensure correct data types
                 )
         return Response({"message": "Quotation file update successful"}, status=200)
     except financialyear.DoesNotExist:
