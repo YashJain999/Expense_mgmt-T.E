@@ -187,6 +187,7 @@ import Graph from "./Graph";
 import Prediction from "./Prediction";	
 import UploadQuotation from './UploadQuotation';
 import CompareQuotation from './CompareQuotation';
+import UploadBills from './UploadBills';
 
 
 function Home() {
@@ -287,6 +288,11 @@ function Home() {
               exact
               path="/bills"
               element={<Bills isOffcanvasOpen={isOffcanvasOpen} />}
+            ></Route>
+            <Route
+              exact
+              path="/bills/uploadbills"
+              element={<UploadBills isOffcanvasOpen={isOffcanvasOpen} />}
             ></Route>
             <Route
               exact

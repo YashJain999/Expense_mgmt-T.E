@@ -5,22 +5,12 @@ import axios from 'axios';
 import { useParams } from "react-router-dom";
 import ButtonComponent from './ButtonComponent';
 
-function Cumulative({ isOffcanvasOpen }) {
+function Cumulative() {
     const [selectedYear, setSelectedYear] = useState('');
     const [selectedYearfrom, setSelectedYearfrom] = useState('');
     const [budgetData, setBudgetData] = useState([]);
     const [data, setData] = useState([]);
-    const [showInputs, setShowInputs] = useState(false);
     const { username } = useParams();
-    const isButtonDisabled = !selectedYear;
-    const AppStyle = {
-        // position: "relative",
-        // top: "-90px",
-        // left: isOffcanvasOpen ? '0px' : '0%',
-        // width: isOffcanvasOpen ? 'calc(100% - 360px)' : '100%',
-        // transition: 'all 0.5s ease',
-        // zIndex: 1000,
-    };
     // Function to calculate selectedYearto based on selectedYear
     const calculateSelectedYearto = (year) => {
         const [startYear, endYear] = year.split('-');
@@ -67,11 +57,10 @@ function Cumulative({ isOffcanvasOpen }) {
 
     const handleYearSubmit = async () => {
         try {
-            if (selectedYear != '' && selectedYearfrom != '') {
+            if (selectedYear !== '' && selectedYearfrom !== '') {
                 const selectedYearto = selectedYear;
                 const response = await axios.post('http://localhost:8000/get_budget_data/', { selectedYearfrom, selectedYearto, username });
-                setData(response.data);
-                setShowInputs(true);                
+                setData(response.data);                
             }
         }
         catch (error) {
@@ -79,7 +68,7 @@ function Cumulative({ isOffcanvasOpen }) {
         }
     };
     return (
-        <div className='w-100 h-100' style={AppStyle}>
+        <div className='w-100 h-100'>
             {true && (
                 <>
                     <Table data={data} caption={

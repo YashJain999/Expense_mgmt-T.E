@@ -44,34 +44,38 @@ const Table = ({ data, caption }) => {
     const rows = [];
     // Items in the order you specified
     const orderedItems = ['LAB-CONSUME', 'LAB-EQ', 'MAINT-SPARE', 'MISC', 'RND', 'SOFT', 'T&T'];
-
+  
     orderedItems.forEach(item => {
       let row = []
       let rowCell1 = {}
-      // const rowCells = [<td key={`${item}-name`}>{itemNames[item]}</td>];
-      rowCell1["item"] = item;
-      rowCell1["styles"] = {width: "300px"};
+      // Use itemNames to get the readable name
+      rowCell1["item"] = itemNames[item] || item;
+      rowCell1["styles"] = { width: "300px" };
       rowCell1["className"] = "bg-primary text-white text-start";
       row.push(rowCell1);
+  
       uniqueYears.forEach(year => {
         const data = items[item][year] || { budgeted_amt: 0, actual_exp: 0 };
-        let rowCellBudget_amt = {}
+  
+        let rowCellBudget_amt = {};
         rowCellBudget_amt["item"] = data.budgeted_amt;
         rowCellBudget_amt["styles"] = {};
         rowCellBudget_amt["className"] = "";
-        row.push(rowCellBudget_amt)
-
-        let rowCellActual_exp = {}
+        row.push(rowCellBudget_amt);
+  
+        let rowCellActual_exp = {};
         rowCellActual_exp["item"] = data.actual_exp;
         rowCellActual_exp["styles"] = {};
         rowCellActual_exp["className"] = "";
-        row.push(rowCellActual_exp)
+        row.push(rowCellActual_exp);
       });
+  
       rows.push(row);
     });
-
+  
     return rows;
   };
+  
 
   return (
     <div className='w-100 h-100'>

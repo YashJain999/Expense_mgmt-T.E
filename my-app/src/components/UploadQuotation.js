@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Breadcrumb, Dropdown, DropdownButton, Card, Button, Modal, Form, Row, Col } from 'react-bootstrap';
+import { Breadcrumb, Dropdown, DropdownButton, Card, Button, Modal, Form, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faFolder } from '@fortawesome/free-solid-svg-icons';
+import { faFile,faPlus, faFolder } from '@fortawesome/free-solid-svg-icons';
 
 export default function FolderCreator() {
   const [selectedYear, setSelectedYear] = useState('');
@@ -25,6 +25,8 @@ export default function FolderCreator() {
   const [file, setFile] = useState(null);
   const [fileCards, setFileCards] = useState([]);
   const { username } = useParams();
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
 
   useEffect(() => {
     fetchData();
@@ -106,23 +108,42 @@ export default function FolderCreator() {
       alert('Please select a financial year.');
       return;
     }
-
+  
+    // Confirmation dialog
+    const confirmDelete = window.confirm('Are you sure you want to delete this folder?');
+  
+    if (!confirmDelete) {
+      // If the user clicks "Cancel", do nothing and return
+      return;
+    }
+  
+    // Proceed with deletion if user confirmed
     try {
       await axios.post('http://localhost:8000/delete_req/', {
         selectedYear,
         username,
         req_name: folders[folderIndex]
       });
+  
+      // Remove the deleted folder from the state
       setFolders(folders.filter((_, index) => index !== folderIndex));
     } catch (error) {
       console.error('Error deleting folder:', error);
     }
   };
+  
   const handleDelete_file = async (folderIndex) => {
     if (!selectedYear) {
       alert('Please select a financial year.');
       return;
     }
+        // Confirmation dialog
+        const confirmDelete = window.confirm('Are you sure you want to delete this folder?');
+  
+        if (!confirmDelete) {
+          // If the user clicks "Cancel", do nothing and return
+          return;
+        }
     try {
       await axios.post('http://localhost:8000/delete_file/', {
         selectedYear,
@@ -140,11 +161,12 @@ export default function FolderCreator() {
   };
 
   const handleIconClick = (folderIndex, action, event) => {
-    event.stopPropagation();
+    // event.stopPropagation();
     if (action === 'rename') {
       setRenamingFolder(folderIndex);
       setNewFolderName(folders[folderIndex]);
       setShowRenameModal(true);
+
     } else if (action === 'delete') {
       handleDelete(folderIndex);
     }
@@ -259,6 +281,33 @@ export default function FolderCreator() {
     const pdfUrl = `http://localhost:8000/get_pdf/${pdfId}/`;
       window.open(pdfUrl, '_blank');
   };
+  const handleUpdateFile = async (folderIndex) => {
+    if (!selectedYear) {
+      alert('Please select a financial year.');
+      return;
+    }
+    try {
+      const response = await axios.get(`http://localhost:8000/get_file_item_details/${selectedYear}/${username}/${currentFolder}/${fileCards[folderIndex].pdf_id}/`);
+      const { items, pdfs } = response.data;
+      console.log(items, pdfs)
+      if (pdfs && pdfs.length > 0) {
+        setNewFileName(pdfs[0].file_name || '');
+        setVendorName(pdfs[0].vendor_name || '');
+        // setFile(pdfs[0].pdf_file || '');
+      }
+      const flattenedItems = items.flat().map(item => ({
+        name: item.item_name,
+        quantity: item.quantity,
+        price: item.price,
+        warranty_date: item.warranty_date
+      }));
+      setItems(flattenedItems);
+      // setPdfs(pdfs);
+    }
+    catch (error) {
+      console.error('Error updating file:', error);
+    }
+  };
 
   return (
     <div className="folder-creator">
@@ -307,23 +356,31 @@ export default function FolderCreator() {
         {currentFolder && <Breadcrumb.Item active>{currentFolder}</Breadcrumb.Item>}
       </Breadcrumb>
 
+      {selectedYear && folders.length > 0 && (
+          <span className="d-block fs-4 fw-bold mb-1 text-dark text-decoration-underline">Requirements for {selectedYear}</span>
+        )}
       <Row className="folder-list mt-4">
         {folders.map((folder, index) => (
-          <Col key={index} xs={6} sm={4} md={3} lg={2} className="d-flex justify-content-center">
+          <Col key={index} xs={6} sm={4} md={3} lg={3} className="d-flex justify-content-center">
             <Card
-              style={{ width: '160px', position: 'relative' }}
-              className="text-center clickable-card"
-              onDoubleClick={() => handleFolderDoubleClick(folder)}
-            >
-              <Card.Body>
-                <FontAwesomeIcon icon={faFolder} size="3x" className="mb-3" />
-                <Card.Title className="text-truncate">{folder}</Card.Title>
-
-                <Dropdown className="position-absolute" style={{ bottom: '0', right: '0' }}>
-                  <Dropdown.Toggle as={Button} variant="link" className="custom-options-icon">
-                    <div className="dot"></div>
-                    <div className="dot"></div>
-                    <div className="dot"></div>
+                style={{ width: '300px', position: 'relative', backgroundColor: '#ffffff' }}
+                className="text-center clickable-card folder-card my-3 "
+                onDoubleClick={() => handleFolderDoubleClick(folder)}
+              >
+              <Card.Body className="d-flex align-items-center">
+              <FontAwesomeIcon icon={faFolder} size="2x" className="me-3 text-black" />
+                <OverlayTrigger placement="top" overlay={<Tooltip>{folder}</Tooltip>}>
+                  <Card.Subtitle
+                    className="text-truncate"
+                    style={{ cursor: 'pointer', maxWidth: '200px' }}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
+                    {folder}
+                  </Card.Subtitle>
+                </OverlayTrigger>
+                <Dropdown className="dropdown-arrow position-absolute text-dark" style={{ bottom: '10px', right: '2px' }}>
+                <Dropdown.Toggle as={Button} variant="link" className="custom-options-icon">
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={(e) => handleIconClick(index, 'rename', e)}>Rename</Dropdown.Item>
@@ -441,47 +498,66 @@ export default function FolderCreator() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <div className="file-folder-list mt-4">
-        <Row>
-          {fileCards.map((fileCard, index) => (
-            <Col key={index} xs={6} sm={4} md={3} lg={2} className="d-flex justify-content-center">
-              <Card
-                style={{ width: '160px', position: 'relative' }}
-                className="text-center clickable-card"
-                onDoubleClick={() => handleOpenPdf(fileCard.pdf_id)} // Handle double-click
-              >
-                <Card.Body>
-                  <FontAwesomeIcon icon={faFolder} size="3x" className="mb-3" />
-                  <Card.Title className="text-truncate">{fileCard.pdf_name}</Card.Title>
-                  <Card.Subtitle className="text-truncate">Vendor: {fileCard.vendor_name}</Card.Subtitle>
-                  {fileCard.isOpen && (
-                    <div style={{ textAlign: 'left', marginTop: '10px' }}>
-                      {fileCard.items.map((item, idx) => (
-                        <div key={idx}>
-                          <strong>Item:</strong> {item.name} <br />
-                          <strong>Quantity:</strong> {item.quantity} <br />
-                          <strong>Price:</strong> {item.price} <br />
-                        </div>
-                      ))}
-                      <strong>File:</strong> {fileCard.file}
-                    </div>
-                  )}
-                  <Dropdown className="position-absolute" style={{ bottom: '0', right: '0' }}>
+      <div>
+      <div className="file-folder-list d-block fs-4 fw-bold mb-1 text-dark text-decoration-underline">
+      {fileCards.length > 0 && (
+          <span className="text-muted d-block mb-3">
+            Quotations for {selectedYear}
+          </span>
+        )}
+        </div>
+      <Row>
+        {fileCards.map((fileCard, index) => (
+          <Col key={index} xs={6} sm={4} md={3} lg={3} className="d-flex justify-content-center">
+            <Card
+              style={{ width: '230px', position: 'relative' }}
+                className="text-center clickable-card file-card p-3 shadow-sm rounded-4 border border-secondary-subtle text-bg-light my-3"
+              onDoubleClick={() => handleOpenPdf(fileCard.pdf_id)}
+            >
+              <Card.Body>
+                <FontAwesomeIcon icon={faFile} size="3x" className="mb-3" />
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>{fileCard.file_name}</Tooltip>}
+                >
+                  <Card.Title
+                    className="text-truncate fs-7 text-dark mb-2"
+                    style={{ cursor: 'pointer', maxWidth: '200px' }}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
+                    {fileCard.file_name}
+                  </Card.Title>
+                </OverlayTrigger>
+
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>{fileCard.vendor_name}</Tooltip>}
+                >
+                  <Card.Subtitle
+                    className="text-muted text-truncate fs-6 mb-3"
+                    style={{ cursor: 'pointer', maxWidth: '200px' }}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
+                    Vendor: {fileCard.vendor_name}
+                  </Card.Subtitle>
+                </OverlayTrigger>
+
+                <Dropdown className="position-absolute" style={{ bottom: '0', right: '0' }}>
                   <Dropdown.Toggle as={Button} variant="link" className="custom-options-icon">
-                    <div className="dot"></div>
-                    <div className="dot"></div>
-                    <div className="dot"></div>
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={(e) => handleDelete_file(index)}>Delete</Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      </div>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    </div>
+
 
       {/* Rename Folder Modal */}
       <Modal show={showRenameModal} onHide={() => setShowRenameModal(false)}>

@@ -62,6 +62,13 @@ urlpatterns = [
     path('fetch_compare_data/',fetch_compare_data, name='fetch_req_data'),
     path('delete_file/', delete_file, name='delete_req'),
     path('get_pdf/<str:pdf_id>/', get_pdf, name='get_pdf'),
+    path('get_bill_pdf/<str:pdf_id>/', get_bill_pdf, name='get_pdf'),
+    path('upload_bill/', upload_bill, name='upload_bill'),
+    path('get_bills/', get_bills, name='get_bill'),
+    path('delete_bill/', delete_bill, name='get_bill'),
+    path('get_item_names/',get_item_names,name='get_item_names'),
+    path('update_file/',update_file,name='update_file'),
+    path('update_file_quotation/',update_file_quotation,name='update_file_quotation'),
 
 ]
 if settings.DEBUG:

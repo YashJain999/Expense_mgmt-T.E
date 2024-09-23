@@ -4,23 +4,12 @@ import axios from 'axios';
 import { useParams } from "react-router-dom";
 import Table from './CumulativeTable';
 
-function Dynamic({ isOffcanvasOpen }) {
+function Dynamic() {
     const [selectedYearfrom, setSelectedYearfrom] = useState('');
     const [selectedYearto, setSelectedYearto] = useState('');
     const [budgetData, setBudgetData] = useState([]);
     const [data, setData] = useState([]);
     const { username } = useParams();
-    const [showInputs, setShowInputs] = useState(false);
-    const isButtonDisabled = !selectedYearfrom || !selectedYearto;
-    const AppStyle = {
-        // position: "relative",
-        // top: "-100px",
-        // left: isOffcanvasOpen ? '0px' : '0%',
-        // width: isOffcanvasOpen ? 'calc(100% - 360px)' : '100%',
-        // transition: 'all 0.5s ease',
-        // zIndex: 1000,
-    };
-
     useEffect(() => {
         fetchData();
     }, []);
@@ -46,12 +35,11 @@ function Dynamic({ isOffcanvasOpen }) {
         handleYearSubmit();
     }, [selectedYearfrom, selectedYearto]);
     const handleYearSubmit = async () => {
-        if (selectedYearfrom != '' && selectedYearto != '') {
+        if (selectedYearfrom !== '' && selectedYearto !== '') {
             if (numYearFrom <= numYearTo) {
                 try {
                     const response = await axios.post('http://localhost:8000/get_budget_data/', { selectedYearfrom, selectedYearto, username });
                     setData(response.data);
-                    setShowInputs(true);
                 }
                 catch (error) {
                     console.error('Error fetching budget data:', error);
@@ -64,7 +52,7 @@ function Dynamic({ isOffcanvasOpen }) {
     };
 
     return (
-        <div className='w-100 h-100' style={AppStyle}>
+        <div className='w-100 h-100'>
             {true && (
                 <Table data={data} caption={
                     <div className='d-flex flex-row gap-5 px-3 mt-2 '>

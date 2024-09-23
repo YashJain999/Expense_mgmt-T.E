@@ -8,11 +8,11 @@ import Home from "./components/Home";
 import PrivateRoute from "./PrivateRoute";
 
 function App() {
-  const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(true);
+  // const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(true);
 
-  const toggleOffcanvas = () => {
-    setIsOffcanvasOpen(!isOffcanvasOpen);
-  };
+  // const toggleOffcanvas = () => {
+  //   setIsOffcanvasOpen(!isOffcanvasOpen);
+  // };
 
   return (
     <div className="main-container w-100 mh-100 bg-light overflow-y-scroll" style={{ height: "100vh" }}>
@@ -23,7 +23,7 @@ function App() {
         <Route 
           path="/home/:username/:u_dept?/*" 
           element={
-          <PrivateRoute> <Home isOffcanvasOpen={isOffcanvasOpen} toggleOffcanvas={toggleOffcanvas} /></PrivateRoute>} 
+          <PrivateRoute> <Home /></PrivateRoute>} 
         />
       </Routes>
     </div>

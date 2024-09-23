@@ -484,7 +484,7 @@ export default function Sidebar({ isOffcanvasOpen, toggleOffcanvas }) {
   const [isBillsListVisible, setIsBillsListVisible] = useState(false);
   const toggleBillsList = () => {
     const buttonObject4 = [
-      { text: "b.B1", path: `/home/${username}/${u_dept}/bills/b.b1` },
+      { text: "Upload Bills", path: `/home/${username}/${u_dept}/bills/uploadbills` },
       { text: "b.B2", path: `/home/${username}/${u_dept}/bills/b.b2` },
     ];
     setShouldShowBills(buttonObject4);

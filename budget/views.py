@@ -90,10 +90,8 @@ class LoginView(APIView):
                     return Response({'message': 'Login successful','u_desig':user.u_desig,'u_dep':user.u_dep ,'code':'10'})
                 else :
                     return Response({'message': 'Incorrect password' , 'code':'20'})
-                    print("Icoorect Password")
             else:
                 return Response({'message': 'Incorrect User Email','code':'30'})
-                print("Iccorect User email")
         except user.DoesNotExist:
             return Response({'message': 'User not found','code':'40'})  
         
@@ -315,7 +313,6 @@ def show_enter_data(request):
     financial_year = financialyear.objects.get(Desc=selected_year)
     desc = financial_year.F_year
     enter_data = list(budget.objects.filter(dept='IT',f_year__in=desc).values('budgeted_amt','actual_exp'))
-    print(enter_data)
     return Response(enter_data)
 
 
@@ -433,12 +430,8 @@ def get_uploaded_docs(request):
     branch=User.objects.get(u_email=username).u_dep
     selectedYear = request.data.get('selectedYear')
     year = financialyear.objects.get(Desc=selectedYear).F_year
-
-    # Retrieve the required data from the model
     try:
         data = list(Pdf.objects.filter(dept=branch, f_year=year).values('pdf_name', 'description', 'status', 'comment'))
-        
-        print(data)  # Assuming you have defined a PdfSerializer for the pdf model
         return Response(data)
     except Pdf.DoesNotExist:
         return Response({"message": "No data found for the specified branch and year"}, status=status.HTTP_404_NOT_FOUND)
@@ -608,9 +601,6 @@ def update_budget_details(request):
                         budgeted_amt=budgeted_amt,
                         actual_exp=actual_exp
                     )
-                else:
-                    print(f"Item '{item_name}' not found in item_mappings.")
-
             return Response({'message': 'Budget details updated successfully.'}, status=status.HTTP_200_OK)
 
         except json.JSONDecodeError:
@@ -668,7 +658,6 @@ def get_all_pdf_records(request):
                 'status' :record.status,
             }
             data.append(pdf_data)
-            print(data)
         return Response(data)
 
     except financialyear.DoesNotExist:

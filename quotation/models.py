@@ -74,6 +74,12 @@ def generate_pdf_filename(instance, filename):
     unique_id = uuid.uuid4().hex[:10]
     return f'quotation/{timestamp}_{unique_id}.pdf'
 
+def generate_bills_filename(instance, filename):
+    """Generate unique filename for PDF files."""
+    timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+    unique_id = uuid.uuid4().hex[:10]
+    return f'bills/{timestamp}_{unique_id}.pdf'
+
 class quotation(models.Model):
     dept = models.CharField( 
         verbose_name='Department',
@@ -154,5 +160,65 @@ class items(models.Model):
     )
     price = models.FloatField(
         verbose_name='Price',
+        null=False
+    )
+class bills(models.Model):
+    dept = models.CharField( 
+        verbose_name='Department',
+        max_length=50,
+        null=False
+    )
+    f_year = models.IntegerField(
+        verbose_name='Financial Year',
+        null=False
+    )
+    pdf_id = models.CharField(
+        primary_key = True,
+        verbose_name='PDF ID',
+        max_length=225,
+        null=False,
+        unique=True
+    )
+    pdf_name = models.CharField(
+        verbose_name= "Pdf_name",
+        max_length = 255,
+        null=False
+    )
+    item_name = models.CharField(
+        verbose_name= "item_name",
+        max_length = 255,
+        null=False
+    )
+    pdf_file = models.FileField(
+        verbose_name="PDF File",
+        upload_to=generate_bills_filename,
+        null=False
+    )
+    vendor_name = models.CharField(
+        verbose_name= "vendor_name",
+        max_length = 255,
+        null=False,
+        default='default_vendor_name'
+    )
+    product_purchased= models.CharField(
+        verbose_name= "Product Purchased",
+        max_length = 255,
+        null=False,
+        default='default_product_purchased'
+    )
+    total_amount= models.FloatField(
+        verbose_name='Total Amount',
+        null=False
+    )
+    quantity = models.IntegerField(
+        verbose_name='Quantity',
+        null=False
+    )
+    bill_date=models.DateField(
+        verbose_name='Bill Date',
+        null=False
+    )
+    warranty_date= models.DateField(
+        verbose_name='Warranty Date',
         null=False
     )
