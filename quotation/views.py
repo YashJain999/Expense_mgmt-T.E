@@ -17,6 +17,12 @@ from django.http import FileResponse, Http404
 import json  
 import traceback
 
+@api_view(['GET'])
+def get_item_names(request):
+    folder_names= itemmaster.objects.values_list('item_desc', flat=True)    
+    # Assuming you have a model that stores folder names based on years
+    return Response(list(folder_names))
+
 @api_view(['POST'])
 def get_req(request):
     selected_year = request.data.get('selectedYear')
@@ -37,6 +43,8 @@ def add_req(request):
     dept = User.objects.get(u_email=username).u_dep
     req_name = request.data.get('req_name')
     try:
+        if requirement.objects.filter(dept=dept,F_year=financial_year,req_name=req_name).exists():
+            return Response({'message': 'Requirement already exixts'}, status=404)
         requirement.objects.create(
             dept=dept,
             F_year=financial_year,
@@ -97,7 +105,6 @@ def delete_req(request):
             if items_to_delete.exists():
                 items_to_delete.delete()
             # Handle the file deletion
-            print(quotation_entry.pdf_file)
             quotation_file_path = os.path.join(settings.MEDIA_ROOT, str(quotation_entry.pdf_file)[2:-1])
             if os.path.exists(quotation_file_path):
                 os.remove(quotation_file_path)
@@ -109,7 +116,7 @@ def delete_req(request):
     except requirement.DoesNotExist:
         return Response({'message': 'Requirement not found'}, status=404)
     except Exception as e:
-        print(traceback.format_exc())  # Log the full traceback for debugging
+        # print(traceback.format_exc())  # Log the full traceback for debugging
         return Response({'message': 'Failed to delete requirement', 'error': str(e)}, status=400)
 
 @api_view(['POST'])
@@ -150,7 +157,6 @@ def upload_quotation(request):
                     vendor_name=vendor_name,
                     req_name=req_name
                 )
-                print("Quotation saved")
                 # Iterate through items and save each one
                 for item in pdf_items:
                     items.objects.create(  # Ensure this matches your model name
@@ -166,7 +172,7 @@ def upload_quotation(request):
     except financialyear.DoesNotExist:
         return Response({'message': 'Specified year not found'}, status=404)
     except Exception as e:
-        print(traceback.format_exc())  # Log the full traceback for debugging
+        # print(traceback.format_exc())  # Log the full traceback for debugging
         return Response({'message': 'Failed to upload quotation', 'error': str(e)}, status=500)
     
 @api_view(['GET','POST'])
@@ -181,7 +187,7 @@ def fetch_req_data(request):
     try:
         dept = User.objects.get(u_email=username).u_dep
         if quotation.objects.filter(dept=dept, f_year=financial_year, req_name=folder_name).exists():
-            pdfs = list(quotation.objects.filter(dept=dept, f_year=financial_year, req_name=folder_name).values('pdf_name', 'pdf_id','vendor_name','pdf_id'))
+            pdfs = list(quotation.objects.filter(dept=dept, f_year=financial_year, req_name=folder_name).values('pdf_name', 'pdf_id','vendor_name','pdf_id','file_name'))
             return Response({'pdfs': list(pdfs)}, status=200)
         else:  
             return Response({'message': 'No PDFs found for the selected year and department'}, status=404)

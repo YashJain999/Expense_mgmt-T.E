@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Breadcrumb, Dropdown, DropdownButton, Card, Button, Modal, Form, Row, Col } from 'react-bootstrap';
+import { Breadcrumb, Dropdown, DropdownButton, Card, Button, Modal, Form, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faFolder, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
+import {faFile, faPlus, faFolder, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 import "../assets/css/UploadQuotation.css";
 
 export default function FolderCreator() {
@@ -28,6 +28,7 @@ export default function FolderCreator() {
   const [modalMode, setModalMode] = useState('upload');
   const [selectedItem, setSelectedItem] = useState(null);
   const [warrantyDate, setWarrantyDate] = useState('');
+  const [hoveredIndex, setHoveredIndex] = useState(null);
   const { username } = useParams();
 
 
@@ -112,7 +113,13 @@ export default function FolderCreator() {
       alert('Please select a financial year.');
       return;
     }
-
+    // Confirmation dialog
+    const confirmDelete = window.confirm('Are you sure you want to delete this folder?');
+  
+    if (!confirmDelete) {
+      // If the user clicks "Cancel", do nothing and return
+      return;
+    }
     try {
       await axios.post('http://localhost:8000/delete_req/', {
         selectedYear,
@@ -149,7 +156,6 @@ export default function FolderCreator() {
       if (pdfs && pdfs.length > 0) {
         setNewFileName(pdfs[0].file_name || '');
         setVendorName(pdfs[0].vendor_name || '');
-        // setFile(pdfs[0].pdf_file || '');
       }
       const flattenedItems = items.flat().map(item => ({
         name: item.item_name,
@@ -158,7 +164,6 @@ export default function FolderCreator() {
         warranty_date: item.warranty_date
       }));
       setItems(flattenedItems);
-      // setPdfs(pdfs);
     }
     catch (error) {
       console.error('Error updating file:', error);
@@ -168,6 +173,13 @@ export default function FolderCreator() {
   const handleDelete_file = async (folderIndex) => {
     if (!selectedYear) {
       alert('Please select a financial year.');
+      return;
+    }
+    // Confirmation dialog
+    const confirmDelete = window.confirm('Are you sure you want to delete this folder?');
+  
+    if (!confirmDelete) {
+      // If the user clicks "Cancel", do nothing and return
       return;
     }
     try {
@@ -401,9 +413,15 @@ export default function FolderCreator() {
           }
           variant="primary"
           onSelect={(eventKey) => {
-            if (eventKey === 'addFolder') setShowModal(true);
-            else if (eventKey === 'addFile') setModalMode('upload'); setShowFileModal(true); setNewFileName('');
-            setVendorName(''); setItems([]); // Open File Modal
+            if (eventKey === 'addFolder') {
+              setShowModal(true);
+            } else if (eventKey === 'addFile') {
+              setModalMode('upload');
+              setShowFileModal(true);
+              setNewFileName('');  
+              setVendorName('');  
+              setItems([]);         
+            }
           }}
         >
           <Dropdown.Item eventKey="addFile" disabled={!currentFolder}>Add New File</Dropdown.Item>
@@ -437,41 +455,32 @@ export default function FolderCreator() {
         {currentFolder && <Breadcrumb.Item active>{currentFolder}</Breadcrumb.Item>}
       </Breadcrumb>
 
+      {selectedYear && folders.length > 0 && (
+          <span className="d-block fs-4 fw-bold mb-1 text-dark text-decoration-underline">Requirements for {selectedYear}</span>
+        )}
+
       <Row className="folder-list mt-4">
         {folders.map((folder, index) => (
-          <Col key={index} xs={6} sm={4} md={3} lg={2} className="d-flex justify-content-center">
+          <Col key={index} xs={6} sm={4} md={3} lg={3} className="d-flex justify-content-center">
             <Card
-              style={{ width: '200px', position: 'relative',
-                backgroundColor: `hsl(${index * 40}, 80%, 90%)`,
-                border: 'none', // Remove default border
-                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Add shadow for a 3D effect
-                transition: 'transform 0.3s ease, box-shadow 0.3s ease', // Smooth hover effect
-                marginTop: '20px', // Increased space between top folders
-               }}
-              className="text-center clickable-card"
+              style={{ width: '300px', position: 'relative', backgroundColor: '#ffffff' }}
+              className="text-center clickable-card folder-card my-3 "
               onDoubleClick={() => handleFolderDoubleClick(folder)}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.05)'; // Zoom on hover
-                e.currentTarget.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.2)'; // Stronger shadow on hover
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)'; // Reset scale
-                e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)'; // Reset shadow
-              }}
             >
-              <Card.Body>
-                <FontAwesomeIcon icon={faFolder} size="3x" className="mb-3" style={{ color: `hsl(${index * 40}, 60%, 50%)` }} />
-                <Card.Title className="text-truncate" style={{
-                      fontSize: '0.9rem',
-                      fontWeight: 'bold',
-                      color: 'hsl(220, 15%, 30%)', // Darker text for better contrast
-                    }}>{folder}</Card.Title>
-
-                <Dropdown className="position-absolute" style={{ bottom: '0', right: '0' }}>
-                  <Dropdown.Toggle as={Button} variant="link" className="custom-options-icon">
-                    <div className="dot"></div>
-                    <div className="dot"></div>
-                    <div className="dot"></div>
+              <Card.Body className="d-flex align-items-center">
+              <FontAwesomeIcon icon={faFolder} size="2x" className="me-3 text-black" />
+                <OverlayTrigger placement="top" overlay={<Tooltip>{folder}</Tooltip>}>
+                  <Card.Subtitle
+                    className="text-truncate"
+                    style={{ cursor: 'pointer', maxWidth: '200px' }}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
+                {folder}
+                  </Card.Subtitle>
+                </OverlayTrigger>
+                <Dropdown className="dropdown-arrow position-absolute text-dark" style={{ bottom: '10px', right: '2px' }}>
+                <Dropdown.Toggle as={Button} variant="link" className="custom-options-icon">
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={(e) => handleIconClick(index, 'rename', e)}>Rename</Dropdown.Item>
@@ -629,59 +638,64 @@ export default function FolderCreator() {
       </Modal>
 
       {/*file cards */}
-      <div className="file-folder-list mt-4">
-        <Row>
-          {fileCards.map((fileCard, index) => (
-            <Col key={index} xs={6} sm={4} md={3} lg={2} className="d-flex justify-content-center">
-              <Card
-                style={{ width: '250px', height:'250px',backgroundColor: `hsl(${index * 40}, 80%, 90%)`, // Unique pastel background color for each card
-                border: 'none', // Remove default border
-                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Add shadow for a 3D effect
-                transition: 'transform 0.3s ease, box-shadow 0.3s ease', // Smooth hover effect
-                marginTop: '20px', position: 'relative' }}
-                className="text-center clickable-card"
-                onDoubleClick={() => handleOpenPdf(fileCard.pdf_id)} // Handle double-click
-              onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.05)'; // Zoom on hover
-                  e.currentTarget.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.2)'; // Stronger shadow on hover
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)'; // Reset scale
-                  e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)'; // Reset shadow
-                }}
-              >
-                <Card.Body>
-                  <FontAwesomeIcon icon={faFolder} size="3x" className="mb-3" />
-                  <Card.Title className="text-truncate">{fileCard.file_name || 'No file name available'}</Card.Title>
-                  <Card.Subtitle className="text-truncate">Vendor: {fileCard.vendor_name}</Card.Subtitle>
-                  {fileCard.isOpen && (
-                    <div style={{ textAlign: 'left', marginTop: '10px' }}>
-                      {items.map((item, index) => (
-                        <div key={index}>
-                          <strong>Item:</strong> {item.name} <br />
-                          <strong>Quantity:</strong> {item.quantity} <br />
-                          <strong>Price:</strong> {item.price} <br />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <Dropdown className="position-absolute" style={{ bottom: '0', right: '0' }}>
+      <div>
+      <div className="file-folder-list d-block fs-4 fw-bold mb-1 text-dark text-decoration-underline">
+      {fileCards.length > 0 && (
+          <span className="text-muted d-block mb-3">
+            Quotations for {selectedYear}
+          </span>
+        )}
+        </div>
+      <Row>
+      {fileCards.map((fileCard, index) => (
+          <Col key={index} xs={6} sm={4} md={3} lg={3} className="d-flex justify-content-center">
+            <Card
+              style={{ width: '230px', position: 'relative' }}
+                className="text-center clickable-card file-card p-3 shadow-sm rounded-4 border border-secondary-subtle text-bg-light my-3"
+              onDoubleClick={() => handleOpenPdf(fileCard.pdf_id)}
+            >
+              <Card.Body>
+              <FontAwesomeIcon icon={faFile} size="3x" className="mb-3" />
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>{fileCard.file_name}</Tooltip>}
+                >
+                  <Card.Title
+                    className="text-truncate fs-7 text-dark mb-2"
+                    style={{ cursor: 'pointer', maxWidth: '200px' }}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
+                    {fileCard.file_name}
+                  </Card.Title>
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip>{fileCard.vendor_name}</Tooltip>}
+                >
+                  <Card.Subtitle
+                    className="text-muted text-truncate fs-6 mb-3"
+                    style={{ cursor: 'pointer', maxWidth: '200px' }}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                  >
+                    Vendor: {fileCard.vendor_name}
+                  </Card.Subtitle>
+                </OverlayTrigger>
+                <Dropdown className="position-absolute" style={{ bottom: '0', right: '0' }}>
                     <Dropdown.Toggle as={Button} variant="link" className="custom-options-icon">
-                      <div className="dot"></div>
-                      <div className="dot"></div>
-                      <div className="dot"></div>
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
                       <Dropdown.Item onClick={(e) => handleFileOperation(index, 'update', e)}>Update</Dropdown.Item>
                       <Dropdown.Item onClick={(e) => handleFileOperation(index, 'delete', e)}>Delete</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      </div>
+                  </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    </div>
 
       {/* Rename Folder Modal */}
       <Modal show={showRenameModal} onHide={() => setShowRenameModal(false)}>
